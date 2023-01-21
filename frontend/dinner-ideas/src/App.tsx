@@ -7,13 +7,14 @@ function App() {
 	const api = 'https://ucfizrks22.execute-api.us-west-1.amazonaws.com/default/dinner-ideas';
     const data = { "type" : "Read" };
 
-	const response = await window.fetch(api, {
+	const response = window.fetch(api, {
 		method: 'POST',
-		body: JSON.stringify(data);
+		body: JSON.stringify(data)
 
+	}).then(response => {
+		console.log(response.json());
 	});
 
-	console.log(response.json());
 
   	return (
 		<div className="App">
