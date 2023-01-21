@@ -30,6 +30,12 @@ public class Function
     /// <returns></returns>
     public string FunctionHandler(DinnerPayload payload, ILambdaContext context)
     {
+        var architecture = System.Runtime.InteropServices.RuntimeInformation.ProcessArchitecture;
+        var dotnetVersion = Environment.Version.ToString();
+
+        Console.WriteLine(architecture);
+        Console.WriteLine(dotnetVersion);
+
         // TODO test dynamo DB
         AmazonDynamoDBConfig config = new AmazonDynamoDBConfig
         {
@@ -37,15 +43,12 @@ public class Function
         };
         _dbClient = new AmazonDynamoDBClient(config);
 
-        // _dbClient.CreateTableAsync
-
-
         return payload.Type switch {
             PayloadType.Create => "Create", 
             PayloadType.Read => "Read", 
             PayloadType.Update => "Update", 
-            PayloadType.Delete => "Delete", 
-            _ => "Invalid"
+            PayloadType.Delete => "Delete",
+            _ => throw new Exception("no")
         };
     }
 }
