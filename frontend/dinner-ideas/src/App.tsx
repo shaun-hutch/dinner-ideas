@@ -2,27 +2,19 @@ import React from 'react';
 import logo from './logo.svg';
 import './App.css';
 
-import { Auth } from '@aws-amplify/auth';
-import Lambda from 'aws-sdk/clients/lambda';
 function App() {
 
-	// const api = 'https://ucfizrks22.execute-api.us-west-1.amazonaws.com/default/dinner-ideas';
-    // const data = { "type" : "Read" };
+	const api = 'https://vf47fh2d73xkr2567uypgbcpc40pvhso.lambda-url.us-west-1.on.aws/';
+    const data = { "type" : 0 };
 
-	Auth.currentCredentials()
-	.then(credentials => {
-		const lambda = new Lambda(
-		{
-			credentials: Auth.essentialCredentials(credentials)
-		});
-		lambda.invoke({
-		FunctionName: 'dinner-ideas',
-		Payload: JSON.stringify({ type: 0 }),
-		}, function(err, data){
-			if (err) console.log(err, err.stack);
-			else console.log(data);
-		});
+	const response = window.fetch(api, {
+		method: 'POST',
+		body: JSON.stringify(data)
+
+	}).then(response => {
+		console.log(response);
 	});
+
 
 
 
