@@ -477,4 +477,4 @@ $RECYCLE.BIN/
 *.lnk
 
 node_modules/
-.yarn/
+frontend/dinner-ideas/build/
