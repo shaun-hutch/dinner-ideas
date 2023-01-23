@@ -1,1 +1,3 @@
 echo bundling lambda...
+dotnet lambda deploy-function -fn dinner-ideas -pl api/src/dinner-ideas
+echo lambda deployed!

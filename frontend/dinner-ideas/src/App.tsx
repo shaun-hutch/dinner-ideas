@@ -22,7 +22,7 @@ function App() {
 		body: JSON.stringify(data)
 
 	}).then(response => {
-		console.log(response);
+		console.log(response.json());
 	});
 
 

@@ -28,7 +28,7 @@ public class Function
     /// <param name="input"></param>
     /// <param name="context"></param>
     /// <returns></returns>
-    public string FunctionHandler(DinnerPayload payload, ILambdaContext context)
+    public DinnerResponse FunctionHandler(DinnerPayload payload, ILambdaContext context)
     {
         var architecture = System.Runtime.InteropServices.RuntimeInformation.ProcessArchitecture;
         var dotnetVersion = Environment.Version.ToString();
@@ -43,12 +43,23 @@ public class Function
         };
         _dbClient = new AmazonDynamoDBClient(config);
 
-        return payload.Type switch {
-            PayloadType.Create => "Create", 
-            PayloadType.Read => "Read", 
-            PayloadType.Update => "Update", 
-            PayloadType.Delete => "Delete",
-            _ => throw new Exception("no")
-        };
+        // generate some dummy data for now
+        var items = Enumerable.Range(0, 10).Select(x => 
+            new FoodItem {
+                Id = Guid.NewGuid(),
+                Description = $"test description {x}",
+                ImageBase64 = "test base 64",
+                Name = $"food item {x}"
+            }
+        );
+
+        switch (payload.Type) {
+            case PayloadType.Read:
+                return new DinnerResponse {
+                    FoodItems = items
+                };
+            default:
+                return new DinnerResponse();
+        }
     }
 }
