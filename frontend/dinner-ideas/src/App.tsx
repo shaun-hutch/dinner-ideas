@@ -1,11 +1,21 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import logo from './logo.svg';
 import './App.css';
+import FoodList from './components/FoodList/FoodList';
 
 function App() {
 
 	const api = 'https://vf47fh2d73xkr2567uypgbcpc40pvhso.lambda-url.us-west-1.on.aws/';
     const data = { "type" : 0 };
+
+
+	const [isLoading, setIsLoading] = useState(false);
+
+	useEffect(() => {
+		setTimeout(() => {
+			setIsLoading(true);
+		}, 2000);
+	}, [isLoading])
 
 	const response = window.fetch(api, {
 		method: 'POST',
@@ -16,25 +26,24 @@ function App() {
 	});
 
 
+	const weekItemId = 'test';
+	const mostRecentDate = new Date();
+
 
 
   	return (
-		<div className="App">
-			<header className="App-header">
-			<img src={logo} className="App-logo" alt="logo" />
-			<p>
-				Edit <code>src/App.tsx</code> and save to reload.
-			</p>
-			<a
-				className="App-link"
-				href="https://reactjs.org"
-				target="_blank"
-				rel="noopener noreferrer"
-			>
-				Learn React
-			</a>
+		<div className='dinner-ideas'>
+			<header>
+				<h1>Dinner Ideas</h1>
 			</header>
-    	</div>
+			<body>
+				<FoodList
+					listDate={mostRecentDate}
+					weekItemId={weekItemId} 
+					isLoading={isLoading}
+				/>
+			</body>
+		</div>
   	);
 }
 
