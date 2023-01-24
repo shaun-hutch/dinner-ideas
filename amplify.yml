@@ -1,0 +1,14 @@
+version: 1
+frontend:
+  phases:
+    build:
+      commands:
+        - cd frontend/dinner-ideas
+        - npm ci
+        - npm run build
+  artifacts:
+    baseDirectory: frontend/dinner-ideas/build/
+    files:
+      - '**/*'
+  cache:
+    paths: []
