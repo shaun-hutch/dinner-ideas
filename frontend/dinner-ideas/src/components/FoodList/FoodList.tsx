@@ -1,7 +1,8 @@
-import { FoodItem } from "../../models/Models";
+import { Action, ActionType, FoodItem, FoodItemsState } from "../../models/Models";
 import FoodItemComponent from "../FoodItem/FoodItemComponent";
 import { getFoodItems } from "../../foodItemsApi";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useReducer } from "react";
+import FoodItemContentLoader from "../FoodItem/FoodItemContentLoader";
 
 interface FoodListProps
 {
@@ -12,38 +13,42 @@ interface FoodListProps
 const FoodList: React.FC<FoodListProps> = ({
     listDate
 }) => {
+    const initialState: FoodItemsState = {
+        foodItems: [],
+        isLoading: true,
+        error: ''
+    };
 
-    const [foodItems, setFoodItems] = useState<FoodItem[]>([]);
-    const [isLoading, setIsLoading] = useState<boolean>(true);
-
-    const items = 10;
-
+    const [state, dispatch] = useReducer(useFoodItemsReducer, initialState);
+    const { isLoading, foodItems, error } = state;
     const formattedDate = listDate.toDateString();
 
-
-    useEffect(() => {
-        if (isLoading) {
-            getFoodItems('').then(data => {
-                console.log(data);
-                setFoodItems(data);
-                setIsLoading(false);
-            });
-        }
-    }, []);
+    
+    useEffect(() => {       
+        getFoodItems('').then(data => {
+            console.log(data);
 
 
-    if (isLoading) {
-        return <>loading items...</>
-    }
+            const success: Action = {
+                type: ActionType.Success,
+                data: data,
+                error: ''
+            };
+            dispatch(success);
 
-    const foodListItems = foodItems?.map(foodItem => {
-        return (
-            <>
-                
-            </>
-        );
-    })
+            // setFoodItems(data);
+            // setIsLoading(false);
+        });
+    },[listDate]);
 
+    console.log('is loading', isLoading);
+    // if (isLoading) {
+    //     return (
+    //     <>
+            
+    //     </>
+    //     );
+    // }
 
     return (
         <>
@@ -51,21 +56,51 @@ const FoodList: React.FC<FoodListProps> = ({
             <div className='date-label'>
                 <h3>{formattedDate}</h3>
             </div>
-            <div className="food-list">
-                <ul>
-                    {foodItems.map(foodItem => 
-                    <li>
-                        <FoodItemComponent
-                            key={foodItem.Id}
-                            foodItem={foodItem}
-                            isLoading={isLoading}
-                        />
-                    </li>
-                    )}
-                </ul>
-            </div>
+                <div className="food-list">
+            
+                {isLoading ? 
+                    <>
+                        <ul>
+                            {Array.from(Array(10).keys()).map(x => <li><FoodItemContentLoader key={`loading_${x}`}/></li>)}
+                        </ul>
+                    </> : <>
+                            <ul>
+                                {foodItems.map(foodItem => 
+                                    <FoodItemComponent
+                                        key={foodItem.Id}
+                                        foodItem={foodItem}
+                                    />
+                                )}
+                            </ul>
+                    </>}
+                </div>
         </>
     )
 };
+
+const useFoodItemsReducer = (state: FoodItemsState, action: Action) => {
+    switch (action.type) {
+        case ActionType.Call: {
+            return {
+                ...state,
+                isLoading: true,
+            };
+        }
+        case ActionType.Success: {
+            return {
+                ...state,
+                foodItems: action.data,
+                isLoading: false,
+            }
+        }
+        case ActionType.Error: {
+            return {
+                ...state,
+                isLoading: false,
+                error: action.error
+            }
+        }
+    }
+}
 
 export default FoodList;

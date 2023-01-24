@@ -4,7 +4,6 @@ import FoodList from './components/FoodList/FoodList';
 function App() {
 	const mostRecentDate = new Date();
 
-
   	return (
 		<div className='dinner-ideas'>
 			<header>
