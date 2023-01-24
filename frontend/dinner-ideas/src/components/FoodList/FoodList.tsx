@@ -1,39 +1,45 @@
-import { FoodItem } from "../../models/FoodItem";
+import { FoodItem } from "../../models/Models";
 import FoodItemComponent from "../FoodItem/FoodItemComponent";
+import { getFoodItems } from "../../foodItemsApi";
+import { useEffect, useState } from "react";
 
 interface FoodListProps
 {
     listDate: Date;
-    weekItemId: string;
-    isLoading: boolean;
 }
 
 
 const FoodList: React.FC<FoodListProps> = ({
-    listDate,
-    weekItemId,
-    isLoading
+    listDate
 }) => {
+
+    const [foodItems, setFoodItems] = useState<FoodItem[]>([]);
+    const [isLoading, setIsLoading] = useState<boolean>(true);
 
     const items = 10;
 
     const formattedDate = listDate.toDateString();
 
-    
 
-    const foodListItems = Array.from(Array(10).keys()).map(x => {
-        const dummyItem: FoodItem = {
-            Id: x.toString(),
-            Description: 'test description here',
-            Image: 'test',
-            Name: `item ${x}`
+    useEffect(() => {
+        if (isLoading) {
+            getFoodItems('').then(data => {
+                console.log(data);
+                setFoodItems(data);
+                setIsLoading(false);
+            });
         }
+    }, []);
+
+
+    if (isLoading) {
+        return <>loading items...</>
+    }
+
+    const foodListItems = foodItems?.map(foodItem => {
         return (
             <>
-                <FoodItemComponent
-                    foodItem={dummyItem}
-                    isLoading={isLoading}
-                />
+                
             </>
         );
     })
@@ -46,7 +52,17 @@ const FoodList: React.FC<FoodListProps> = ({
                 <h3>{formattedDate}</h3>
             </div>
             <div className="food-list">
-                {foodListItems}
+                <ul>
+                    {foodItems.map(foodItem => 
+                    <li>
+                        <FoodItemComponent
+                            key={foodItem.Id}
+                            foodItem={foodItem}
+                            isLoading={isLoading}
+                        />
+                    </li>
+                    )}
+                </ul>
             </div>
         </>
     )

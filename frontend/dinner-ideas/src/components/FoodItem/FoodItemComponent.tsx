@@ -1,4 +1,4 @@
-import { FoodItem } from "../../models/FoodItem";
+import { FoodItem } from "../../models/Models";
 
 interface FoodItemProps
 {
