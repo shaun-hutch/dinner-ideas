@@ -1,13 +1,15 @@
 import FoodList from './components/FoodList/FoodList';
+import NavBar from './components/NavBar/NavBar';
 
 function App() {
 	const mostRecentDate = new Date();
 
   	return (
 		<div className='dinner-ideas'>
-			<header>
-				<h1>Dinner Ideas</h1>
-			</header>
+			<NavBar/>
+			
+
+
 			<div className='food-list'>
 				<FoodList
 					listDate={mostRecentDate}

@@ -10,7 +10,7 @@ Install node JS, latest, then navigate to `frontend/dinner-ideas`
 
 `npm install`
 
-`npm run start`
+`npm run serve`
 
 ---
 

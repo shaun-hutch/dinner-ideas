@@ -4,6 +4,7 @@ export interface FoodItem
     Name: string;
     Description: string;
     ImageBase64: string;
+    ImageUrl: string;
 }
 
 export interface FoodItemsState {

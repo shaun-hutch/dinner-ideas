@@ -3,6 +3,7 @@ import FoodItemComponent from "../FoodItem/FoodItemComponent";
 import { getFoodItems } from "../../foodItemsApi";
 import { useEffect, useState, useReducer } from "react";
 import FoodItemContentLoader from "../FoodItem/FoodItemContentLoader";
+import './FoodList.scss';
 
 interface FoodListProps
 {
@@ -35,45 +36,31 @@ const FoodList: React.FC<FoodListProps> = ({
                 error: ''
             };
             dispatch(success);
-
-            // setFoodItems(data);
-            // setIsLoading(false);
         });
     },[listDate]);
 
     console.log('is loading', isLoading);
-    // if (isLoading) {
-    //     return (
-    //     <>
-            
-    //     </>
-    //     );
-    // }
-
     return (
         <>
             <h2>Food list thing</h2>
             <div className='date-label'>
                 <h3>{formattedDate}</h3>
             </div>
-                <div className="food-list">
-            
-                {isLoading ? 
+            <div className="food-list-items">
+            {isLoading ? 
                     <>
-                        <ul>
-                            {Array.from(Array(10).keys()).map(x => <li><FoodItemContentLoader key={`loading_${x}`}/></li>)}
-                        </ul>
+                        {Array.from(Array(10).keys()).map(x => <FoodItemContentLoader key={`loading_${x}`}/>)}
                     </> : <>
-                            <ul>
-                                {foodItems.map(foodItem => 
-                                    <FoodItemComponent
-                                        key={foodItem.Id}
-                                        foodItem={foodItem}
-                                    />
-                                )}
-                            </ul>
-                    </>}
-                </div>
+                        <div>
+                            {foodItems.map(foodItem => 
+                                <FoodItemComponent
+                                    key={foodItem.Id}
+                                    foodItem={foodItem}
+                                />
+                            )}
+                        </div>
+                </>}
+            </div>
         </>
     )
 };

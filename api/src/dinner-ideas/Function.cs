@@ -49,7 +49,8 @@ public class Function
                 Id = Guid.NewGuid(),
                 Description = $"test description {x}",
                 ImageBase64 = "test base 64",
-                Name = $"food item {x}"
+                Name = $"food item {x}",
+                ImageUrl = "https://picsum.photos/200"
             }
         );
 
