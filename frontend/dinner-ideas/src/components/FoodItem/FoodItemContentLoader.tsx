@@ -5,7 +5,7 @@ const FoodItemContentLoader = () => (
     <div>
         <ContentLoader 
             speed={2}
-            width={200}
+            width={500}
             height={100}
             viewBox="0 0 200 100"
             backgroundColor="#f3f3f3"

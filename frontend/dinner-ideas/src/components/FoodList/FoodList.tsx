@@ -1,6 +1,6 @@
 import { Action, ActionType, FoodItem, FoodItemsState } from "../../models/Models";
 import FoodItemComponent from "../FoodItem/FoodItemComponent";
-import { getFoodItems } from "../../foodItemsApi";
+import { getFoodItems, useFoodItemsReducer } from "../../foodItemsApi";
 import { useEffect, useState, useReducer } from "react";
 import FoodItemContentLoader from "../FoodItem/FoodItemContentLoader";
 import './FoodList.scss';
@@ -27,9 +27,6 @@ const FoodList: React.FC<FoodListProps> = ({
     
     useEffect(() => {       
         getFoodItems('').then(data => {
-            console.log(data);
-
-
             const success: Action = {
                 type: ActionType.Success,
                 data: data,
@@ -65,29 +62,6 @@ const FoodList: React.FC<FoodListProps> = ({
     )
 };
 
-const useFoodItemsReducer = (state: FoodItemsState, action: Action) => {
-    switch (action.type) {
-        case ActionType.Call: {
-            return {
-                ...state,
-                isLoading: true,
-            };
-        }
-        case ActionType.Success: {
-            return {
-                ...state,
-                foodItems: action.data,
-                isLoading: false,
-            }
-        }
-        case ActionType.Error: {
-            return {
-                ...state,
-                isLoading: false,
-                error: action.error
-            }
-        }
-    }
-}
+
 
 export default FoodList;
