@@ -2,6 +2,8 @@ using Amazon.Lambda.Core;
 using Amazon.DynamoDBv2;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using DinnerIdeas.Services;
+using Amazon;
 
 // Assembly attribute to enable the Lambda function's JSON input to be converted into a .NET class.
 [assembly: LambdaSerializer(typeof(Amazon.Lambda.Serialization.SystemTextJson.DefaultLambdaJsonSerializer))]
@@ -11,6 +13,7 @@ namespace DinnerIdeas;
 public class Function
 {
     private IAmazonDynamoDB _dbClient;
+    private IMapper _mapper;
     private readonly IConfigurationRoot _configuration;
     private readonly IServiceProvider _serviceProvider;
 
@@ -19,6 +22,24 @@ public class Function
         _configuration = new ConfigurationBuilder()
             .AddEnvironmentVariables()
             .Build();
+
+        var services = new ServiceCollection();
+        services.AddSingleton<IServiceProvider>(sp => sp);
+        services.AddScoped(typeof(IMapper), typeof(Mapper));
+        _serviceProvider = services.BuildServiceProvider();
+
+// #if DEBUG
+//         AmazonDynamoDBConfig config = new AmazonDynamoDBConfig
+//         {
+//             ServiceURL = "http://localhost:8000"
+//         };
+// #elif RELEASE
+        AmazonDynamoDBConfig config = new AmazonDynamoDBConfig();
+        config.RegionEndpoint = RegionEndpoint.USWest1;
+
+// #endif
+        
+        _dbClient = new AmazonDynamoDBClient(config);
     }
 
 
@@ -28,20 +49,12 @@ public class Function
     /// <param name="input"></param>
     /// <param name="context"></param>
     /// <returns></returns>
-    public DinnerResponse FunctionHandler(DinnerPayload payload, ILambdaContext context)
+    public async Task<DinnerResponse> FunctionHandler(DinnerPayload payload, ILambdaContext context)
     {
-        var architecture = System.Runtime.InteropServices.RuntimeInformation.ProcessArchitecture;
-        var dotnetVersion = Environment.Version.ToString();
+        using var scope = _serviceProvider.CreateScope();
 
-        Console.WriteLine(architecture);
-        Console.WriteLine(dotnetVersion);
-
-        // TODO test dynamo DB
-        AmazonDynamoDBConfig config = new AmazonDynamoDBConfig
-        {
-            ServiceURL = "http://localhost:8000"
-        };
-        _dbClient = new AmazonDynamoDBClient(config);
+        var mapper = scope.ServiceProvider.GetRequiredService<IMapper>();
+        var foodItemService = new FoodItemService(_dbClient, mapper);
 
         // generate some dummy data for now
         var items = Enumerable.Range(0, 10).Select(x => 
@@ -56,8 +69,9 @@ public class Function
 
         switch (payload.Type) {
             case PayloadType.Read:
+                var foodItem = await foodItemService.GetItem(payload.FoodItemId);
                 return new DinnerResponse {
-                    FoodItems = items
+                    FoodItems = new List<FoodItem> { foodItem }
                 };
             default:
                 return new DinnerResponse();

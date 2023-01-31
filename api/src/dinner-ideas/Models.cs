@@ -5,7 +5,8 @@ public class DinnerPayload
     public PayloadType Type { get; }
     public FoodItem? FoodItem { get; } = null;
     public WeekItem? WeekItem { get; } = null;
-    public Guid WeekItemId {get; }
+    public Guid WeekItemId { get; set; }
+    public Guid FoodItemId { get; set; }
 }
 
 public class FoodItem 
