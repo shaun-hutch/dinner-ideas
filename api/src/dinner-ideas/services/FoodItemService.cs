@@ -35,13 +35,7 @@ namespace DinnerIdeas.Services
                 Key = new Dictionary<string, AttributeValue>() { { "dinner-ideas", new AttributeValue { S = $"FoodItem|{guid}" } } }
             };
 
-            Console.WriteLine(guid.ToString());
             var response = await _dbClient.GetItemAsync(request);
-
-            foreach(var key in response.Item.Keys)
-            {
-                Console.WriteLine(response.Item[key].S);
-            }
 
             return _mapper.MapFromDymnamoDBObject<FoodItem>(response.Item);
         }

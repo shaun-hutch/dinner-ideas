@@ -13,13 +13,25 @@ namespace DinnerIdeas.Services
     {
         public T MapFromDymnamoDBObject<T>(Dictionary<string, AttributeValue> item)
         {
-            T? result = default(T);
+            T? result = (T)Activator.CreateInstance<T>();
             var resultType = typeof(T);
 
             var properties = resultType.GetProperties();
             foreach (var prop in properties)
             {
-                prop.SetValue(result, item[prop.Name].S);
+                Console.WriteLine(prop.Name);
+                if (item.ContainsKey(prop.Name)) {
+                    Console.WriteLine("setting value");
+                    if (prop.PropertyType == typeof(System.Guid))
+
+                        prop.SetValue(result, Guid.Parse(item[prop.Name].S));
+                    else 
+                        prop.SetValue(result, item[prop.Name].S);
+                }
+                else {
+                    Console.WriteLine("ayy lmao nope");
+                }
+
             }
 
             return result;
