@@ -37,6 +37,15 @@ namespace DinnerIdeas.Services
 
             var response = await _dbClient.GetItemAsync(request);
 
+            if (response?.Item == null) 
+                throw new NullReferenceException("no food item obtained, null");
+
+            if (response?.Item.Count == 0)
+            {
+                Console.WriteLine($"unable to find food item with id: {guid}");
+                throw new ResourceNotFoundException("no food item found, empty");
+            }
+
             return _mapper.MapFromDymnamoDBObject<FoodItem>(response.Item);
         }
 

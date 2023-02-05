@@ -44,28 +44,19 @@ public class Function
 
 
     /// <summary>
-    /// A simple function that takes a string and does a ToUpper
+    /// A function that does CRUD operations for food and week items
     /// </summary>
-    /// <param name="input"></param>
     /// <param name="context"></param>
+    /// <param name="payload"></param>
     /// <returns></returns>
     public async Task<DinnerResponse> FunctionHandler(DinnerPayload payload, ILambdaContext context)
     {
         using var scope = _serviceProvider.CreateScope();
-
         var mapper = scope.ServiceProvider.GetRequiredService<IMapper>();
         var foodItemService = new FoodItemService(_dbClient, mapper);
 
-        // generate some dummy data for now
-        var items = Enumerable.Range(0, 10).Select(x => 
-            new FoodItem {
-                Id = Guid.NewGuid(),
-                Description = $"test description {x}",
-                ImageBase64 = "test base 64",
-                Name = $"food item {x}",
-                ImageUrl = "https://picsum.photos/200"
-            }
-        );
+        Console.WriteLine($"payload food item id: {payload.FoodItemId}");
+        Console.WriteLine($"payload action: {payload.Type}");
 
         switch (payload.Type) {
             case PayloadType.Read:
