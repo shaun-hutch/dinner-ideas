@@ -1,0 +1,23 @@
+{
+  "dev": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-dinnerideas-dev-195351-authRole",
+      "UnauthRoleArn": "arn:aws:iam::896789984538:role/amplify-dinnerideas-dev-195351-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::896789984538:role/amplify-dinnerideas-dev-195351-authRole",
+      "Region": "us-west-1",
+      "DeploymentBucketName": "amplify-dinnerideas-dev-195351-deployment",
+      "UnauthRoleName": "amplify-dinnerideas-dev-195351-unauthRole",
+      "StackName": "amplify-dinnerideas-dev-195351",
+      "StackId": "arn:aws:cloudformation:us-west-1:896789984538:stack/amplify-dinnerideas-dev-195351/aacdf750-d6ab-11ed-b40d-06d32b94ae47",
+      "AmplifyAppId": "d1e2texqrpjtgj"
+    },
+    "categories": {
+      "auth": {
+        "dinnerideas1babdcc4": {}
+      },
+      "api": {
+        "dinnerideas": {}
+      }
+    }
+  }
+}
