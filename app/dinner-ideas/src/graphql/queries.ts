@@ -31,3 +31,32 @@ export const listTodos = /* GraphQL */ `
     }
   }
 `;
+export const getFoodItem = /* GraphQL */ `
+  query GetFoodItem($id: ID!) {
+    getFoodItem(id: $id) {
+      id
+      name
+      description
+      createdAt
+      updatedAt
+    }
+  }
+`;
+export const listFoodItems = /* GraphQL */ `
+  query ListFoodItems(
+    $filter: ModelFoodItemFilterInput
+    $limit: Int
+    $nextToken: String
+  ) {
+    listFoodItems(filter: $filter, limit: $limit, nextToken: $nextToken) {
+      items {
+        id
+        name
+        description
+        createdAt
+        updatedAt
+      }
+      nextToken
+    }
+  }
+`;

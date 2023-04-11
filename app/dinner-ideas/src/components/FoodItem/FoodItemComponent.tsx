@@ -19,6 +19,7 @@ const FoodItemComponent: React.FC<FoodItemProps> = ({
             </div>
             <div className="description">
                 <p>{foodItem.Description}</p>
+                test hello yee
             </div>
         </div>
     );

@@ -35,3 +35,36 @@ export const onDeleteTodo = /* GraphQL */ `
     }
   }
 `;
+export const onCreateFoodItem = /* GraphQL */ `
+  subscription OnCreateFoodItem($filter: ModelSubscriptionFoodItemFilterInput) {
+    onCreateFoodItem(filter: $filter) {
+      id
+      name
+      description
+      createdAt
+      updatedAt
+    }
+  }
+`;
+export const onUpdateFoodItem = /* GraphQL */ `
+  subscription OnUpdateFoodItem($filter: ModelSubscriptionFoodItemFilterInput) {
+    onUpdateFoodItem(filter: $filter) {
+      id
+      name
+      description
+      createdAt
+      updatedAt
+    }
+  }
+`;
+export const onDeleteFoodItem = /* GraphQL */ `
+  subscription OnDeleteFoodItem($filter: ModelSubscriptionFoodItemFilterInput) {
+    onDeleteFoodItem(filter: $filter) {
+      id
+      name
+      description
+      createdAt
+      updatedAt
+    }
+  }
+`;
