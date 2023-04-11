@@ -1,22 +1,21 @@
+import { Container } from '@mui/material';
 import FoodList from './components/FoodList/FoodList';
 import NavBar from './components/NavBar/NavBar';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import FoodItemFormComponent from './components/FoodItemForm/FoodItemFormComponent';
+import ReactDOM from 'react-dom/client';
 
-function App() {
-	const mostRecentDate = new Date();
+export default function App() {
 
   	return (
-		<div className='dinner-ideas'>
-			<NavBar/>
-			
-
-
-			<div className='food-list'>
-				<FoodList
-					listDate={mostRecentDate}
-				/>
-			</div>
-		</div>
+		<BrowserRouter>
+			<Routes>
+					<Route path='/' element={<FoodList/>} />
+					<Route path='/create' element={<FoodItemFormComponent />} />
+			</Routes>
+		</BrowserRouter>
 	);
 }
 
-export default App;
+const root = ReactDOM.createRoot(document.getElementById('root')as HTMLElement);
+root.render(<App />);

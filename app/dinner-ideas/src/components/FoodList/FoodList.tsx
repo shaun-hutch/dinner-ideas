@@ -7,13 +7,13 @@ import './FoodList.scss';
 
 interface FoodListProps
 {
-    listDate: Date;
+    listDate?: Date;
 }
 
 
-const FoodList: React.FC<FoodListProps> = ({
-    listDate
-}) => {
+export default function FoodList (
+    props: FoodListProps
+) {
     const initialState: FoodItemsState = {
         foodItems: [],
         isLoading: true,
@@ -22,9 +22,8 @@ const FoodList: React.FC<FoodListProps> = ({
 
     const [state, dispatch] = useReducer(useFoodItemsReducer, initialState);
     const { isLoading, foodItems, error } = state;
-    const formattedDate = listDate.toDateString();
+    const formattedDate = props?.listDate?.toDateString();
 
-    
     useEffect(() => {       
         getFoodItems('').then(data => {
             const success: Action = {
@@ -34,7 +33,7 @@ const FoodList: React.FC<FoodListProps> = ({
             };
             dispatch(success);
         });
-    },[listDate]);
+    },[]);
 
     console.log('is loading', isLoading);
     return (
@@ -46,13 +45,14 @@ const FoodList: React.FC<FoodListProps> = ({
             <div className="food-list-items">
             {isLoading ? 
                     <>
-                        {Array.from(Array(10).keys()).map(x => <FoodItemContentLoader key={`loading_${x}`}/>)}
+                        {Array.from(Array(3).keys()).map(x => <FoodItemContentLoader key={`loading_${x}`}/>)}
                     </> : <>
                         <div>
                             {foodItems.map(foodItem => 
                                 <FoodItemComponent
-                                    key={foodItem.Id}
-                                    foodItem={foodItem}
+                                    key={foodItem.id}
+                                    description={foodItem.description}
+                                    name={foodItem.name}
                                 />
                             )}
                         </div>
@@ -61,7 +61,3 @@ const FoodList: React.FC<FoodListProps> = ({
         </>
     )
 };
-
-
-
-export default FoodList;

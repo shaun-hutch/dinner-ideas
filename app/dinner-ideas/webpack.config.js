@@ -9,6 +9,7 @@ module.exports = {
   ],
   devServer: {
     port: 3030, // you can change the port
+    historyApiFallback: true
   },
   module: {
     rules: [
@@ -38,5 +39,6 @@ module.exports = {
   output: {
     filename: 'bundle.js',
     path: path.resolve(__dirname, 'build'),
+    publicPath: '/'
   },
 };

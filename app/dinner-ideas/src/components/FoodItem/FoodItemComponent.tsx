@@ -1,28 +1,24 @@
 import { FoodItem } from "../../models/Models";
 import './FoodItemComponent.scss';
 
-interface FoodItemProps
+interface FoodItemComponentProps
 {
-    foodItem: FoodItem;
+    name: string;
+    description: string;
 }
 
-const FoodItemComponent: React.FC<FoodItemProps> = ({
-    foodItem,
-}) => {
+export default function FoodItemComponent (props: FoodItemComponentProps) {
     return (
         <div className="food-item">
             <div className="image">
-                <img src={foodItem.ImageUrl} height="100" width="100" />
+                <img src="https://picsum.photos/100" />
             </div>
             <div className="name">
-                <h3>{foodItem.Name}</h3>
+                <h3>{props.name}</h3>
             </div>
             <div className="description">
-                <p>{foodItem.Description}</p>
-                test hello yee
+                <p>{props.description}</p>
             </div>
         </div>
     );
 }
-
-export default FoodItemComponent;

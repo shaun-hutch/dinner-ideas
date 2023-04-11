@@ -1,10 +1,14 @@
-export interface FoodItem
+interface BaseItem {
+    id: string;
+    createdAt: string;
+    updatedAt: string;
+}
+
+
+export interface FoodItem extends BaseItem
 {
-    Id: string;
-    Name: string;
-    Description: string;
-    ImageBase64: string;
-    ImageUrl: string;
+    name: string;
+    description: string;
 }
 
 export interface FoodItemsState {
