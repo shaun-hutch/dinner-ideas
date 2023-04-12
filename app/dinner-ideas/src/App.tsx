@@ -1,21 +1,22 @@
-import { Container } from '@mui/material';
-import FoodList from './components/FoodList/FoodList';
-import NavBar from './components/NavBar/NavBar';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import FoodItemFormComponent from './components/FoodItemForm/FoodItemFormComponent';
-import ReactDOM from 'react-dom/client';
+import "./App.scss";
+import NavBar from "./components/NavBar/NavBar";
+import FoodList from "./components/FoodList/FoodList";
+import { Route } from "react-router";
+import FoodItemFormComponent from "./components/FoodItemForm/FoodItemFormComponent";
+import { BrowserRouter, Routes } from "react-router-dom";
 
 export default function App() {
-
-  	return (
+  return (
+    <>
+		<NavBar />
 		<BrowserRouter>
-			<Routes>
-					<Route path='/' element={<FoodList/>} />
+			<div>
+				<Routes>
+					<Route path='/' element={<FoodList />} />
 					<Route path='/create' element={<FoodItemFormComponent />} />
-			</Routes>
+				</Routes>
+			</div>
 		</BrowserRouter>
-	);
+    </>
+  );
 }
-
-const root = ReactDOM.createRoot(document.getElementById('root')as HTMLElement);
-root.render(<App />);

@@ -9,14 +9,14 @@ module.exports = {
   ],
   devServer: {
     port: 3030, // you can change the port
-    historyApiFallback: true
+    historyApiFallback: true,
   },
   module: {
     rules: [
       {
         test: /\.(js|ts|tsx)$/, // .ts and .tsx files
         exclude: /node_modules/, // excluding the node_modules folder
-        loader: "ts-loader"
+        loader: "ts-loader",
       },
       {
         test: /\.(sa|sc|c)ss$/, // styles files
@@ -29,16 +29,16 @@ module.exports = {
       },
       {
         test: /\.(png|svg|jpg|jpeg|gif)$/i,
-        type: 'public/resource',
+        type: "public/resource",
       },
     ],
   },
   resolve: {
-    extensions: ['.tsx', '.ts', '.js'],
+    extensions: [".tsx", ".ts", ".js"],
   },
   output: {
-    filename: 'bundle.js',
-    path: path.resolve(__dirname, 'build'),
-    publicPath: '/'
+    filename: "bundle.js",
+    path: path.resolve(__dirname, "build"),
+    publicPath: "/",
   },
 };

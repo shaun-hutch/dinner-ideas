@@ -1,13 +1,18 @@
-import './NavBar.scss';
+import { Link } from "react-router-dom";
+import "./NavBar.scss";
 
-const NavBar: React.FC<any> = () => {
+export default function NavBar() {
+
     return (
-        <nav className="navbar bg-body-tertiary">
-            <div className="container-fluid">
-                <a className="navbar-brand" href="#">Dinner Ideas</a>
-            </div>
+        <nav className="navbar">
+            <ul>
+                <li>
+                    <a href="/">Home</a>
+                </li>
+                <li>
+                    <a href='/create'>Create</a>
+                </li>
+            </ul>
         </nav>
     )
-};
-
-export default NavBar;
+}
