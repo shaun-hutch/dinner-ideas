@@ -1,0 +1,15 @@
+@import '../../App.scss';
+
+.food-form {
+    margin-top: 1em;
+    &-card {
+        &-content {
+            display: flex;
+            flex-direction: column;
+
+            &-item {
+                margin-bottom: 1em;
+            }
+        }
+    }
+}
