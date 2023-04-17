@@ -1,14 +1,6 @@
-$primary: #4caf50;
-$primary-light: #80e27e;
-$primary-dark: #087f23;
+$primary: lightgray;
 
 .dinner-ideas {
   font-family: "Segoe UI", sans-serif;
   height: 100vh;
-
-  &-nav {
-    display: flex;
-    background-color: red;
-    height: 4em;
-  }
 }

@@ -8,9 +8,11 @@ module.exports = {
     }),
   ],
   devServer: {
-    port: 3030, // you can change the port
+    port: 3030,
+    hot: true,
     historyApiFallback: true,
-  },
+    liveReload: true
+},
   module: {
     rules: [
       {
@@ -19,13 +21,13 @@ module.exports = {
         loader: "ts-loader",
       },
       {
-        test: /\.(sa|sc|c)ss$/, // styles files
-        use: ["style-loader", "css-loader", "sass-loader"],
-      },
-      {
         test: /\.(png|woff|woff2|eot|ttf|svg)$/, // to import images and fonts
         loader: "url-loader",
         options: { limit: false },
+      },
+      {
+        test: /\.(sc|c)ss$/, // styles files
+        use: ["style-loader", "css-loader", "sass-loader"]
       },
       {
         test: /\.(png|svg|jpg|jpeg|gif)$/i,

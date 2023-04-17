@@ -8,8 +8,8 @@ import { BrowserRouter, Routes } from "react-router-dom";
 export default function App() {
   return (
     <>
-		<NavBar />
 		<BrowserRouter>
+		<NavBar />
 			<div>
 				<Routes>
 					<Route path='/' element={<FoodList />} />
