@@ -1,14 +1,14 @@
-import { Box, Button, Card, TextField } from "@mui/material";
-import React, { useCallback, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { createItem } from "../../foodItemsApi";
+import { Box, Button, Card, TextField } from '@mui/material';
+import React, { useCallback, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { createItem } from '../../foodItemsApi';
 import CardActions from '@mui/material/CardActions';
 import CardContent from '@mui/material/CardContent';
 import './FoodItemFormComponent.scss';
 
 export default function FoodItemFormComponent() {
-  const [name, setName] = useState<string>("");
-  const [description, setDescription] = useState<string>("");
+  const [name, setName] = useState<string>('');
+  const [description, setDescription] = useState<string>('');
 
   const [nameValid, setNameValid] = useState<boolean>(true);
   const [descriptionValid, setDescriptionValid] = useState<boolean>(true);
@@ -39,31 +39,49 @@ export default function FoodItemFormComponent() {
       return;
     }
 
-    createItem(name, description).then(() => navigate("/"));
-  }, [nameValid, descriptionValid, name, description, setNameValid, setDescriptionValid]);
+    createItem(name, description).then(() => navigate('/'));
+  }, [
+    nameValid,
+    descriptionValid,
+    name,
+    description,
+    setNameValid,
+    setDescriptionValid
+  ]);
 
   return (
-    <div className='food-form'>
-    <Card className='food-form-card'>
-      <CardContent>
-        <Box className='food-form-card-content' component="form">
-          <div className='food-form-card-content-item'>
-            <TextField required variant="filled" error={!nameValid} label="Name" onChange={onNameChange} />
-          </div>
-          <div className='food-form-card-content-item'>
-            <TextField required variant="filled" error={!descriptionValid} label="Description" onChange={onDescriptionChange} />
-          </div>
-        </Box>
-      </CardContent>
-      <CardActions>
-        <Box>
-          <Button variant="outlined" onClick={onCreate}>Create</Button>
-        </Box>
-      </CardActions>
-    </Card>
+    <div className="food-form">
+      <Card className="food-form-card">
+        <CardContent>
+          <Box className="food-form-card-content" component="form">
+            <div className="food-form-card-content-item">
+              <TextField
+                required
+                variant="filled"
+                error={!nameValid}
+                label="Name"
+                onChange={onNameChange}
+              />
+            </div>
+            <div className="food-form-card-content-item">
+              <TextField
+                required
+                variant="filled"
+                error={!descriptionValid}
+                label="Description"
+                onChange={onDescriptionChange}
+              />
+            </div>
+          </Box>
+        </CardContent>
+        <CardActions>
+          <Box>
+            <Button variant="outlined" onClick={onCreate}>
+              Create
+            </Button>
+          </Box>
+        </CardActions>
+      </Card>
     </div>
-      
-
-
   );
 }

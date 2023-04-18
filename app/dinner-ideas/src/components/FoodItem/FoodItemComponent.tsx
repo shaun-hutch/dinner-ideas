@@ -1,5 +1,5 @@
-import { FoodItem } from "../../models/Models";
-import "./FoodItemComponent.scss";
+import { FoodItem } from '../../models/Models';
+import './FoodItemComponent.scss';
 
 interface FoodItemComponentProps {
   name: string;
