@@ -1,4 +1,4 @@
-import "./App.scss";
+import "./App.css";
 import NavBar from "./components/NavBar/NavBar";
 import FoodList from "./components/FoodList/FoodList";
 import { Route } from "react-router";
@@ -7,7 +7,7 @@ import { BrowserRouter, Routes } from "react-router-dom";
 
 export default function App() {
   return (
-    <>
+	<>
 		<BrowserRouter>
 		<NavBar />
 			<div>
@@ -17,6 +17,6 @@ export default function App() {
 				</Routes>
 			</div>
 		</BrowserRouter>
-    </>
+	</>
   );
 }

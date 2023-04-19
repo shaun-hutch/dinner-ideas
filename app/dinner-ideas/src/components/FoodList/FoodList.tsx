@@ -8,7 +8,7 @@ import FoodItemComponent from "../FoodItem/FoodItemComponent";
 import { getFoodItems, useFoodItemsReducer } from "../../foodItemsApi";
 import { useEffect, useState, useReducer } from "react";
 import FoodItemContentLoader from "../FoodItem/FoodItemContentLoader";
-import "./FoodList.scss";
+import "./FoodList.css";
 
 interface FoodListProps {
   listDate?: Date;
@@ -39,17 +39,9 @@ export default function FoodList(props: FoodListProps) {
   console.log("is loading", isLoading);
   return (
     <>
-      <h2>Food list thing</h2>
-      <div className="date-label">
-        <h3>{formattedDate}</h3>
-      </div>
       <div className="food-list-items">
         {isLoading ? (
-          <>
-            {Array.from(Array(3).keys()).map((x) => (
-              <FoodItemContentLoader key={`loading_${x}`} />
-            ))}
-          </>
+            <FoodItemContentLoader key={"loading"} />
         ) : (
           <>
             <div>

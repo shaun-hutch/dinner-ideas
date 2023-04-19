@@ -1,0 +1,16 @@
+@import '../../App.css';
+
+.food-form {
+    margin-top: 1em;
+        
+}
+.content {
+    display: flex;
+    flex-direction: column;
+
+}
+.item {
+    margin-bottom: 1em;
+    width: inherit;
+    max-width: 50%;
+}

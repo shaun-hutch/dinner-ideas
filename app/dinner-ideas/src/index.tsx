@@ -3,6 +3,7 @@ import { Amplify } from "aws-amplify";
 import awsExports from "./aws-exports";
 import { StrictMode } from "react";
 import App from "./App";
+import './tailwind.css';
 
 Amplify.configure(awsExports);
 

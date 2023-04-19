@@ -1,10 +1,7 @@
-import { Box, Button, Card, TextField } from '@mui/material';
 import React, { useCallback, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { createItem } from '../../foodItemsApi';
-import CardActions from '@mui/material/CardActions';
-import CardContent from '@mui/material/CardContent';
-import './FoodItemFormComponent.scss';
+import './FoodItemFormComponent.css';
 
 export default function FoodItemFormComponent() {
   const [name, setName] = useState<string>('');
@@ -20,7 +17,7 @@ export default function FoodItemFormComponent() {
   );
 
   const onDescriptionChange = useCallback(
-    (event: React.ChangeEvent<HTMLTextAreaElement>) => {
+    (event: React.ChangeEvent<HTMLInputElement>) => {
       setDescription(event.target.value);
     },
     [setDescription]
@@ -40,39 +37,33 @@ export default function FoodItemFormComponent() {
 
   return (
     <div className="food-form">
-      <Card className="food-form-card">
-        <CardContent>
-          <Box className="food-form-card-content">
-              <TextField
-                required
-                variant="filled"
-                error={!nameValid}
-                label="Name"
-                className="food-form-card-content-item"
-                onChange={onNameChange}
-              />
-              <TextField
-                required
-                variant="filled"
-                error={!descriptionValid}
-                label="Description"
-                onChange={onDescriptionChange}
-                className="food-form-card-content-item"
-              />
-          </Box>
-        </CardContent>
-        <CardActions>
-          <Box>
-            <Button
-              variant="outlined"
+      <div className="food-form-card">
+        <div>
+          <div className="food-form-card-content">
+            <input
+              type="text"
+              required
+              className="food-form-card-content-item"
+              onChange={onNameChange}
+            />
+            <input
+              type="text"
+              required
+              onChange={onDescriptionChange}
+              className="food-form-card-content-item"
+            />
+          </div>
+        </div>
+        <div>
+          <div>
+            <input type="button"
               onClick={onCreate}
               disabled={!nameValid || !descriptionValid}
-            >
+            />
               Create
-            </Button>
-          </Box>
-        </CardActions>
-      </Card>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

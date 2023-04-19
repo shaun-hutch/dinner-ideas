@@ -1,0 +1,4 @@
+amplify-codegen-temp/models
+app/dinner-ideas/webpack.config.js
+app/dinner-ideas/tailwind.config.js
+app/dinner-ideas/postcss.config.js

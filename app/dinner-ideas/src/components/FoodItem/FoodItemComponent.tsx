@@ -1,5 +1,4 @@
-import { FoodItem } from '../../models/Models';
-import './FoodItemComponent.scss';
+import './FoodItemComponent.css';
 
 interface FoodItemComponentProps {
   name: string;
@@ -8,15 +7,15 @@ interface FoodItemComponentProps {
 
 export default function FoodItemComponent(props: FoodItemComponentProps) {
   return (
-    <div className="food-item">
-      <div className="image">
-        <img src="https://picsum.photos/100" />
-      </div>
-      <div className="name">
-        <h3>{props.name}</h3>
-      </div>
-      <div className="description">
-        <p>{props.description}</p>
+    <div className="card w-96 glass">
+      <figure><img src="https://placehold.co/200" /></figure>
+      <div className="card-body">
+        <div className="card-title">
+          <h3>{props.name}</h3>
+        </div>
+        <div className="description">
+          <p>{props.description}</p>
+        </div>
       </div>
     </div>
   );

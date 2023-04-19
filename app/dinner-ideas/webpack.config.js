@@ -8,11 +8,15 @@ module.exports = {
     }),
   ],
   devServer: {
-    port: 3030,
+    static: {
+      directory: path.resolve(__dirname, 'dist'),
+    },
+    port: 3000,
+    open: true,
     hot: true,
-    historyApiFallback: true,
-    liveReload: true
-},
+    compress: true,
+    historyApiFallback: true
+  },
   module: {
     rules: [
       {
@@ -26,8 +30,9 @@ module.exports = {
         options: { limit: false },
       },
       {
-        test: /\.(sc|c)ss$/, // styles files
-        use: ["style-loader", "css-loader", "sass-loader"]
+        test: /\.css$/i,
+        include: path.resolve(__dirname, 'src'),
+        use: ['style-loader', { loader: 'css-loader', options: { importLoaders: 1 } }, 'postcss-loader'],
       },
       {
         test: /\.(png|svg|jpg|jpeg|gif)$/i,
