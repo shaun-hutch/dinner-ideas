@@ -56,11 +56,12 @@ export default function FoodItemFormComponent() {
         </div>
         <div>
           <div>
-            <input type="button"
+            <button className="btn-primary"
               onClick={onCreate}
               disabled={!nameValid || !descriptionValid}
-            />
+            >
               Create
+            </button>
           </div>
         </div>
       </div>
