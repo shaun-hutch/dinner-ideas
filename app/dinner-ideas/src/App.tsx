@@ -10,7 +10,7 @@ export default function App() {
 	<>
 		<BrowserRouter>
 		<NavBar />
-			<div>
+			<div className="card glass app">
 				<Routes>
 					<Route path='/' element={<FoodList />} />
 					<Route path='/create' element={<FoodItemFormComponent />} />

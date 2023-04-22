@@ -5,10 +5,11 @@ import {
   FoodItemsState,
 } from "../../models/Models";
 import FoodItemComponent from "../FoodItem/FoodItemComponent";
-import { getFoodItems, useFoodItemsReducer } from "../../foodItemsApi";
+import { deleteItem, getFoodItems, useFoodItemsReducer } from "../../foodItemsApi";
 import { useEffect, useState, useReducer } from "react";
 import FoodItemContentLoader from "../FoodItem/FoodItemContentLoader";
 import "./FoodList.css";
+import React from "react";
 
 interface FoodListProps {
   listDate?: Date;
@@ -22,10 +23,15 @@ export default function FoodList(props: FoodListProps) {
   };
 
   const [state, dispatch] = useReducer(useFoodItemsReducer, initialState);
-  const { isLoading, foodItems, error } = state;
-  const formattedDate = props?.listDate?.toDateString();
+  const { isLoading, foodItems } = state;
 
-  useEffect(() => {
+  const deleteFoodItem = React.useCallback((id: string) => {
+    deleteItem(id).then(() => {
+      load();
+    });
+  }, []);
+
+  const load = () => {
     getFoodItems("").then((data) => {
       const success: Action = {
         type: ActionType.Success,
@@ -34,6 +40,10 @@ export default function FoodList(props: FoodListProps) {
       };
       dispatch(success);
     });
+  };
+
+  useEffect(() => {
+    load();
   }, []);
 
   console.log("is loading", isLoading);
@@ -50,6 +60,8 @@ export default function FoodList(props: FoodListProps) {
                   key={foodItem.id}
                   description={foodItem.description}
                   name={foodItem.name}
+                  id={foodItem.id}
+                  onDeleteFoodItem={deleteFoodItem}
                 />
               ))}
             </div>

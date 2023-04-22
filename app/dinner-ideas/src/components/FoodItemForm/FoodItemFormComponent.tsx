@@ -17,7 +17,7 @@ export default function FoodItemFormComponent() {
   );
 
   const onDescriptionChange = useCallback(
-    (event: React.ChangeEvent<HTMLInputElement>) => {
+    (event: React.ChangeEvent<HTMLTextAreaElement>) => {
       setDescription(event.target.value);
     },
     [setDescription]
@@ -36,35 +36,33 @@ export default function FoodItemFormComponent() {
   }, [description]);
 
   return (
-    <div className="food-form">
-      <div className="food-form-card">
-        <div>
+    <div className="food-item-form">
+      <div className="card">
+        <h2 className='card-title'>Create Food Item</h2>
+        <div className='card-body'>
           <div className="food-form-card-content">
             <input
               type="text"
-              required
-              className="food-form-card-content-item"
+              placeholder="Name"
+              className="input input-bordered w-full max-w-xs"
               onChange={onNameChange}
             />
-            <input
-              type="text"
-              required
-              onChange={onDescriptionChange}
-              className="food-form-card-content-item"
-            />
+          </div>
+          <div className="food-form-card-content">
+            <textarea className="textarea textarea-bordered w-full max-w-xs" placeholder="Description" onChange={onDescriptionChange}></textarea>
           </div>
         </div>
-        <div>
-          <div>
-            <button className="btn-primary"
+          <div className="card-actions">
+            <button
+              className="btn btn-primary"
               onClick={onCreate}
               disabled={!nameValid || !descriptionValid}
             >
               Create
             </button>
           </div>
-        </div>
       </div>
+
     </div>
   );
 }

@@ -1,14 +1,14 @@
 @import '../../App.css';
 
-.food-form {
-    margin-top: 1em;
+.food-item-form {
+    margin: 1em;
         
 }
-.content {
-    display: flex;
-    flex-direction: column;
 
+.card-body {
+    padding-left: 0;
 }
+
 .item {
     margin-bottom: 1em;
     width: inherit;

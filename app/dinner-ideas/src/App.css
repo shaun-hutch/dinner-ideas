@@ -1,7 +1,16 @@
 body {
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 .dinner-ideas {
   height: 100vh;
+}
+
+.app {
+  margin: 1em;
+}
+
+svg {
+  height: 20px;
+  color: white;
 }

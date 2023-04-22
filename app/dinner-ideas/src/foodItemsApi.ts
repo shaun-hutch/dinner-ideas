@@ -1,9 +1,9 @@
 import { API, graphqlOperation } from "aws-amplify";
 import { Action, ActionType, FoodItem, FoodItemsState } from "./models/Models";
 import { listFoodItems } from "./graphql/queries";
-import { createFoodItem } from "./graphql/mutations";
+import { createFoodItem, deleteFoodItem } from "./graphql/mutations";
 import { GraphQLQuery } from "@aws-amplify/api";
-import { CreateFoodItemInput, ListFoodItemsQuery } from "./API";
+import { CreateFoodItemInput, CreateFoodItemMutation, DeleteFoodItemInput, DeleteFoodItemMutation, ListFoodItemsQuery } from "./API";
 
 export async function getFoodItems(weekItemId: string): Promise<FoodItem[]> {
   try {
@@ -26,11 +26,23 @@ export async function createItem(name: string, description: string) {
       name
     };
 
-    await API.graphql(
-      graphqlOperation(createFoodItem, { input: input })
+    await API.graphql<GraphQLQuery<CreateFoodItemMutation>>(
+      graphqlOperation(createFoodItem, { input })
     );
   } catch (err) {
     console.error("error creating food item:", err);
+  }
+}
+
+export async function deleteItem(id: string) {
+  try {
+    const input: DeleteFoodItemInput = {
+      id
+    };
+
+    await API.graphql<GraphQLQuery<DeleteFoodItemMutation>>(graphqlOperation(deleteFoodItem, { input }));
+  } catch (err) {
+    console.error('error deleting food item');
   }
 }
 
