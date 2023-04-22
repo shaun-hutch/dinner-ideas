@@ -1,21 +1,18 @@
 import {
   Action,
   ActionType,
-  FoodItem,
   FoodItemsState,
 } from "../../models/Models";
 import FoodItemComponent from "../FoodItem/FoodItemComponent";
 import { deleteItem, getFoodItems, useFoodItemsReducer } from "../../foodItemsApi";
-import { useEffect, useState, useReducer } from "react";
+import { useEffect, useReducer } from "react";
 import FoodItemContentLoader from "../FoodItem/FoodItemContentLoader";
 import "./FoodList.css";
 import React from "react";
 
-interface FoodListProps {
-  listDate?: Date;
-}
 
-export default function FoodList(props: FoodListProps) {
+
+export default function FoodList() {
   const initialState: FoodItemsState = {
     foodItems: [],
     isLoading: true,
@@ -30,6 +27,12 @@ export default function FoodList(props: FoodListProps) {
       load();
     });
   }, []);
+
+  // const editFoodItem = React.useCallback((name: string, description: string, id: string) => {
+  //   updateFoodItem(name, description, id).then(() => {
+  //     load();
+  //   })
+  // }, []);
 
   const load = () => {
     getFoodItems("").then((data) => {

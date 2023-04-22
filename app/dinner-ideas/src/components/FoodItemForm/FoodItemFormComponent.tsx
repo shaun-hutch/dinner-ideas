@@ -1,11 +1,15 @@
-import React, { useCallback, useMemo, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { createItem } from '../../foodItemsApi';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { createItem, updateItem } from '../../foodItemsApi';
 import './FoodItemFormComponent.css';
 
 export default function FoodItemFormComponent() {
+  const location = useLocation();
+  console.log(location);
+
   const [name, setName] = useState<string>('');
   const [description, setDescription] = useState<string>('');
+  const [foodItemId, setFoodItemId] = useState<string>('');
 
   const navigate = useNavigate();
 
@@ -23,9 +27,13 @@ export default function FoodItemFormComponent() {
     [setDescription]
   );
 
-  const onCreate = useCallback(() => {
-    createItem(name, description).then(() => navigate('/'));
-  }, [name, description]);
+  const onUpdate = useCallback(() => {
+    if (foodItemId !== '') {
+      updateItem(name, description, foodItemId).then(() => navigate('/'));
+    } else {
+      createItem(name, description).then(() => navigate('/'));
+    }
+  }, [name, description, foodItemId]);
 
   const nameValid = useMemo(() => {
     return name !== '';
@@ -35,34 +43,46 @@ export default function FoodItemFormComponent() {
     return description !== '';
   }, [description]);
 
+  useEffect(() => {
+    setName(location?.state?.name ?? '');
+    setDescription(location?.state?.description ?? '');
+    setFoodItemId(location?.state?.id ?? '');
+  }, []);
+
   return (
     <div className="food-item-form">
       <div className="card">
-        <h2 className='card-title'>Create Food Item</h2>
-        <div className='card-body'>
+        <h2 className="card-title">Create Food Item</h2>
+        <div className="card-body">
           <div className="food-form-card-content">
             <input
               type="text"
               placeholder="Name"
               className="input input-bordered w-full max-w-xs"
               onChange={onNameChange}
+              value={name}
             />
           </div>
           <div className="food-form-card-content">
-            <textarea className="textarea textarea-bordered w-full max-w-xs" placeholder="Description" onChange={onDescriptionChange}></textarea>
+            <textarea
+              className="textarea textarea-bordered w-full max-w-xs"
+              placeholder="Description"
+              onChange={onDescriptionChange}
+              value={description}
+            ></textarea>
           </div>
         </div>
-          <div className="card-actions">
+        <div className="card-actions">
             <button
               className="btn btn-primary"
-              onClick={onCreate}
+              onClick={onUpdate}
               disabled={!nameValid || !descriptionValid}
             >
-              Create
+              Save
             </button>
-          </div>
+    
+        </div>
       </div>
-
     </div>
   );
 }
