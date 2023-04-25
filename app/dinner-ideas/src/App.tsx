@@ -4,11 +4,25 @@ import FoodList from "./components/FoodList/FoodList";
 import { Route } from "react-router";
 import FoodItemFormComponent from "./components/FoodItemForm/FoodItemFormComponent";
 import { BrowserRouter, Routes } from "react-router-dom";
+import { withAuthenticator, Button, Heading } from '@aws-amplify/ui-react';
+// import '@aws-amplify/ui-react/styles.css';
 
-export default function App() {
+
+interface AppProps {
+	signOut: () => void;
+	user: {
+		username: string;
+	};
+}
+
+function App(props: AppProps) {
   return (
 	<>
 		<BrowserRouter>
+		<div className="card">
+			<Heading level={1}>Hello {props.user.username}</Heading>
+			<Button onClick={props.signOut}>Sign out</Button>
+		</div>
 		<NavBar />
 			<div className="card glass app">
 				<Routes>
@@ -20,3 +34,5 @@ export default function App() {
 	</>
   );
 }
+
+export default withAuthenticator(App);

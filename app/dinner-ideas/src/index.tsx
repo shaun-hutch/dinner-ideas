@@ -10,8 +10,16 @@ Amplify.configure(awsExports);
 const domNode = document.getElementById('root');
 const root = createRoot(domNode as HTMLElement);
 
+const signOut = () => {
+    console.log('hello');
+};
+const user = {
+    username: 'jeff'
+}
+
+
 root.render(
     <StrictMode>
-        <App />
+        <App signOut={signOut} user={user}/>
     </StrictMode>
 );
