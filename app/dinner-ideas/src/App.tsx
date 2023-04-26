@@ -4,7 +4,8 @@ import FoodList from "./components/FoodList/FoodList";
 import { Route } from "react-router";
 import FoodItemFormComponent from "./components/FoodItemForm/FoodItemFormComponent";
 import { BrowserRouter, Routes } from "react-router-dom";
-import { withAuthenticator } from '@aws-amplify/ui-react';
+import { Authenticator, withAuthenticator } from '@aws-amplify/ui-react';
+import AuthComponents from "./components/Auth/AuthComponents";
 
 
 interface AppProps {
@@ -15,22 +16,24 @@ interface AppProps {
 }
 
 function App(props: AppProps) {
+
+	const auth = AuthComponents();	
+
   return (
 	<>
-		<BrowserRouter>
-		{/* <div className="card">
-			<Button onClick={props.signOut}>Sign out</Button>
-		</div> */}
-		<NavBar username={props.user.username} />
-			<div className="card glass app">
-				<Routes>
-					<Route path='/' element={<FoodList />} />
-					<Route path='/create' element={<FoodItemFormComponent />} />
-				</Routes>
-			</div>
-		</BrowserRouter>
+		<Authenticator formFields={auth.formFields} components={auth.components}>
+			<BrowserRouter>
+			<NavBar username={props.user.username} />
+				<div className="card glass app">
+					<Routes>
+						<Route path='/' element={<FoodList />} />
+						<Route path='/create' element={<FoodItemFormComponent />} />
+					</Routes>
+				</div>
+			</BrowserRouter>
+    </Authenticator>
 	</>
   );
 }
 
-export default withAuthenticator(App);
+export default App;
