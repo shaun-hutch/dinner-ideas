@@ -35,6 +35,12 @@ module.exports = {
         use: ['style-loader', { loader: 'css-loader', options: { importLoaders: 1 } }, 'postcss-loader'],
       },
       {
+        // test: /\.\\app\\dinner-ideas\\node_modules\\@aws-amplify\\ui-react\\dist\\styles.css$/,
+        test: /\.css$/i,
+        include: path.resolve(__dirname, 'node_modules'),
+        use: [{ loader: 'style-loader' }, { loader: 'css-loader' }],
+      },
+      {
         test: /\.(png|svg|jpg|jpeg|gif)$/i,
         type: "public/resource",
       },
