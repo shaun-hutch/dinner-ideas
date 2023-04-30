@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import './NavBar.css';
+import { AuthButton } from '../Auth/AuthButton';
 
 export interface NavBarProps
 {
@@ -20,6 +21,9 @@ export default function NavBar(props: NavBarProps) {
           <Link to="/" className="btn btn-ghost normal-case text-xl">
             Dinner Ideas
           </Link>
+        </div>
+        <div className="flex-1">
+          <AuthButton />
         </div>
         <div className="flex-none">
           <ul className="menu menu-horizontal px-1">

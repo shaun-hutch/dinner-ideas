@@ -4,8 +4,7 @@ import FoodList from "./components/FoodList/FoodList";
 import { Route } from "react-router";
 import FoodItemFormComponent from "./components/FoodItemForm/FoodItemFormComponent";
 import { BrowserRouter, Routes } from "react-router-dom";
-import { Authenticator, withAuthenticator } from '@aws-amplify/ui-react';
-import AuthComponents from "./components/Auth/AuthComponents";
+import { Authenticator } from '@aws-amplify/ui-react';
 import '@aws-amplify/ui-react/styles.css';
 
 interface AppProps {
@@ -16,10 +15,6 @@ interface AppProps {
 }
 
 function App(props: AppProps) {
-
-	const auth = AuthComponents();	
-
-
   return (
 	<>
 		<Authenticator initialState="signIn">
