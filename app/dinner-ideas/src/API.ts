@@ -2,18 +2,18 @@
 /* eslint-disable */
 //  This file was automatically generated and should not be edited.
 
-export type CreateTodoInput = {
+export type CreateFoodItemInput = {
   id?: string | null,
   name: string,
-  description?: string | null,
+  description: string,
 };
 
-export type ModelTodoConditionInput = {
+export type ModelFoodItemConditionInput = {
   name?: ModelStringInput | null,
   description?: ModelStringInput | null,
-  and?: Array< ModelTodoConditionInput | null > | null,
-  or?: Array< ModelTodoConditionInput | null > | null,
-  not?: ModelTodoConditionInput | null,
+  and?: Array< ModelFoodItemConditionInput | null > | null,
+  or?: Array< ModelFoodItemConditionInput | null > | null,
+  not?: ModelFoodItemConditionInput | null,
 };
 
 export type ModelStringInput = {
@@ -56,39 +56,6 @@ export type ModelSizeInput = {
   between?: Array< number | null > | null,
 };
 
-export type Todo = {
-  __typename: "Todo",
-  id: string,
-  name: string,
-  description?: string | null,
-  createdAt: string,
-  updatedAt: string,
-};
-
-export type UpdateTodoInput = {
-  id: string,
-  name?: string | null,
-  description?: string | null,
-};
-
-export type DeleteTodoInput = {
-  id: string,
-};
-
-export type CreateFoodItemInput = {
-  id?: string | null,
-  name: string,
-  description: string,
-};
-
-export type ModelFoodItemConditionInput = {
-  name?: ModelStringInput | null,
-  description?: ModelStringInput | null,
-  and?: Array< ModelFoodItemConditionInput | null > | null,
-  or?: Array< ModelFoodItemConditionInput | null > | null,
-  not?: ModelFoodItemConditionInput | null,
-};
-
 export type FoodItem = {
   __typename: "FoodItem",
   id: string,
@@ -96,6 +63,7 @@ export type FoodItem = {
   description: string,
   createdAt: string,
   updatedAt: string,
+  owner?: string | null,
 };
 
 export type UpdateFoodItemInput = {
@@ -108,13 +76,13 @@ export type DeleteFoodItemInput = {
   id: string,
 };
 
-export type ModelTodoFilterInput = {
+export type ModelFoodItemFilterInput = {
   id?: ModelIDInput | null,
   name?: ModelStringInput | null,
   description?: ModelStringInput | null,
-  and?: Array< ModelTodoFilterInput | null > | null,
-  or?: Array< ModelTodoFilterInput | null > | null,
-  not?: ModelTodoFilterInput | null,
+  and?: Array< ModelFoodItemFilterInput | null > | null,
+  or?: Array< ModelFoodItemFilterInput | null > | null,
+  not?: ModelFoodItemFilterInput | null,
 };
 
 export type ModelIDInput = {
@@ -133,33 +101,18 @@ export type ModelIDInput = {
   size?: ModelSizeInput | null,
 };
 
-export type ModelTodoConnection = {
-  __typename: "ModelTodoConnection",
-  items:  Array<Todo | null >,
-  nextToken?: string | null,
-};
-
-export type ModelFoodItemFilterInput = {
-  id?: ModelIDInput | null,
-  name?: ModelStringInput | null,
-  description?: ModelStringInput | null,
-  and?: Array< ModelFoodItemFilterInput | null > | null,
-  or?: Array< ModelFoodItemFilterInput | null > | null,
-  not?: ModelFoodItemFilterInput | null,
-};
-
 export type ModelFoodItemConnection = {
   __typename: "ModelFoodItemConnection",
   items:  Array<FoodItem | null >,
   nextToken?: string | null,
 };
 
-export type ModelSubscriptionTodoFilterInput = {
+export type ModelSubscriptionFoodItemFilterInput = {
   id?: ModelSubscriptionIDInput | null,
   name?: ModelSubscriptionStringInput | null,
   description?: ModelSubscriptionStringInput | null,
-  and?: Array< ModelSubscriptionTodoFilterInput | null > | null,
-  or?: Array< ModelSubscriptionTodoFilterInput | null > | null,
+  and?: Array< ModelSubscriptionFoodItemFilterInput | null > | null,
+  or?: Array< ModelSubscriptionFoodItemFilterInput | null > | null,
 };
 
 export type ModelSubscriptionIDInput = {
@@ -192,62 +145,6 @@ export type ModelSubscriptionStringInput = {
   notIn?: Array< string | null > | null,
 };
 
-export type ModelSubscriptionFoodItemFilterInput = {
-  id?: ModelSubscriptionIDInput | null,
-  name?: ModelSubscriptionStringInput | null,
-  description?: ModelSubscriptionStringInput | null,
-  and?: Array< ModelSubscriptionFoodItemFilterInput | null > | null,
-  or?: Array< ModelSubscriptionFoodItemFilterInput | null > | null,
-};
-
-export type CreateTodoMutationVariables = {
-  input: CreateTodoInput,
-  condition?: ModelTodoConditionInput | null,
-};
-
-export type CreateTodoMutation = {
-  createTodo?:  {
-    __typename: "Todo",
-    id: string,
-    name: string,
-    description?: string | null,
-    createdAt: string,
-    updatedAt: string,
-  } | null,
-};
-
-export type UpdateTodoMutationVariables = {
-  input: UpdateTodoInput,
-  condition?: ModelTodoConditionInput | null,
-};
-
-export type UpdateTodoMutation = {
-  updateTodo?:  {
-    __typename: "Todo",
-    id: string,
-    name: string,
-    description?: string | null,
-    createdAt: string,
-    updatedAt: string,
-  } | null,
-};
-
-export type DeleteTodoMutationVariables = {
-  input: DeleteTodoInput,
-  condition?: ModelTodoConditionInput | null,
-};
-
-export type DeleteTodoMutation = {
-  deleteTodo?:  {
-    __typename: "Todo",
-    id: string,
-    name: string,
-    description?: string | null,
-    createdAt: string,
-    updatedAt: string,
-  } | null,
-};
-
 export type CreateFoodItemMutationVariables = {
   input: CreateFoodItemInput,
   condition?: ModelFoodItemConditionInput | null,
@@ -261,6 +158,7 @@ export type CreateFoodItemMutation = {
     description: string,
     createdAt: string,
     updatedAt: string,
+    owner?: string | null,
   } | null,
 };
 
@@ -277,6 +175,7 @@ export type UpdateFoodItemMutation = {
     description: string,
     createdAt: string,
     updatedAt: string,
+    owner?: string | null,
   } | null,
 };
 
@@ -293,42 +192,7 @@ export type DeleteFoodItemMutation = {
     description: string,
     createdAt: string,
     updatedAt: string,
-  } | null,
-};
-
-export type GetTodoQueryVariables = {
-  id: string,
-};
-
-export type GetTodoQuery = {
-  getTodo?:  {
-    __typename: "Todo",
-    id: string,
-    name: string,
-    description?: string | null,
-    createdAt: string,
-    updatedAt: string,
-  } | null,
-};
-
-export type ListTodosQueryVariables = {
-  filter?: ModelTodoFilterInput | null,
-  limit?: number | null,
-  nextToken?: string | null,
-};
-
-export type ListTodosQuery = {
-  listTodos?:  {
-    __typename: "ModelTodoConnection",
-    items:  Array< {
-      __typename: "Todo",
-      id: string,
-      name: string,
-      description?: string | null,
-      createdAt: string,
-      updatedAt: string,
-    } | null >,
-    nextToken?: string | null,
+    owner?: string | null,
   } | null,
 };
 
@@ -344,6 +208,7 @@ export type GetFoodItemQuery = {
     description: string,
     createdAt: string,
     updatedAt: string,
+    owner?: string | null,
   } | null,
 };
 
@@ -363,58 +228,15 @@ export type ListFoodItemsQuery = {
       description: string,
       createdAt: string,
       updatedAt: string,
+      owner?: string | null,
     } | null >,
     nextToken?: string | null,
   } | null,
 };
 
-export type OnCreateTodoSubscriptionVariables = {
-  filter?: ModelSubscriptionTodoFilterInput | null,
-};
-
-export type OnCreateTodoSubscription = {
-  onCreateTodo?:  {
-    __typename: "Todo",
-    id: string,
-    name: string,
-    description?: string | null,
-    createdAt: string,
-    updatedAt: string,
-  } | null,
-};
-
-export type OnUpdateTodoSubscriptionVariables = {
-  filter?: ModelSubscriptionTodoFilterInput | null,
-};
-
-export type OnUpdateTodoSubscription = {
-  onUpdateTodo?:  {
-    __typename: "Todo",
-    id: string,
-    name: string,
-    description?: string | null,
-    createdAt: string,
-    updatedAt: string,
-  } | null,
-};
-
-export type OnDeleteTodoSubscriptionVariables = {
-  filter?: ModelSubscriptionTodoFilterInput | null,
-};
-
-export type OnDeleteTodoSubscription = {
-  onDeleteTodo?:  {
-    __typename: "Todo",
-    id: string,
-    name: string,
-    description?: string | null,
-    createdAt: string,
-    updatedAt: string,
-  } | null,
-};
-
 export type OnCreateFoodItemSubscriptionVariables = {
   filter?: ModelSubscriptionFoodItemFilterInput | null,
+  owner?: string | null,
 };
 
 export type OnCreateFoodItemSubscription = {
@@ -425,11 +247,13 @@ export type OnCreateFoodItemSubscription = {
     description: string,
     createdAt: string,
     updatedAt: string,
+    owner?: string | null,
   } | null,
 };
 
 export type OnUpdateFoodItemSubscriptionVariables = {
   filter?: ModelSubscriptionFoodItemFilterInput | null,
+  owner?: string | null,
 };
 
 export type OnUpdateFoodItemSubscription = {
@@ -440,11 +264,13 @@ export type OnUpdateFoodItemSubscription = {
     description: string,
     createdAt: string,
     updatedAt: string,
+    owner?: string | null,
   } | null,
 };
 
 export type OnDeleteFoodItemSubscriptionVariables = {
   filter?: ModelSubscriptionFoodItemFilterInput | null,
+  owner?: string | null,
 };
 
 export type OnDeleteFoodItemSubscription = {
@@ -455,5 +281,6 @@ export type OnDeleteFoodItemSubscription = {
     description: string,
     createdAt: string,
     updatedAt: string,
+    owner?: string | null,
   } | null,
 };

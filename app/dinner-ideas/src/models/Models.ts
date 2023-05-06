@@ -2,6 +2,7 @@ interface BaseItem {
   id: string;
   createdAt: string;
   updatedAt: string;
+  owner: string;
 }
 
 export interface FoodItem extends BaseItem {

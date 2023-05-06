@@ -2,69 +2,48 @@
 /* eslint-disable */
 // this is an auto generated file. This will be overwritten
 
-export const onCreateTodo = /* GraphQL */ `
-  subscription OnCreateTodo($filter: ModelSubscriptionTodoFilterInput) {
-    onCreateTodo(filter: $filter) {
-      id
-      name
-      description
-      createdAt
-      updatedAt
-    }
-  }
-`;
-export const onUpdateTodo = /* GraphQL */ `
-  subscription OnUpdateTodo($filter: ModelSubscriptionTodoFilterInput) {
-    onUpdateTodo(filter: $filter) {
-      id
-      name
-      description
-      createdAt
-      updatedAt
-    }
-  }
-`;
-export const onDeleteTodo = /* GraphQL */ `
-  subscription OnDeleteTodo($filter: ModelSubscriptionTodoFilterInput) {
-    onDeleteTodo(filter: $filter) {
-      id
-      name
-      description
-      createdAt
-      updatedAt
-    }
-  }
-`;
 export const onCreateFoodItem = /* GraphQL */ `
-  subscription OnCreateFoodItem($filter: ModelSubscriptionFoodItemFilterInput) {
-    onCreateFoodItem(filter: $filter) {
+  subscription OnCreateFoodItem(
+    $filter: ModelSubscriptionFoodItemFilterInput
+    $owner: String
+  ) {
+    onCreateFoodItem(filter: $filter, owner: $owner) {
       id
       name
       description
       createdAt
       updatedAt
+      owner
     }
   }
 `;
 export const onUpdateFoodItem = /* GraphQL */ `
-  subscription OnUpdateFoodItem($filter: ModelSubscriptionFoodItemFilterInput) {
-    onUpdateFoodItem(filter: $filter) {
+  subscription OnUpdateFoodItem(
+    $filter: ModelSubscriptionFoodItemFilterInput
+    $owner: String
+  ) {
+    onUpdateFoodItem(filter: $filter, owner: $owner) {
       id
       name
       description
       createdAt
       updatedAt
+      owner
     }
   }
 `;
 export const onDeleteFoodItem = /* GraphQL */ `
-  subscription OnDeleteFoodItem($filter: ModelSubscriptionFoodItemFilterInput) {
-    onDeleteFoodItem(filter: $filter) {
+  subscription OnDeleteFoodItem(
+    $filter: ModelSubscriptionFoodItemFilterInput
+    $owner: String
+  ) {
+    onDeleteFoodItem(filter: $filter, owner: $owner) {
       id
       name
       description
       createdAt
       updatedAt
+      owner
     }
   }
 `;

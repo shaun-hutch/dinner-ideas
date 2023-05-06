@@ -7,7 +7,7 @@ test("renders learn react link", () => {
   const user = {
     username: 'jeff'
   };
-  render(<App signOut={jest.fn()} user={user}/>);
+  render(<App/>);
   const linkElement = screen.getByText(/learn react/i);
   expect(linkElement).toBeInTheDocument();
 });

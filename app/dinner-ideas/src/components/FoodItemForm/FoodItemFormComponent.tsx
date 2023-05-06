@@ -1,11 +1,15 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { createItem, updateItem } from '../../foodItemsApi';
 import './FoodItemFormComponent.css';
+import { UserContext } from '../../App';
 
 export default function FoodItemFormComponent() {
   const location = useLocation();
   console.log(location);
+
+  const user = useContext(UserContext) as any;
+  const sub = user?.attributes?.sub;
 
   const [name, setName] = useState<string>('');
   const [description, setDescription] = useState<string>('');

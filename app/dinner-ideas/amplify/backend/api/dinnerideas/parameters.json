@@ -1,5 +1,11 @@
 {
   "AppSyncApiName": "dinnerideas",
   "DynamoDBBillingMode": "PAY_PER_REQUEST",
-  "DynamoDBEnableServerSideEncryption": false
+  "DynamoDBEnableServerSideEncryption": false,
+  "AuthCognitoUserPoolId": {
+    "Fn::GetAtt": [
+      "authdinnerideas840d6274",
+      "Outputs.UserPoolId"
+    ]
+  }
 }

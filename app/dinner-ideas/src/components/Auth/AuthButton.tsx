@@ -1,18 +1,21 @@
 import { Auth, Hub } from "aws-amplify";
 import React from "react";
 import { Link, useNavigate } from "react-router-dom";
+import "./AuthButton.css";
 
-export const AuthButton = () => {
+export interface AuthButtonProps
+{
+    onUserChange: (user: any) => void;
+}
 
-    const [user, setUser] = React.useState(null);
+export const AuthButton = (props: AuthButtonProps) => {
     const navigate = useNavigate();
 
 
     const signOut = async () => {
         try {
             await Auth.signOut();
-            setUser(null);
-            navigate('/signin')
+            props.onUserChange(null);
         } catch (error) {
             console.error('error signing out', error);
         }
@@ -21,7 +24,7 @@ export const AuthButton = () => {
     const checkUser = async () => {
         try {
             const current = await Auth.currentAuthenticatedUser();
-            setUser(current);
+            props.onUserChange(current);
         } catch (error) {
             console.error('error checking user', error);
         }
@@ -30,23 +33,19 @@ export const AuthButton = () => {
     React.useEffect(() => {
         checkUser();
 
-        const listener = Hub.listen('auth', ({ payload: { event, data}}) => {
+        Hub.listen('auth', ({ payload: { event, data}}) => {
             if (event === 'signIn' || event === 'signUp') {
-                setUser(data);
+                props.onUserChange(data);
                 navigate('/');
             } else if (event === 'signOut') {
-                setUser(null);
+                props.onUserChange(null);
+                navigate('/signin');
             }
         });
 
-        return () => listener();
     }, [navigate]);
 
     return (
-        user ? (
-            <Link to="/signin" onClick={signOut}>Sign Out</Link>
-        ) : (
-            <Link to="/signIn">Sign In</Link>
-        )
+        <Link to="/signin" className="sign-out" onClick={signOut}>Sign Out</Link>
     )    
 };

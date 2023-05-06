@@ -10,8 +10,6 @@ import FoodItemContentLoader from "../FoodItem/FoodItemContentLoader";
 import "./FoodList.css";
 import React from "react";
 
-
-
 export default function FoodList() {
   const initialState: FoodItemsState = {
     foodItems: [],
@@ -27,12 +25,6 @@ export default function FoodList() {
       load();
     });
   }, []);
-
-  // const editFoodItem = React.useCallback((name: string, description: string, id: string) => {
-  //   updateFoodItem(name, description, id).then(() => {
-  //     load();
-  //   })
-  // }, []);
 
   const load = () => {
     getFoodItems("").then((data) => {

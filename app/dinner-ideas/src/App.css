@@ -14,3 +14,14 @@ svg {
   height: 20px;
   color: white;
 }
+
+/* amplify custom styles */
+.amplify-flex button {
+  background-color: #e3d8b4;
+  color: #000;
+}
+
+.amplify-flex button:hover {
+  background-color: #d1c6a5;
+  color: #000;
+}
