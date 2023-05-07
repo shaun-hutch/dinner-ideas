@@ -8,4 +8,5 @@ type FoodItem @model @auth(rules: [
   id: ID!
   name: String!
   description: String!
+  image: String!
 }

@@ -19,11 +19,12 @@ export async function getFoodItems(weekItemId: string): Promise<FoodItem[]> {
   }
 }
 
-export async function createItem(name: string, description: string) {
+export async function createItem(name: string, description: string, file: string) {
   try {
     const input: CreateFoodItemInput = {
       description,
-      name
+      name,
+      image: file
     };
 
     await API.graphql<GraphQLQuery<CreateFoodItemMutation>>({
@@ -36,12 +37,13 @@ export async function createItem(name: string, description: string) {
   }
 }
 
-export async function updateItem(name: string, description: string, id: string) {
+export async function updateItem(name: string, description: string, id: string, file: string) {
   try {
     const input: UpdateFoodItemInput = {
       description,
       name,
-      id
+      id,
+      image: file
     };
 
     await API.graphql<GraphQLQuery<UpdateFoodItemMutation>>({

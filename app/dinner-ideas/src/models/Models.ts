@@ -8,6 +8,7 @@ interface BaseItem {
 export interface FoodItem extends BaseItem {
   name: string;
   description: string;
+  image: string;
 }
 
 export interface FoodItemsState {

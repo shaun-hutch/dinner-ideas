@@ -8,6 +8,7 @@ export const getFoodItem = /* GraphQL */ `
       id
       name
       description
+      image
       createdAt
       updatedAt
       owner
@@ -25,6 +26,7 @@ export const listFoodItems = /* GraphQL */ `
         id
         name
         description
+        image
         createdAt
         updatedAt
         owner

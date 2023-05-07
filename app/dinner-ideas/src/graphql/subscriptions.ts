@@ -11,6 +11,7 @@ export const onCreateFoodItem = /* GraphQL */ `
       id
       name
       description
+      image
       createdAt
       updatedAt
       owner
@@ -26,6 +27,7 @@ export const onUpdateFoodItem = /* GraphQL */ `
       id
       name
       description
+      image
       createdAt
       updatedAt
       owner
@@ -41,6 +43,7 @@ export const onDeleteFoodItem = /* GraphQL */ `
       id
       name
       description
+      image
       createdAt
       updatedAt
       owner
