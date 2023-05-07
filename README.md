@@ -1,45 +1,47 @@
 # Dinner Ideas
 A small application to help with dinner ideas, and meal prep each week.
 
-## Front end
-React application
-
-- [Node.js](https://nodejs.org)
-
-Install node JS, latest, then navigate to `frontend/dinner-ideas`
-
-`npm install`
-
-`npm run serve`
-
----
-
-## Back end
-
 ### Prerequisites
-- [.NET 6](https://dotnet.microsoft.com/en-us/download/dotnet/6.0)
-- [AWS Lambda Test Tool](https://github.com/aws/aws-lambda-dotnet/tree/master/Tools/LambdaTestTool)
 - [AWS CLI V2](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html)
+- Amplify NPM Package
 
 Install AWS CLI, then setup your credentials accordingly with `aws configure`
 
 **Note:** you will need to setup a user with appropriate permissions in IAM and generate an access key pair:
-
 [IAM](https://us-east-1.console.aws.amazon.com/iamv2/home?region=us-west-1#/users)
 
-Install the .NET 6 version of the lambda test tool:
+Navigate to `./app/dinner-ideas` to configure and run the frontend application (local frontend also points to GraphQL backend)
 
-`dotnet tool install -g Amazon.Lambda.TestTool-6.0`
+Install the AWS Amplify CLI globally:
+**Note** The IAM key pair setup above is used here
+`npm install -g @aws-amplify-cli`
 
+Configure the Amplify CLI with required parameters (may require you to login to the AWS Console)
+`amplify configure`
 
-In the root repo folder, run the shell command to build and run the lambda test tool:
+## Frontend
+React application
 
-`./run-local.sh`
+- [Node.js](https://nodejs.org)
 
-The commands used:
-`dotnet build`
-`dotnet lambda-test-tool-6.0`
+Install node JS, latest, then navigate to `./app/dinner-ideas`
 
-To deploy the lambda to AWS, run this shell file:
+Install the frontend dependencies:
+`npm install`
 
-`./deploy-lambda.sh`
+Run the frontend:
+`npm run serve`
+
+To publish the frontend (note this also publishes the backend if it has not been updated, so this one command can be used to push everything to AWS)
+`amplify publish`
+
+---
+
+## Backend
+
+GraphQL (through AWS Amplify)
+
+To push the backend:
+`amplify push`
+
+Say yes to the prompts to update the CloudFormation stacks and update the GraphQL schema and API
