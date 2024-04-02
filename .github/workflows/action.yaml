@@ -21,10 +21,11 @@ jobs:
         cd ./dinner-ideas
         npm ci
         npm run build --if-present
-        cd ./build
 
     - run: echo syncing build files to S3
-    - run: aws s3 sync . s3://shaun-web-app-bucket
+    - run: |
+        cd ./dinner-ideas/build
+        aws s3 sync . s3://shaun-web-app-bucket
     env:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
