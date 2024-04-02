@@ -13,9 +13,7 @@ Install AWS CLI, then setup your credentials accordingly with
 **Note:** you will need to setup a user with appropriate permissions in IAM and generate an access key pair:
 [IAM](https://us-east-1.console.aws.amazon.com/iamv2/home?region=us-west-1#/users)
 
-Navigate to `./app/dinner-ideas` to configure and run the frontend application (local frontend also points to GraphQL backend)
-
-Configure the Amplify CLI with required parameters (may require you to login to the AWS Console)
+Navigate to `./app/dinner-ideas` to configure and run the frontend application.
 
 ## Frontend
 React application
@@ -31,3 +29,11 @@ Install the frontend dependencies:
 Run the frontend:
 
 `npm run serve`
+
+## Backend
+
+Coming Soon™
+
+# CI/CD
+
+GitHub Action to build and deploy to S3, accessed through CloudFront.
