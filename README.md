@@ -1,7 +1,7 @@
 # Dinner Ideas
 A small application to help with dinner ideas, and meal prep each week.
 
-![Build and Deploy](https://github.com/shaun-hutch/dinner-ideas/blob/main/.github/workflows/action.yaml/badge.svg)
+[![Node.js CI](https://github.com/shaun-hutch/dinner-ideas/actions/workflows/action.yaml/badge.svg)](https://github.com/shaun-hutch/dinner-ideas/actions/workflows/action.yaml)
 
 ### Prerequisites
 - [AWS CLI V2](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html)
