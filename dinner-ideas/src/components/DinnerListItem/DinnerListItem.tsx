@@ -14,10 +14,10 @@ const DinnerListItem = (props: DinnerListItemProps) => {
 
     const {
         isLoading,
-        name,
-        totalTime,
-        image,
-        tags
+        // name,
+        // totalTime,
+        // image,
+        // tags
     } = props;
     // name
 
