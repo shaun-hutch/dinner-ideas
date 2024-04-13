@@ -29,7 +29,7 @@ const DinnerListItem = (props: DinnerListItemProps) => {
     
     const photo = (
         <div className="image">
-            <img src="https://picsum.photos/200" width="200" />
+            <img src="https://picsum.photos/200" width="200" alt="placeholder"/>
         </div>
     );
 
