@@ -21,9 +21,9 @@ const App = () => {
 
     return (
         <div className="body">
-            {mockItems.map(item => <DinnerListItem key={item.id} isLoading={false} name={item.name} tags={item.tags} totalTime={item.cookTime + item.prepTime} />)}
-            
-            
+            <div className="dinner-list">
+                {mockItems.map(item => <DinnerListItem key={item.id} isLoading={false} name={item.name} tags={item.tags} totalTime={item.cookTime + item.prepTime} />)}
+            </div>
         </div>
     )
 };

@@ -25,15 +25,20 @@ const DinnerListItem = (props: DinnerListItemProps) => {
     // image
     // tags
 
-
+    const formattedTime = `${props.totalTime} mins`
     
+    const photo = (
+        <div className="image">
+            <img src="https://picsum.photos/200" width="200" />
+        </div>
+    );
 
 
     return (
         <div className="dinner-list-item">
             {
                 isLoading ? <>Loading</> : 
-                <Card title={props.name} footer={<>{props.totalTime} mins</>}/>
+                <Card className="md:w25rem" title={props.name} subTitle={formattedTime} header={photo} />
             }
         </div> 
     );
