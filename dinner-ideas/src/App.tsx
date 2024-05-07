@@ -4,8 +4,6 @@ import { FoodTag } from './models/FoodTag';
 import DinnerListItem from './components/DinnerListItem/DinnerListItem';
 
 const App = () => {
-
-
     // mock items
     const mockItems: DinnerItem[] = [...Array(10).keys()].map(x => {
         return {
@@ -15,7 +13,7 @@ const App = () => {
             description: "test description here",
             name: `Item ${x}`,
             steps: [],
-            tags: [ FoodTag.Cheap, FoodTag.Quick ]
+            tags: [ FoodTag.Cheap, FoodTag.Quick, FoodTag.FamilyFriendly, FoodTag.GlutenFree, FoodTag.Vegan, FoodTag.Vegeterian, FoodTag.LowCarb ]
         }
     });
 

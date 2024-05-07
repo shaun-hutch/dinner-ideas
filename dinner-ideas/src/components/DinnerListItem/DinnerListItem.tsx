@@ -1,7 +1,7 @@
 import { Card } from "primereact/card";
 import { FoodTag } from "../../models/FoodTag";
 import './DinnerListItem.css';
-import ItemChip from "./ItemChip";
+import ItemChipContainer from "../ItemChip/ItemChipContainer";
 
 interface DinnerListItemProps {
     isLoading: boolean;
@@ -20,7 +20,6 @@ const DinnerListItem = (props: DinnerListItemProps) => {
         totalTime
     } = props;
 
-
     const formattedTime = `${totalTime} mins`
     
     const photo = (
@@ -29,19 +28,17 @@ const DinnerListItem = (props: DinnerListItemProps) => {
         </div>
     );
 
-    const itemChips = (
-        <div className="item-chips">
-                {tags.map(x => 
-                    <ItemChip FoodTag={x} />
-                )}
-        </div>
-    );
-
     return (
         <div className="dinner-list-item">
             {
                 isLoading ? <>Loading</> : 
-                <Card className="md:w25rem" title={name} subTitle={formattedTime} header={photo} footer={itemChips} />
+                <Card 
+                    className="md:w25rem" 
+                    title={name} 
+                    subTitle={formattedTime} 
+                    header={photo} 
+                    footer={<ItemChipContainer tags={tags}/>}
+                />
             }
         </div> 
     );
