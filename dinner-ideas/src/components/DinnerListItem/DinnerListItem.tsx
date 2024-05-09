@@ -2,6 +2,7 @@ import { Card } from "primereact/card";
 import { FoodTag } from "../../models/FoodTag";
 import './DinnerListItem.css';
 import ItemChipContainer from "../ItemChip/ItemChipContainer";
+import meta_salad from '../../../src/images/meta_salad.png'
 
 interface DinnerListItemProps {
     isLoading: boolean;
@@ -24,7 +25,7 @@ const DinnerListItem = (props: DinnerListItemProps) => {
     
     const photo = (
         <div className="image">
-            <img src="https://picsum.photos/400" width="400" alt="placeholder"/>
+            <img src={meta_salad} width="300" alt="placeholder"/>
         </div>
     );
 
@@ -37,7 +38,9 @@ const DinnerListItem = (props: DinnerListItemProps) => {
                     title={name} 
                     subTitle={formattedTime} 
                     header={photo} 
-                    footer={<ItemChipContainer tags={tags}/>}
+                    footer={
+                        <ItemChipContainer tags={tags}/>
+                    }
                 />
             }
         </div> 

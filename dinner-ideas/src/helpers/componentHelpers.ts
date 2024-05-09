@@ -1,0 +1,1 @@
+export const componentKey = (name?: string) => `${name ?? "component"}_${crypto.randomUUID()}`;

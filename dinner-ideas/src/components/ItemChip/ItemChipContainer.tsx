@@ -1,3 +1,4 @@
+import { componentKey } from "../../helpers/componentHelpers";
 import { FoodTag } from "../../models/FoodTag"
 import ItemChip from "./ItemChip"
 import './ItemChipContainer.css';
@@ -11,7 +12,7 @@ const ItemChipContainer = (props: ItemChipContainerProps) => {
     return (
         <div className="item-chips">
                 {props.tags.map(x => 
-                    <ItemChip FoodTag={x} />
+                    <ItemChip FoodTag={x} key={componentKey("Chip")} />
                 )}
         </div>
     )
