@@ -13,7 +13,7 @@ const App = () => {
             description: "test description here",
             name: `Item ${x}`,
             steps: [],
-            tags: [ FoodTag.Cheap, FoodTag.Quick, FoodTag.FamilyFriendly, FoodTag.GlutenFree, FoodTag.Vegan, FoodTag.Vegeterian, FoodTag.LowCarb ]
+            tags: generateMockTags()
         }
     });
 
@@ -25,5 +25,21 @@ const App = () => {
         </div>
     )
 };
+
+const generateMockTags = (): FoodTag[] => {
+    const items: FoodTag[] = Object.values(FoodTag);
+
+    let tags: FoodTag[] = [];
+    let i = 0;
+    while (i < 3) {
+        let item = items[Math.floor(Math.random()*items.length)];
+        if (!tags.find(x => x === item)) {
+            tags.push(item);
+        }
+        i++;
+    }
+
+    return tags;
+}
 
 export default App;
