@@ -3,31 +3,42 @@ import { FoodTag } from "../../models/FoodTag";
 import './DinnerListItem.css';
 import ItemChipContainer from "../ItemChip/ItemChipContainer";
 import meta_salad from '../../../src/images/meta_salad.png'
+import React from "react";
 
 interface DinnerListItemProps {
     isLoading: boolean;
+    id: number;
     name: string;
     totalTime: number;
     tags: FoodTag[];
     image?: string; // base64
+    onClick: (id: number) => void;
 }
 
 const DinnerListItem = (props: DinnerListItemProps) => {
 
     const {
         isLoading,
+        id,
         name,
         tags,
-        totalTime
+        totalTime,
+        image,
+        onClick
     } = props;
 
     const formattedTime = `${totalTime} mins`
+    const processedImage = !!image ? `data:image/png;base64,${image}` : meta_salad;
     
     const photo = (
         <div className="image">
-            <img src={meta_salad} width="300" alt="placeholder"/>
+            <img src={processedImage} width="300" alt="placeholder"/>
         </div>
     );
+
+    const onItemClick = React.useCallback(() => {
+        onClick(id)
+    }, [id, onClick]);
 
     return (
         <div className="dinner-list-item">
@@ -41,6 +52,7 @@ const DinnerListItem = (props: DinnerListItemProps) => {
                     footer={
                         <ItemChipContainer tags={tags}/>
                     }
+                    onClick={onItemClick}
                 />
             }
         </div> 
