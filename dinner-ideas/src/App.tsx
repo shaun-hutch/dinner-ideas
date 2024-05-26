@@ -13,7 +13,12 @@ const App = () => {
             description: "test description here",
             name: `Item ${x}`,
             steps: [],
-            tags: generateMockTags()
+            tags: generateMockTags(),
+            createdBy: 1,
+            createdDate: new Date(),
+            version: 1,
+            lastModifiedBy: 1,
+            lastModifiedDate: new Date()
         }
     });
 
