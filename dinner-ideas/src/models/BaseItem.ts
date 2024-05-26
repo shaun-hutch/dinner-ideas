@@ -4,4 +4,5 @@ export interface BaseItem {
     lastModifiedBy: number;
     createdDate: Date;
     lastModifiedDate: Date;
+    version: number;
 }
