@@ -1,7 +1,7 @@
+import { BaseItem } from "./BaseItem";
 import { FoodTag } from "./FoodTag";
 
-export interface DinnerItem {
-    id: number;
+export interface DinnerItem extends BaseItem {
     name: string;
     description: string;
     prepTime: number;
