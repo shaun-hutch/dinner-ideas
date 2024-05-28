@@ -1,1 +1,2 @@
-zip function.zip dinner-ideas-lambda-api.py
+cd src
+zip -r ../function.zip .

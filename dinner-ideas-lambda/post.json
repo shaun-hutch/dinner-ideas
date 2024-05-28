@@ -1,0 +1,18 @@
+{
+    "operation": "create",
+    "payload": {
+        "item": {
+            "name": "Beef Stroganoff",
+            "description": "Description here",
+            "prepTime": 15,
+            "cookTime": 15,
+            "steps": [],
+            "tags": ["Quick"],
+            "id": "1",
+            "createdBy": 1,
+            "lastModifiedBy": 1,
+            "createdDate": "2024-05-28T11:02:24.892Z",
+            "lastModifiedDate": "2024-05-28T11:02:24.892Z"
+        }
+    }
+}

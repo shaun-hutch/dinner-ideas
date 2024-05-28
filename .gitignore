@@ -478,3 +478,4 @@ $RECYCLE.BIN/
 
 node_modules/
 frontend/dinner-ideas/build/
+*.zip

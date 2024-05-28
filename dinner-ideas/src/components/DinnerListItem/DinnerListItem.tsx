@@ -11,7 +11,7 @@ interface DinnerListItemProps {
     name: string;
     totalTime: number;
     tags: FoodTag[];
-    image?: string; // base64
+    image?: string; // s3 prefix location
     onClick: (id: number) => void;
 }
 

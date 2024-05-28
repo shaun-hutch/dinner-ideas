@@ -1,6 +1,8 @@
 import boto3
 import json
 
+from db import create
+
 # define the DynamoDB table that Lambda will connect to
 tableName = "dinner-ideas-table"
 
@@ -36,13 +38,15 @@ def lambda_handler(event, context):
     operation = event['operation']
 
     operations = {
-        'create': ddb_create,
+        'create': create,
         'read': ddb_read,
         'update': ddb_update,
         'delete': ddb_delete,
         'echo': echo,
     }
 
+    # dynamo DB JSON payload is case sensistive
+    # payload must be in 'Item' ,capital I lol
     if operation in operations:
         return operations[operation](event.get('payload'))
     else:
