@@ -9,9 +9,12 @@ tableName = "dinner-ideas-table"
 dynamo = boto3.resource('dynamodb').Table(tableName)
 
 def create(item):
-
-    print(item)
     response = dynamo.put_item(**item)
+
+    print(response)
+
+def get(item):
+    response = dynamo.get_item(**item)
 
     print(response)
 

@@ -1,7 +1,6 @@
 import boto3
-import json
 
-from db import create
+from db import create, get
 
 # define the DynamoDB table that Lambda will connect to
 tableName = "dinner-ideas-table"
@@ -18,6 +17,9 @@ def lambda_handler(event, context):
       - payload: a JSON object containing parameters to pass to the 
                  operation being performed
     '''
+
+    params = event.get('pathParameters')
+    print(params)
     
     # define the functions used to perform the CRUD operations
     def ddb_create(x):
@@ -39,6 +41,7 @@ def lambda_handler(event, context):
 
     operations = {
         'create': create,
+        'get': get,
         'read': ddb_read,
         'update': ddb_update,
         'delete': ddb_delete,
