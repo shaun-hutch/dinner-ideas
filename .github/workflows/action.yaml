@@ -1,4 +1,4 @@
-name: Node.js CI
+name: Front End & Back End Build
 
 on:
   push:
@@ -36,7 +36,7 @@ jobs:
     - name: Use Python
       uses: actions/setup-python@main
       with:
-        node-version: 20.12.0 
+        python-version: 3.x
     - run: |
         cd ./dinner-ideas-lambda
         ./zip.sh
