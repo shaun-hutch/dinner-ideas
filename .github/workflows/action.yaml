@@ -38,7 +38,7 @@ jobs:
       with:
         python-version: 3.x
     - run: |
-        cd ./dinner-ideas-lambda
+        cd ./dinner-ideas-api
         ./zip.sh
         ./update-lambda.sh
     env:
