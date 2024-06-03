@@ -10,6 +10,9 @@ public class Function
 {
     public void FunctionHandler(DynamoDBEvent dynamoEvent, ILambdaContext context)
     {
+        return;
+
+
         context.Logger.LogInformation($"Beginning to process {dynamoEvent.Records.Count} records...");
 
         foreach (var record in dynamoEvent.Records)
