@@ -1,5 +1,7 @@
 using Amazon.Lambda.Core;
-using Amazon.Lambda.DynamoDBEvents;
+using Amazon.Lambda.APIGatewayEvents;
+using System.Net;
+using Newtonsoft.Json;
 
 // Assembly attribute to enable the Lambda function's JSON input to be converted into a .NET class.
 [assembly: LambdaSerializer(typeof(Amazon.Lambda.Serialization.SystemTextJson.DefaultLambdaJsonSerializer))]
@@ -8,21 +10,40 @@ namespace dinner_ideas_lambda;
 
 public class Function
 {
-    public void FunctionHandler(DynamoDBEvent dynamoEvent, ILambdaContext context)
+    public APIGatewayProxyResponse FunctionHandler(APIGatewayProxyRequest apiGatewayEvent, ILambdaContext context)
     {
-        return;
+
+        var json = JsonConvert.SerializeObject(apiGatewayEvent, Formatting.Indented);
+
+        context.Logger.LogInformation(json);
 
 
-        context.Logger.LogInformation($"Beginning to process {dynamoEvent.Records.Count} records...");
+        var routeParams = apiGatewayEvent.PathParameters;
 
-        foreach (var record in dynamoEvent.Records)
+        context.Logger.LogInformation($"HTTP Method: {apiGatewayEvent.HttpMethod}");
+        
+        switch (apiGatewayEvent.HttpMethod)
         {
-            context.Logger.LogInformation($"Event ID: {record.EventID}");
-            context.Logger.LogInformation($"Event Name: {record.EventName}");
-            
-            // TODO: Add business logic processing the record.Dynamodb object.
+            case "GET":
+                if (routeParams.TryGetValue("id", out var id))
+                {
+                    context.Logger.LogInformation($"contains id: {id}");
+                }
+                break;
+            case "POST":
+                break;
+            case "PUT":
+                break;
+            case "DELETE":
+                break;
         }
 
-        context.Logger.LogInformation("Stream processing complete.");
+        return new APIGatewayProxyResponse
+        {
+            StatusCode = (int)HttpStatusCode.OK,
+            Body = json
+        };
     }
+
+    
 }
