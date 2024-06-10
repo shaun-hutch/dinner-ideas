@@ -22,14 +22,13 @@ public class Function
         provider = services.BuildServiceProvider();
     }
 
-    public APIGatewayProxyResponse FunctionHandler(APIGatewayProxyRequest apiGatewayEvent, ILambdaContext context)
+    public async Task<APIGatewayProxyResponse> FunctionHandler(APIGatewayProxyRequest apiGatewayEvent, ILambdaContext context)
     {
         var dinnerItemService = provider.GetRequiredService<IDinnerItemService>();
 
         var json = JsonConvert.SerializeObject(apiGatewayEvent, Formatting.Indented);
 
         context.Logger.LogInformation(json);
-
 
         var routeParams = apiGatewayEvent.PathParameters;
 
@@ -39,12 +38,12 @@ public class Function
         switch (apiGatewayEvent.HttpMethod)
         {
             case "GET":
-                if (routeParams.TryGetValue("id", out var id))
+                if (routeParams?.TryGetValue("id", out var id) == true)
                 {
                     context.Logger.LogInformation($"contains id: {id}");
                     if (Guid.TryParse(id, out var parsed))
                     {
-                        var itemResponse = dinnerItemService.GetItem(parsed);
+                        var itemResponse = await dinnerItemService.GetItem(parsed);
                         bodyResponse = JsonConvert.SerializeObject(itemResponse);
                     }
                     else 
@@ -52,12 +51,17 @@ public class Function
                 }
                 else 
                 {
-                    var itemListResponse = dinnerItemService.GetItems();
+                    var itemListResponse = await dinnerItemService.GetItems();
                     bodyResponse = JsonConvert.SerializeObject(itemListResponse);
-
                 }
                 break;
             case "POST":
+
+                var obj = JsonConvert.DeserializeObject<DinnerItem>(apiGatewayEvent.Body);
+
+                var postResponse = await dinnerItemService.CreateItem(obj!);
+
+                bodyResponse = JsonConvert.SerializeObject(postResponse);
                 break;
             case "PUT":
                 break;
@@ -74,7 +78,8 @@ public class Function
 
     private void ConfigureServices(IServiceCollection services)
     {
-        services.AddTransient<IDinnerItemService, DinnerItemService>();
+        services.AddScoped<IDinnerItemService, DinnerItemService>();
+        services.AddScoped<IDynamoObjectService, DynamoObjectService>();
     }
 
     
