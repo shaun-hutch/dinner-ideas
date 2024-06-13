@@ -8,8 +8,8 @@ namespace dinner_ideas_lambda.services;
 
 public interface IDinnerItemService
 {
-    Task<DinnerItem> GetItem(Guid id);
-    Task<IEnumerable<DinnerItem>> GetItems();
+    Task<DinnerItem> GetItem(Guid id, int ownerId = 1);
+    Task<IEnumerable<DinnerItem>> GetItems(int ownerId = 1);
     Task<DinnerItem> CreateItem(DinnerItem item);
     Task<DinnerItem> UpdateItem(DinnerItem item);
     Task<bool> DeleteItem(DinnerItem item);
@@ -63,16 +63,20 @@ public class DinnerItemService : IDinnerItemService
         throw new NotImplementedException();
     }
 
-    public async Task<IEnumerable<DinnerItem>> GetItems()
+    public async Task<IEnumerable<DinnerItem>> GetItems(int ownerId = 1)
     {
-        var response = await _dynamoDBClient.ScanAsync(new ScanRequest
+        var request = new ScanRequest ()
         {
-            TableName = TABLE_NAME
-        });
+            TableName = TABLE_NAME,
+            FilterExpression = $"createdBy = :createdBy",
+            ExpressionAttributeValues = new ()
+            {
+                { ":createdBy", new () { N = ownerId.ToString() }}
+            }
+        };
 
-        Console.WriteLine(JsonConvert.SerializeObject(response.Items, Formatting.Indented));
-
-
+        var response = await _dynamoDBClient.ScanAsync(request);
+        Console.WriteLine($"Item count: {response.Items.Count}");
 
         if (response.Items.Count > 0)
             return response.Items.Select(_dynamoObjectService.FromAttributeMap<DinnerItem>);
@@ -80,24 +84,23 @@ public class DinnerItemService : IDinnerItemService
         return [];
     }
 
-    public async Task<DinnerItem> GetItem(Guid id)
+    public async Task<DinnerItem> GetItem(Guid id, int ownerId = 1)
     {
-        
-
-
-        return new DinnerItem ()
+        var response = await _dynamoDBClient.GetItemAsync(new ()
         {
-            CookTime = 10,
-            CreatedBy = 1,
-            CreatedDate = DateTime.UtcNow,
-            Description = "test",
-            Id = Guid.NewGuid(),
-            LastModifiedBy = 1,
-            LastModifiedDate = DateTime.UtcNow,
-            Name = "test item",
-            PrepTime = 10,
-            Version = 1
-        };
+            TableName = TABLE_NAME,
+            Key = new ()
+            {
+                { 
+                    "typeAndId", new () { S = $"{nameof(DinnerItem)}|{id}|{ownerId}" }
+                }
+            }
+        });
+        
+        if (response.Item.Any())
+                return _dynamoObjectService.FromAttributeMap<DinnerItem>(response.Item);
+        else 
+            return null;
     }
 
     public async Task<DinnerItem> UpdateItem(DinnerItem item)
