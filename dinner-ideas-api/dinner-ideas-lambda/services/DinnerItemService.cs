@@ -9,11 +9,11 @@ namespace dinner_ideas_lambda.services;
 
 public interface IDinnerItemService
 {
-    Task<DinnerItem> GetItem(Guid id, int ownerId = 1);
+    Task<DinnerItem> GetItem(Guid id);
     Task<IEnumerable<DinnerItem>> GetItems(int ownerId = 1);
     Task<DinnerItem> CreateItem(DinnerItem item);
     Task<DinnerItem> UpdateItem(DinnerItem item);
-    Task<bool> DeleteItem(DinnerItem item);
+    Task<bool> DeleteItem(Guid id);
 }
 
 public class DinnerItemService : IDinnerItemService
@@ -66,9 +66,21 @@ public class DinnerItemService : IDinnerItemService
         }
     }
 
-    public Task<bool> DeleteItem(DinnerItem item)
+    public async Task<bool> DeleteItem(Guid id)
     {
-        throw new NotImplementedException();
+        var item = await GetItem(id);
+
+        if (item == null) 
+            return false;
+
+        var response = await _dynamoDBClient.DeleteItemAsync(TABLE_NAME, new ()
+        {
+            { "typeAndId", new () { S = item.TypeAndId }}
+        });
+
+        Console.WriteLine(response);
+
+        return true;
     }
 
     public async Task<IEnumerable<DinnerItem>> GetItems(int ownerId = 1)
@@ -92,7 +104,7 @@ public class DinnerItemService : IDinnerItemService
         return [];
     }
 
-    public async Task<DinnerItem> GetItem(Guid id, int ownerId = 1)
+    public async Task<DinnerItem> GetItem(Guid id)
     {
         var response = await _dynamoDBClient.GetItemAsync(new ()
         {
@@ -100,7 +112,7 @@ public class DinnerItemService : IDinnerItemService
             Key = new ()
             {
                 { 
-                    "typeAndId", new () { S = $"{nameof(DinnerItem)}|{id}|{ownerId}" }
+                    "typeAndId", new () { S = $"{nameof(DinnerItem)}|{id}" }
                 }
             }
         });
@@ -113,6 +125,30 @@ public class DinnerItemService : IDinnerItemService
 
     public async Task<DinnerItem> UpdateItem(DinnerItem item)
     {
-        throw new NotImplementedException();
+        try 
+        {
+            var utcNow = DateTime.UtcNow;
+
+            item.CreatedDate = utcNow;
+            item.LastModifiedDate = utcNow;
+            Console.WriteLine(item.TypeAndId);
+
+            Console.WriteLine(JsonConvert.SerializeObject(item));
+
+            var dict = _dynamoObjectService.ToAttributeMap(item);
+            var response = await _dynamoDBClient.PutItemAsync(TABLE_NAME, dict);
+
+            Console.WriteLine(JsonConvert.SerializeObject(response));
+            
+            if (response.HttpStatusCode != HttpStatusCode.OK)
+                throw new Exception($"No id in response attributes");
+
+            return item;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Unable to create item, Exception: {ex}");
+            throw;
+        }
     }
 }

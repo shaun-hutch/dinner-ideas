@@ -57,16 +57,32 @@ public class Function
                 }
                 break;
             case "POST":
+                var createItem = JsonConvert.DeserializeObject<DinnerItem>(apiGatewayEvent.Body);
 
-                var obj = JsonConvert.DeserializeObject<DinnerItem>(apiGatewayEvent.Body);
-
-                var postResponse = await dinnerItemService.CreateItem(obj!);
+                var postResponse = await dinnerItemService.CreateItem(createItem!);
 
                 bodyResponse = JsonConvert.SerializeObject(postResponse);
                 break;
             case "PUT":
+                var updateItem = JsonConvert.DeserializeObject<DinnerItem>(apiGatewayEvent.Body);
+
+                var putResponse = await dinnerItemService.UpdateItem(updateItem!);
+
+                bodyResponse = JsonConvert.SerializeObject(putResponse);
                 break;
             case "DELETE":
+                if (routeParams?.TryGetValue("id", out var deleteId) == true)
+                {
+                    context.Logger.LogInformation($"contains id for deletion: {deleteId}");
+                    if (Guid.TryParse(deleteId, out var parsed))
+                    {
+                        var itemResponse = await dinnerItemService.DeleteItem(parsed);
+                        bodyResponse = JsonConvert.SerializeObject(itemResponse);
+                    }
+                    else 
+                        context.Logger.LogWarning($"{deleteId} not a valid guid");
+                }
+
                 break;
         }
 
@@ -82,6 +98,4 @@ public class Function
         services.AddScoped<IDinnerItemService, DinnerItemService>();
         services.AddScoped<IDynamoObjectService, DynamoObjectService>();
     }
-
-    
 }

@@ -2,7 +2,7 @@ namespace dinner_ideas_lambda.models;
 
 public class DinnerItem : BaseItem
 {
-    public override string TypeAndId { get => $"{nameof(DinnerItem)}|{Id}|{CreatedBy}"; }
+    public override string TypeAndId { get => $"{nameof(DinnerItem)}|{Id}"; }
     public required string Name { get; set; }
     public required string Description { get; set; }
     public required int PrepTime { get; set; }

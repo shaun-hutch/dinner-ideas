@@ -1,0 +1,21 @@
+{
+    "typeAndId": "DinnerItem|689d1776-02aa-4689-a677-4d57ef4415d6|1",
+    "id": "689d1776-02aa-4689-a677-4d57ef4415d6",
+    "prepTime": 15,
+    "cookTime": 15,
+    "steps": {
+        "step 1": "test step 1",
+        "step 2": "test step 2",
+        "Step 3": "another step 3!"
+    },
+    "description": "Description here",
+    "createdBy": 1,
+    "lastModifiedBy": 1,
+    "createdDate": "2024-06-14T08:38:46.7910955Z",
+    "lastModifiedDate": "2024-06-14T08:38:46.7910955Z",
+    "name": "Chicken Carbonara",
+    "tags": [
+        1,
+        2
+    ]
+}
