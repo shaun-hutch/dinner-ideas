@@ -37,6 +37,15 @@ public class DinnerItemService : IDinnerItemService
     {
         try 
         {
+            item.Id = Guid.NewGuid();
+
+            var utcNow = DateTime.UtcNow;
+
+            item.LastModifiedBy = item.CreatedBy;
+            item.CreatedDate = utcNow;
+            item.LastModifiedDate = utcNow;
+            Console.WriteLine(item.TypeAndId);
+
             var dict = _dynamoObjectService.ToAttributeMap(item);
             var response = await _dynamoDBClient.PutItemAsync(TABLE_NAME, dict);
             

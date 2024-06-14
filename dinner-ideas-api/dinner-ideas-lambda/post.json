@@ -1,0 +1,16 @@
+{
+    "prepTime": 15,
+    "cookTime": 15,
+    "steps": {
+        "step 1": "test step 1",
+        "step 2": "test step 2"
+    },
+    "id": "b2c86c81-ccb4-46c6-af71-c8fd893bc089",
+    "description": "Description here",
+    "createdBy": 1,
+    "name": "Chicken Carbonara",
+    "tags": [
+        1,
+        2
+    ]
+}
