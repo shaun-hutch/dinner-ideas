@@ -3,6 +3,7 @@ using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.Model;
 using dinner_ideas_lambda.models;
 using Newtonsoft.Json;
+using System.Net;
 
 namespace dinner_ideas_lambda.services;
 
@@ -46,19 +47,17 @@ public class DinnerItemService : IDinnerItemService
             item.LastModifiedDate = utcNow;
             Console.WriteLine(item.TypeAndId);
 
+            Console.WriteLine(JsonConvert.SerializeObject(item));
+
             var dict = _dynamoObjectService.ToAttributeMap(item);
             var response = await _dynamoDBClient.PutItemAsync(TABLE_NAME, dict);
-            
-            if (response.Attributes.TryGetValue(ID_KEY, out var id))
-            {
-                Guid.TryParse(id.S, out var parsed);
-                item.Id = parsed;
 
-                return item;
-            }
-            else {
+            Console.WriteLine(JsonConvert.SerializeObject(response));
+            
+            if (response.HttpStatusCode != HttpStatusCode.OK)
                 throw new Exception($"No id in response attributes");
-            }
+
+            return item;
         }
         catch (Exception ex)
         {

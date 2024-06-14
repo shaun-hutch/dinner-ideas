@@ -2,6 +2,7 @@ using Amazon;
 using Amazon.DynamoDBv2.DocumentModel;
 using Amazon.DynamoDBv2.Model;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 
 namespace dinner_ideas_lambda.services;
 
@@ -14,6 +15,16 @@ public interface IDynamoObjectService
 
 public class DynamoObjectService : IDynamoObjectService
 {
+    private readonly JsonSerializerSettings _settings;
+
+    public DynamoObjectService()
+    {
+        _settings = new JsonSerializerSettings
+        {
+            ContractResolver = new CamelCasePropertyNamesContractResolver()
+        };
+    }
+
     public T FromAttributeMap<T>(Dictionary<string, AttributeValue> dict) where T : class
     {
         if (dict == null || dict.Count == 0)
@@ -31,5 +42,5 @@ public class DynamoObjectService : IDynamoObjectService
     }
 
     public Dictionary<string, AttributeValue> ToAttributeMap<T>(T item)
-        => Document.FromJson(JsonConvert.SerializeObject(item)).ToAttributeMap();
+        => Document.FromJson(JsonConvert.SerializeObject(item, _settings)).ToAttributeMap();
 }

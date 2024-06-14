@@ -33,6 +33,7 @@ public class Function
         var routeParams = apiGatewayEvent.PathParameters;
 
         context.Logger.LogInformation($"HTTP Method: {apiGatewayEvent.HttpMethod}");
+        context.Logger.LogInformation(apiGatewayEvent.Body);
         
         var bodyResponse = "";
         switch (apiGatewayEvent.HttpMethod)

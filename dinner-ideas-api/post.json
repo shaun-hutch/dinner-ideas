@@ -1,18 +1,15 @@
 {
-    "operation": "create",
-    "payload": {
-        "item": {
-            "name": "Beef Stroganoff",
-            "description": "Description here",
-            "prepTime": 15,
-            "cookTime": 15,
-            "steps": [],
-            "tags": ["Quick"],
-            "id": "1",
-            "createdBy": 1,
-            "lastModifiedBy": 1,
-            "createdDate": "2024-05-28T11:02:24.892Z",
-            "lastModifiedDate": "2024-05-28T11:02:24.892Z"
-        }
-    }
+    "prepTime": 15,
+    "cookTime": 15,
+    "steps": {
+        "step 1": "test step 1",
+        "step 2": "test step 2"
+    },
+    "description": "Description here",
+    "createdBy": 1,
+    "name": "Chicken Carbonara",
+    "tags": [
+        1,
+        2
+    ]
 }
