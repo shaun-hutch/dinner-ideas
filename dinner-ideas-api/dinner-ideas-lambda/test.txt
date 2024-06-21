@@ -1,0 +1,10 @@
+curl -X POST https://ridvxgcohd.execute-api.us-west-1.amazonaws.com/dinner-ideas/dinner-ideas-db -d @post.json \
+--header "Content-Type: application/json"  
+
+curl -X PUT https://ridvxgcohd.execute-api.us-west-1.amazonaws.com/dinner-ideas/dinner-ideas-db -d @put.json \
+--header "Content-Type: application/json"  
+
+
+curl https://ridvxgcohd.execute-api.us-west-1.amazonaws.com/dinner-ideas/dinner-ideas-db/5f51692e-4bc4-4553-83bb-0ced9e969323
+
+curl -X DELETE https://ridvxgcohd.execute-api.us-west-1.amazonaws.com/dinner-ideas/dinner-ideas-db/5f51692e-4bc4-4553-83bb-0ced9e969323

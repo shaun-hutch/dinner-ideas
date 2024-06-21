@@ -1,6 +1,7 @@
 using Amazon;
 using Amazon.DynamoDBv2.DocumentModel;
 using Amazon.DynamoDBv2.Model;
+using dinner_ideas_lambda.models;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 
@@ -8,9 +9,11 @@ namespace dinner_ideas_lambda.services;
 
 public interface IDynamoObjectService
 {
-    Dictionary<string, AttributeValue> ToAttributeMap<T>(T item);
+    Dictionary<string, AttributeValue> ToAttributeMap<T>(T item) where T: BaseItem;
 
-    T FromAttributeMap<T>(Dictionary<string, AttributeValue> dict) where T : class;
+    T FromAttributeMap<T>(Dictionary<string, AttributeValue> dict) where T : BaseItem;
+
+    string CreateIdKey<T>(Guid id) where T : BaseItem;
 }
 
 public class DynamoObjectService : IDynamoObjectService
@@ -25,7 +28,7 @@ public class DynamoObjectService : IDynamoObjectService
         };
     }
 
-    public T FromAttributeMap<T>(Dictionary<string, AttributeValue> dict) where T : class
+    public T FromAttributeMap<T>(Dictionary<string, AttributeValue> dict) where T : BaseItem
     {
         if (dict == null || dict.Count == 0)
             return default!;
@@ -41,6 +44,9 @@ public class DynamoObjectService : IDynamoObjectService
         return obj!;
     }
 
-    public Dictionary<string, AttributeValue> ToAttributeMap<T>(T item)
+    public Dictionary<string, AttributeValue> ToAttributeMap<T>(T item) where T : BaseItem
         => Document.FromJson(JsonConvert.SerializeObject(item, _settings)).ToAttributeMap();
+
+    public string CreateIdKey<T>(Guid id) where T : BaseItem
+        => $"{nameof(T)}|{id}";
 }

@@ -21,10 +21,10 @@ public class DinnerItemService : IDinnerItemService
     private readonly AmazonDynamoDBConfig _clientConfig;
     private readonly AmazonDynamoDBClient _dynamoDBClient;
     private readonly IDynamoObjectService _dynamoObjectService;
-    private const string TABLE_NAME = "dinner-ideas-table";
-    private const string ID_KEY = "id";
 
-    public DinnerItemService(IDynamoObjectService dynamoObjectService)
+    private readonly IDatabaseClientService _databaseClientService;
+
+    public DinnerItemService(IDynamoObjectService dynamoObjectService, IDatabaseClientService databaseClientService)
     {
         _clientConfig = new AmazonDynamoDBConfig
         {
@@ -32,6 +32,8 @@ public class DinnerItemService : IDinnerItemService
         };
         _dynamoDBClient = new AmazonDynamoDBClient(_clientConfig);
         _dynamoObjectService = dynamoObjectService;
+
+        _databaseClientService = databaseClientService;
     }
 
     public async Task<DinnerItem> CreateItem(DinnerItem item)
@@ -50,7 +52,7 @@ public class DinnerItemService : IDinnerItemService
             Console.WriteLine(JsonConvert.SerializeObject(item));
 
             var dict = _dynamoObjectService.ToAttributeMap(item);
-            var response = await _dynamoDBClient.PutItemAsync(TABLE_NAME, dict);
+            var response = await _dynamoDBClient.PutItemAsync(Constants.TABLE_NAME, dict);
 
             Console.WriteLine(JsonConvert.SerializeObject(response));
             
@@ -73,7 +75,7 @@ public class DinnerItemService : IDinnerItemService
         if (item == null) 
             return false;
 
-        var response = await _dynamoDBClient.DeleteItemAsync(TABLE_NAME, new ()
+        var response = await _dynamoDBClient.DeleteItemAsync(Constants.TABLE_NAME, new ()
         {
             { "typeAndId", new () { S = item.TypeAndId }}
         });
@@ -87,7 +89,7 @@ public class DinnerItemService : IDinnerItemService
     {
         var request = new ScanRequest ()
         {
-            TableName = TABLE_NAME,
+            TableName = Constants.TABLE_NAME,
             FilterExpression = $"createdBy = :createdBy",
             ExpressionAttributeValues = new ()
             {
@@ -106,21 +108,17 @@ public class DinnerItemService : IDinnerItemService
 
     public async Task<DinnerItem> GetItem(Guid id)
     {
-        var response = await _dynamoDBClient.GetItemAsync(new ()
+        try 
         {
-            TableName = TABLE_NAME,
-            Key = new ()
-            {
-                { 
-                    "typeAndId", new () { S = $"{nameof(DinnerItem)}|{id}" }
-                }
-            }
-        });
-        
-        if (response.Item.Any())
-                return _dynamoObjectService.FromAttributeMap<DinnerItem>(response.Item);
-        else 
-            return null;
+            var item = await _databaseClientService.GetItem<DinnerItem>(id);
+            
+            return item;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("Unable to get Dinner item", ex);
+            throw;
+        }
     }
 
     public async Task<DinnerItem> UpdateItem(DinnerItem item)
@@ -136,7 +134,7 @@ public class DinnerItemService : IDinnerItemService
             Console.WriteLine(JsonConvert.SerializeObject(item));
 
             var dict = _dynamoObjectService.ToAttributeMap(item);
-            var response = await _dynamoDBClient.PutItemAsync(TABLE_NAME, dict);
+            var response = await _dynamoDBClient.PutItemAsync(Constants.TABLE_NAME, dict);
 
             Console.WriteLine(JsonConvert.SerializeObject(response));
             
