@@ -36,54 +36,61 @@ public class Function
         context.Logger.LogInformation(apiGatewayEvent.Body);
         
         var bodyResponse = "";
-        switch (apiGatewayEvent.HttpMethod)
+        try 
         {
-            case "GET":
-                if (routeParams?.TryGetValue("id", out var id) == true)
-                {
-                    context.Logger.LogInformation($"contains id: {id}");
-                    if (Guid.TryParse(id, out var parsed))
+            switch (apiGatewayEvent.HttpMethod)
+            {
+                case "GET":
+                    if (routeParams?.TryGetValue("id", out var id) == true)
                     {
-                        var itemResponse = await dinnerItemService.GetItem(parsed);
-                        bodyResponse = JsonConvert.SerializeObject(itemResponse);
+                        context.Logger.LogInformation($"contains id: {id}");
+                        if (Guid.TryParse(id, out var parsed))
+                        {
+                            var itemResponse = await dinnerItemService.GetItem(parsed);
+                            bodyResponse = JsonConvert.SerializeObject(itemResponse);
+                        }
+                        else
+                            context.Logger.LogWarning($"{id} not a valid guid");
                     }
                     else 
-                        context.Logger.LogWarning($"{id} not a valid guid");
-                }
-                else 
-                {
-                    var itemListResponse = await dinnerItemService.GetItems();
-                    bodyResponse = JsonConvert.SerializeObject(itemListResponse);
-                }
-                break;
-            case "POST":
-                var createItem = JsonConvert.DeserializeObject<DinnerItem>(apiGatewayEvent.Body);
-
-                var postResponse = await dinnerItemService.CreateItem(createItem!);
-
-                bodyResponse = JsonConvert.SerializeObject(postResponse);
-                break;
-            case "PUT":
-                var updateItem = JsonConvert.DeserializeObject<DinnerItem>(apiGatewayEvent.Body);
-
-                var putResponse = await dinnerItemService.UpdateItem(updateItem!);
-
-                bodyResponse = JsonConvert.SerializeObject(putResponse);
-                break;
-            case "DELETE":
-                if (routeParams?.TryGetValue("id", out var deleteId) == true)
-                {
-                    context.Logger.LogInformation($"contains id for deletion: {deleteId}");
-                    if (Guid.TryParse(deleteId, out var parsed))
                     {
-                        var itemResponse = await dinnerItemService.DeleteItem(parsed);
-                        bodyResponse = JsonConvert.SerializeObject(itemResponse);
+                        var itemListResponse = await dinnerItemService.GetItems();
+                        bodyResponse = JsonConvert.SerializeObject(itemListResponse);
                     }
-                    else 
-                        context.Logger.LogWarning($"{deleteId} not a valid guid");
-                }
+                    break;
+                case "POST":
+                    var createItem = JsonConvert.DeserializeObject<DinnerItem>(apiGatewayEvent.Body);
 
-                break;
+                    var postResponse = await dinnerItemService.CreateItem(createItem!);
+
+                    bodyResponse = JsonConvert.SerializeObject(postResponse);
+                    break;
+                case "PUT":
+                    var updateItem = JsonConvert.DeserializeObject<DinnerItem>(apiGatewayEvent.Body);
+
+                    var putResponse = await dinnerItemService.UpdateItem(updateItem!);
+
+                    bodyResponse = JsonConvert.SerializeObject(putResponse);
+                    break;
+                case "DELETE":
+                    if (routeParams?.TryGetValue("id", out var deleteId) == true)
+                    {
+                        context.Logger.LogInformation($"contains id for deletion: {deleteId}");
+                        if (Guid.TryParse(deleteId, out var parsed))
+                        {
+                            var itemResponse = await dinnerItemService.DeleteItem(parsed);
+                            bodyResponse = JsonConvert.SerializeObject(itemResponse);
+                        }
+                        else
+                            context.Logger.LogWarning($"{deleteId} not a valid guid");
+                    }
+
+                    break;
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex);
         }
 
         return new APIGatewayProxyResponse
@@ -97,5 +104,6 @@ public class Function
     {
         services.AddScoped<IDinnerItemService, DinnerItemService>();
         services.AddScoped<IDynamoObjectService, DynamoObjectService>();
+        services.AddScoped<IDatabaseClientService, DatabaseClientService>();
     }
 }
