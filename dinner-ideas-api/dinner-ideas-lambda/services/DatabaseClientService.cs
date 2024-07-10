@@ -8,7 +8,7 @@ namespace dinner_ideas_lambda.services;
 public interface IDatabaseClientService
 {
     Task<T> GetItem<T>(Guid id) where T : BaseItem;
-    Task<T> GetItems<T>(int ownerId) where T : BaseItem;
+    Task<IEnumerable<T>> GetItems<T>(int ownerId) where T : BaseItem;
     Task<T> CreateItem<T>(T item) where T : BaseItem;
     Task<T> UpdateItem<T>(T item) where T : BaseItem;
     Task<bool> DeleteItem(Guid id);
@@ -63,9 +63,30 @@ public class DatabaseClientService : IDatabaseClientService
             throw new Exception($"No item found for {typeAndId}");
     }
 
-    public Task<T> GetItems<T>(int ownerId) where T : BaseItem
+    public async Task<IEnumerable<T>> GetItems<T>(int ownerId) where T : BaseItem
     {
-        throw new NotImplementedException();
+        var request = new ScanRequest ()
+        {
+            TableName = Constants.TABLE_NAME,
+            FilterExpression = "#cb = :createdByValue",
+            ExpressionAttributeNames = new ()
+            {
+                { "#cb", "createdBy" }
+            },
+            ExpressionAttributeValues = new ()
+            {
+                { ":createdByValue", new () { N = ownerId.ToString() }}
+            }
+        };
+
+        var response = await _dynamoDBClient.ScanAsync(request);
+
+        Console.WriteLine(response.Items.Count);
+
+        if (response.Items.Count > 0)
+            return response.Items.Select(_dynamoObjectService.FromAttributeMap<T>);
+
+        return [];
     }
 
     public Task<T> UpdateItem<T>(T item) where T : BaseItem

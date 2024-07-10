@@ -30,14 +30,15 @@ public class DynamoObjectService : IDynamoObjectService
 
     public T FromAttributeMap<T>(Dictionary<string, AttributeValue> dict) where T : BaseItem
     {
+        Console.WriteLine($"{dict.Keys.Count} the dict key count");
         if (dict == null || dict.Count == 0)
             return default!;
 
         var json = Document.FromAttributeMap(dict).ToJson();
+        Console.WriteLine($"json: {json}");
         if (string.IsNullOrEmpty(json))
             return default!;
 
-        Console.WriteLine($"json: {json}");
 
         var obj = JsonConvert.DeserializeObject<T>(json);
 

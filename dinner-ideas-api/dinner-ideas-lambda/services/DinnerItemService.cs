@@ -87,23 +87,18 @@ public class DinnerItemService : IDinnerItemService
 
     public async Task<IEnumerable<DinnerItem>> GetItems(int ownerId = 1)
     {
-        var request = new ScanRequest ()
+        try 
         {
-            TableName = Constants.TABLE_NAME,
-            FilterExpression = $"createdBy = :createdBy",
-            ExpressionAttributeValues = new ()
-            {
-                { ":createdBy", new () { N = ownerId.ToString() }}
-            }
-        };
+            var items = await _databaseClientService.GetItems<DinnerItem>(ownerId) as List<DinnerItem>;
+            Console.WriteLine($"item count: {items?.Count ?? 0}");
 
-        var response = await _dynamoDBClient.ScanAsync(request);
-        Console.WriteLine($"Item count: {response.Items.Count}");
-
-        if (response.Items.Count > 0)
-            return response.Items.Select(_dynamoObjectService.FromAttributeMap<DinnerItem>);
-
-        return [];
+            return items ?? [];
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("Unable to get Dinner item", ex);
+            throw;
+        }
     }
 
     public async Task<DinnerItem> GetItem(Guid id)
