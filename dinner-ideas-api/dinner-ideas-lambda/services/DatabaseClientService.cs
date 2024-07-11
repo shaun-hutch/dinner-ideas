@@ -83,10 +83,15 @@ public class DatabaseClientService : IDatabaseClientService
 
         Console.WriteLine(response.Items.Count);
 
+        var result = new List<T>();
         if (response.Items.Count > 0)
-            return response.Items.Select(_dynamoObjectService.FromAttributeMap<T>);
+            foreach (var item in response.Items)
+            {
+                var converted = _dynamoObjectService.FromAttributeMap<T>(item);
+                result.Add(converted);
+            }
 
-        return [];
+        return result;
     }
 
     public Task<T> UpdateItem<T>(T item) where T : BaseItem
