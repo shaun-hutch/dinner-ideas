@@ -49,5 +49,5 @@ public class DynamoObjectService : IDynamoObjectService
         => Document.FromJson(JsonConvert.SerializeObject(item, _settings)).ToAttributeMap();
 
     public string CreateIdKey<T>(Guid id) where T : BaseItem
-        => $"{nameof(T)}|{id}";
+        => $"{typeof(T).Name}|{id}";
 }

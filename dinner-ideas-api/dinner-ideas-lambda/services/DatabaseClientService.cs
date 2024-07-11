@@ -1,3 +1,4 @@
+using System.Net;
 using Amazon;
 using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.Model;
@@ -42,7 +43,7 @@ public class DatabaseClientService : IDatabaseClientService
 
     public async Task<T> GetItem<T>(Guid id) where T : BaseItem
     {
-        var typeAndId = _dynamoObjectService.CreateIdKey<DinnerItem>(id);
+        var typeAndId = _dynamoObjectService.CreateIdKey<T>(id);
         var request = new GetItemRequest
         {
             TableName = Constants.TABLE_NAME,
@@ -94,8 +95,23 @@ public class DatabaseClientService : IDatabaseClientService
         return result;
     }
 
-    public Task<T> UpdateItem<T>(T item) where T : BaseItem
+    public async Task<T> UpdateItem<T>(T item) where T : BaseItem
     {
-        throw new NotImplementedException();
+        var utcNow = DateTime.UtcNow;
+
+        var existingItem = await GetItem<T>(item.Id);
+        if (existingItem is null)
+            throw new ArgumentNullException(nameof(item));
+
+        item.CreatedDate = utcNow;
+        item.LastModifiedDate = utcNow;
+
+        var dict = _dynamoObjectService.ToAttributeMap(item);
+        var response = await _dynamoDBClient.PutItemAsync(Constants.TABLE_NAME, dict);
+
+        if (response.HttpStatusCode != HttpStatusCode.OK)
+            throw new Exception($"No id in response attributes");
+
+        return item;
     }
 }

@@ -1,3 +1,5 @@
+using Amazon.DynamoDBv2.DataModel;
+
 namespace dinner_ideas_lambda.models;
 
 public abstract class BaseItem
@@ -8,5 +10,6 @@ public abstract class BaseItem
     public required int LastModifiedBy { get; set; }
     public required DateTime CreatedDate { get; set; }
     public required DateTime LastModifiedDate { get; set; }
-    public required int Version { get; set; }
+    [DynamoDBVersion]
+    public required int? Version { get; set; }
 }

@@ -120,23 +120,9 @@ public class DinnerItemService : IDinnerItemService
     {
         try 
         {
-            var utcNow = DateTime.UtcNow;
+            var result = await _databaseClientService.UpdateItem<DinnerItem>(item);
 
-            item.CreatedDate = utcNow;
-            item.LastModifiedDate = utcNow;
-            Console.WriteLine(item.TypeAndId);
-
-            Console.WriteLine(JsonConvert.SerializeObject(item));
-
-            var dict = _dynamoObjectService.ToAttributeMap(item);
-            var response = await _dynamoDBClient.PutItemAsync(Constants.TABLE_NAME, dict);
-
-            Console.WriteLine(JsonConvert.SerializeObject(response));
-            
-            if (response.HttpStatusCode != HttpStatusCode.OK)
-                throw new Exception($"No id in response attributes");
-
-            return item;
+            return result;
         }
         catch (Exception ex)
         {
