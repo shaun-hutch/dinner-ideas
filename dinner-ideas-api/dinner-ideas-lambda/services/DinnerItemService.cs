@@ -70,19 +70,15 @@ public class DinnerItemService : IDinnerItemService
 
     public async Task<bool> DeleteItem(Guid id)
     {
-        var item = await GetItem(id);
-
-        if (item == null) 
-            return false;
-
-        var response = await _dynamoDBClient.DeleteItemAsync(Constants.TABLE_NAME, new ()
+        try 
         {
-            { "typeAndId", new () { S = item.TypeAndId }}
-        });
-
-        Console.WriteLine(response);
-
-        return true;
+            return await _databaseClientService.DeleteItem<DinnerItem>(id);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("Unable to delete dinner item", ex);
+            throw;
+        }
     }
 
     public async Task<IEnumerable<DinnerItem>> GetItems(int ownerId = 1)
@@ -90,7 +86,6 @@ public class DinnerItemService : IDinnerItemService
         try 
         {
             var items = await _databaseClientService.GetItems<DinnerItem>(ownerId) as List<DinnerItem>;
-            Console.WriteLine($"item count: {items?.Count ?? 0}");
 
             return items ?? [];
         }

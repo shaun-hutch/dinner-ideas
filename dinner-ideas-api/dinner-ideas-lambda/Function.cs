@@ -36,6 +36,7 @@ public class Function
         context.Logger.LogInformation(apiGatewayEvent.Body);
         
         var bodyResponse = "";
+        var statusCode = (int)HttpStatusCode.OK;
         try 
         {
             switch (apiGatewayEvent.HttpMethod)
@@ -78,24 +79,25 @@ public class Function
                         context.Logger.LogInformation($"contains id for deletion: {deleteId}");
                         if (Guid.TryParse(deleteId, out var parsed))
                         {
-                            var itemResponse = await dinnerItemService.DeleteItem(parsed);
-                            bodyResponse = JsonConvert.SerializeObject(itemResponse);
+                            var deleted = await dinnerItemService.DeleteItem(parsed);
+                            bodyResponse = JsonConvert.SerializeObject(deleted);
                         }
                         else
                             context.Logger.LogWarning($"{deleteId} not a valid guid");
                     }
-
                     break;
             }
         }
+
         catch (Exception ex)
         {
             Console.WriteLine(ex);
+            statusCode = (int)HttpStatusCode.InternalServerError;
         }
 
         return new APIGatewayProxyResponse
         {
-            StatusCode = (int)HttpStatusCode.OK,
+            StatusCode = statusCode,
             Body = bodyResponse
         };
     }

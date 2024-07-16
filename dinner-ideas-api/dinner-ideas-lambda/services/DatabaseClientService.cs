@@ -12,7 +12,7 @@ public interface IDatabaseClientService
     Task<IEnumerable<T>> GetItems<T>(int ownerId) where T : BaseItem;
     Task<T> CreateItem<T>(T item) where T : BaseItem;
     Task<T> UpdateItem<T>(T item) where T : BaseItem;
-    Task<bool> DeleteItem(Guid id);
+    Task<bool> DeleteItem<T>(Guid id) where T : BaseItem;
 }
 
 public class DatabaseClientService : IDatabaseClientService
@@ -36,9 +36,23 @@ public class DatabaseClientService : IDatabaseClientService
         throw new NotImplementedException();
     }
 
-    public Task<bool> DeleteItem(Guid id)
+    public async Task<bool> DeleteItem<T>(Guid id) where T : BaseItem
     {
-        throw new NotImplementedException();
+        var existingItem = await GetItem<T>(id);
+        if (existingItem is null)
+            return false;
+
+        var response = await _dynamoDBClient.DeleteItemAsync(Constants.TABLE_NAME, new ()
+        {
+            { "typeAndId", new () { S = existingItem.TypeAndId }}
+        });
+
+        if (response.HttpStatusCode is HttpStatusCode.OK or HttpStatusCode.NotFound)
+        {
+            return true;
+        }
+        
+        throw new Exception($"Unable to delete {typeof(T)}, Status code: {response.HttpStatusCode}");
     }
 
     public async Task<T> GetItem<T>(Guid id) where T : BaseItem
@@ -61,7 +75,10 @@ public class DatabaseClientService : IDatabaseClientService
         if (response.Item.Count != 0)
             return _dynamoObjectService.FromAttributeMap<T>(response.Item);
         else 
-            throw new Exception($"No item found for {typeAndId}");
+        {
+            Console.WriteLine($"No item found for {typeAndId}");
+            return null;
+        }
     }
 
     public async Task<IEnumerable<T>> GetItems<T>(int ownerId) where T : BaseItem
