@@ -31,9 +31,23 @@ public class DatabaseClientService : IDatabaseClientService
         _dynamoObjectService = dynamoObjectService;
     }
 
-    public Task<T> CreateItem<T>(T item) where T : BaseItem
+    public async Task<T> CreateItem<T>(T item) where T : BaseItem
     {
-        throw new NotImplementedException();
+        item.Id = Guid.NewGuid();
+
+        var utcNow = DateTime.UtcNow;
+
+        item.LastModifiedBy = item.CreatedBy;
+        item.CreatedDate = utcNow;
+        item.LastModifiedDate = utcNow;
+
+        var dict = _dynamoObjectService.ToAttributeMap(item);
+        var response = await _dynamoDBClient.PutItemAsync(Constants.TABLE_NAME, dict);
+
+        if (response.HttpStatusCode != HttpStatusCode.OK)
+            throw new Exception($"Error creating {typeof(T)}, Status code: {response.HttpStatusCode}");
+
+        return item;
     }
 
     public async Task<bool> DeleteItem<T>(Guid id) where T : BaseItem

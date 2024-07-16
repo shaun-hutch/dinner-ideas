@@ -40,26 +40,7 @@ public class DinnerItemService : IDinnerItemService
     {
         try 
         {
-            item.Id = Guid.NewGuid();
-
-            var utcNow = DateTime.UtcNow;
-
-            item.LastModifiedBy = item.CreatedBy;
-            item.CreatedDate = utcNow;
-            item.LastModifiedDate = utcNow;
-            Console.WriteLine(item.TypeAndId);
-
-            Console.WriteLine(JsonConvert.SerializeObject(item));
-
-            var dict = _dynamoObjectService.ToAttributeMap(item);
-            var response = await _dynamoDBClient.PutItemAsync(Constants.TABLE_NAME, dict);
-
-            Console.WriteLine(JsonConvert.SerializeObject(response));
-            
-            if (response.HttpStatusCode != HttpStatusCode.OK)
-                throw new Exception($"No id in response attributes");
-
-            return item;
+            return await _databaseClientService.CreateItem(item);
         }
         catch (Exception ex)
         {
@@ -85,9 +66,9 @@ public class DinnerItemService : IDinnerItemService
     {
         try 
         {
-            var items = await _databaseClientService.GetItems<DinnerItem>(ownerId) as List<DinnerItem>;
+            var resultList = await _databaseClientService.GetItems<DinnerItem>(ownerId) as List<DinnerItem>;
 
-            return items ?? [];
+            return resultList ?? [];
         }
         catch (Exception ex)
         {
@@ -100,9 +81,9 @@ public class DinnerItemService : IDinnerItemService
     {
         try 
         {
-            var item = await _databaseClientService.GetItem<DinnerItem>(id);
+            var result = await _databaseClientService.GetItem<DinnerItem>(id);
             
-            return item;
+            return result;
         }
         catch (Exception ex)
         {
@@ -115,7 +96,7 @@ public class DinnerItemService : IDinnerItemService
     {
         try 
         {
-            var result = await _databaseClientService.UpdateItem<DinnerItem>(item);
+            var result = await _databaseClientService.UpdateItem(item);
 
             return result;
         }
