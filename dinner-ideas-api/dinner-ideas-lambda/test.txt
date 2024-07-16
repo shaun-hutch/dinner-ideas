@@ -1,3 +1,5 @@
+Note: these GUIDs would need to be changed based on your own objects being created.
+
 curl -X POST https://ridvxgcohd.execute-api.us-west-1.amazonaws.com/dinner-ideas/dinner-ideas-db -d @post.json \
 --header "Content-Type: application/json"  
 

@@ -5,6 +5,8 @@ A small application to help with dinner ideas, and meal prep each week.
 
 ### Prerequisites
 - [AWS CLI V2](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html)
+- [Node.js current LTS](https://nodejs.org/en)
+- [.NET 8 SDK](https://dotnet.microsoft.com/en-us/download/dotnet/8.0)
 
 Install AWS CLI, then setup your credentials accordingly with 
 
@@ -13,14 +15,10 @@ Install AWS CLI, then setup your credentials accordingly with
 **Note:** you will need to setup a user with appropriate permissions in IAM and generate an access key pair:
 [IAM](https://us-east-1.console.aws.amazon.com/iamv2/home?region=us-west-1#/users)
 
-Navigate to `./app/dinner-ideas` to configure and run the frontend application.
+Navigate to `./dinner-ideas` to configure and run the frontend application.
 
 ## Frontend
-React application
-
-- [Node.js](https://nodejs.org)
-
-Install node JS, latest, then navigate to `./app/dinner-ideas`
+A React application hosted on S3 as a single page application, accessible through AWS Cloudfront. 
 
 Install the frontend dependencies:
 
@@ -32,7 +30,17 @@ Run the frontend:
 
 ## Backend
 
-Coming Soon™
+An AWS Lambda deployed, accessible with an API Gateway REST API. Database is DynamoDB.
+
+Initial dev steps:
+- `dotnet restore`
+- `dotnet build`
+
+To run locally, the `dinner-ideas-lambda-tester.csproj` project can be used to manually invoke the function code (note you still need AWS CLI and credentials setup for the database calls).
+
+Navigate to `./dinner-ideas-api` to build, zip and deploy a Lambda to AWS (these are used in the Github action build and deploy).
+- Build and zip: `./zip.sh`
+- Deploy: First deployment: `./create-lambda.sh`, update: `./update-lambda.sh` 
 
 # CI/CD
 
