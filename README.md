@@ -42,6 +42,6 @@ Navigate to `./dinner-ideas-api` to build, zip and deploy a Lambda to AWS (these
 - Build and zip: `./zip.sh`
 - Deploy: First deployment: `./create-lambda.sh`, update: `./update-lambda.sh` 
 
-# CI/CD
+## CI/CD
 
 GitHub Action to build and deploy to S3, accessed through CloudFront.
