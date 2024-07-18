@@ -2,8 +2,11 @@ import './App.css';
 import { DinnerItem } from './models/DinnerItem';
 import { FoodTag } from './models/FoodTag';
 import DinnerListItem from './components/DinnerListItem/DinnerListItem';
+import { ApiEndpoint } from './models/Constants';
 
 const App = () => {
+
+    console.log(ApiEndpoint);
     // mock items
     const mockItems: DinnerItem[] = [...Array(10).keys()].map(x => {
         return {

@@ -19,6 +19,8 @@ jobs:
         cd ./dinner-ideas
         npm ci
         npm run build --if-present
+      env:
+        REACT_APP_API_ENDPOINT: ${{ secrets.API_ENDPOINT }}
 
     - run: echo syncing build files to S3
     - run: |

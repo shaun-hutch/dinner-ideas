@@ -9,3 +9,5 @@ export const FoodTagColor = {
     [FoodTag.LowCarb]: "#00BFFF",
     [FoodTag.FamilyFriendly]: "#FF0000",
 };
+
+export const ApiEndpoint = process.env.REACT_APP_API_ENDPOINT;
