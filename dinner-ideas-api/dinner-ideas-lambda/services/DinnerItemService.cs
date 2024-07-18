@@ -18,21 +18,10 @@ public interface IDinnerItemService
 
 public class DinnerItemService : IDinnerItemService
 {
-    private readonly AmazonDynamoDBConfig _clientConfig;
-    private readonly AmazonDynamoDBClient _dynamoDBClient;
-    private readonly IDynamoObjectService _dynamoObjectService;
-
     private readonly IDatabaseClientService _databaseClientService;
 
-    public DinnerItemService(IDynamoObjectService dynamoObjectService, IDatabaseClientService databaseClientService)
+    public DinnerItemService(IDatabaseClientService databaseClientService)
     {
-        _clientConfig = new AmazonDynamoDBConfig
-        {
-            RegionEndpoint = RegionEndpoint.USWest1,
-        };
-        _dynamoDBClient = new AmazonDynamoDBClient(_clientConfig);
-        _dynamoObjectService = dynamoObjectService;
-
         _databaseClientService = databaseClientService;
     }
 

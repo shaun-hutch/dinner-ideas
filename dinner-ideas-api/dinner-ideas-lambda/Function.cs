@@ -25,18 +25,10 @@ public class Function
     public async Task<APIGatewayProxyResponse> FunctionHandler(APIGatewayProxyRequest apiGatewayEvent, ILambdaContext context)
     {
         var dinnerItemService = provider.GetRequiredService<IDinnerItemService>();
-
-        var json = JsonConvert.SerializeObject(apiGatewayEvent, Formatting.Indented);
-
-        context.Logger.LogInformation(json);
-
         var routeParams = apiGatewayEvent.PathParameters;
-
-        context.Logger.LogInformation($"HTTP Method: {apiGatewayEvent.HttpMethod}");
-        context.Logger.LogInformation(apiGatewayEvent.Body);
-        
         var bodyResponse = "";
         var statusCode = (int)HttpStatusCode.OK;
+        
         try 
         {
             switch (apiGatewayEvent.HttpMethod)
