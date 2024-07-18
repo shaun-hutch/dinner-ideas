@@ -1,11 +1,11 @@
 import { Card } from "primereact/card";
 import { FoodTag } from "../../models/FoodTag";
 import './DinnerListItem.css';
-import ItemChipContainer from "../ItemChip/ItemChipContainer";
 import meta_salad from '../../../src/images/meta_salad.png'
 import React from "react";
+import ItemChipContainer from "../ItemChipContainer/ItemChipContainer";
 
-interface DinnerListItemProps {
+interface DinnerItemProps {
     isLoading: boolean;
     id: number;
     name: string;
@@ -15,7 +15,7 @@ interface DinnerListItemProps {
     onClick: (id: number) => void;
 }
 
-const DinnerListItem = (props: DinnerListItemProps) => {
+const DinnerItem = (props: DinnerItemProps) => {
 
     const {
         isLoading,
@@ -59,4 +59,4 @@ const DinnerListItem = (props: DinnerListItemProps) => {
     );
 }
 
-export default DinnerListItem;
+export default DinnerItem;
