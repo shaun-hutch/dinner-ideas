@@ -90,7 +90,14 @@ public class Function
         return new APIGatewayProxyResponse
         {
             StatusCode = statusCode,
-            Body = bodyResponse
+            Body = bodyResponse,
+            Headers = new Dictionary<string, string>
+            {
+                { "Content-Type", "application/json" },
+                { "Access-Control-Allow-Origin", "*" }, // Allow all origins
+                { "Access-Control-Allow-Methods", "GET, POST, PUT, DELETE" }, // Allow specific methods
+                { "Access-Control-Allow-Headers", "Content-Type, Authorization" } // Allow specific headers
+            }
         };
     }
 
