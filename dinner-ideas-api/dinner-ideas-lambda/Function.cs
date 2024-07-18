@@ -5,6 +5,7 @@ using Newtonsoft.Json;
 using Microsoft.Extensions.DependencyInjection;
 using dinner_ideas_lambda.services;
 using dinner_ideas_lambda.models;
+using Newtonsoft.Json.Serialization;
 
 // Assembly attribute to enable the Lambda function's JSON input to be converted into a .NET class.
 [assembly: LambdaSerializer(typeof(Amazon.Lambda.Serialization.SystemTextJson.DefaultLambdaJsonSerializer))]
@@ -106,5 +107,11 @@ public class Function
         services.AddScoped<IDinnerItemService, DinnerItemService>();
         services.AddScoped<IDynamoObjectService, DynamoObjectService>();
         services.AddScoped<IDatabaseClientService, DatabaseClientService>();
+
+        JsonConvert.DefaultSettings = () => new JsonSerializerSettings
+        {
+            ContractResolver = new CamelCasePropertyNamesContractResolver()
+        };
+        
     }
 }
