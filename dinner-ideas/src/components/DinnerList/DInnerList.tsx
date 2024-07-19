@@ -34,6 +34,4 @@ const DinnerList = () => {
     )
 }
 
-
-
 export default DinnerList;
