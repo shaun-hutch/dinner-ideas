@@ -15,7 +15,7 @@ interface DinnerItemProps {
     onClick: (id: number) => void;
 }
 
-const DinnerItem = (props: DinnerItemProps) => {
+const DinnerListItem = (props: DinnerItemProps) => {
 
     const {
         id,
@@ -55,4 +55,4 @@ const DinnerItem = (props: DinnerItemProps) => {
     );
 }
 
-export default DinnerItem;
+export default DinnerListItem;
