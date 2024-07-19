@@ -18,7 +18,6 @@ interface DinnerItemProps {
 const DinnerItem = (props: DinnerItemProps) => {
 
     const {
-        isLoading,
         id,
         name,
         tags,
@@ -42,19 +41,16 @@ const DinnerItem = (props: DinnerItemProps) => {
 
     return (
         <div className="dinner-list-item">
-            {
-                isLoading ? <>Loading</> : 
-                <Card 
-                    className="md:w25rem" 
-                    title={name} 
-                    subTitle={formattedTime} 
-                    header={photo} 
-                    footer={
-                        <ItemChipContainer tags={tags}/>
-                    }
-                    onClick={onItemClick}
-                />
-            }
+            <Card 
+                className="md:w25rem" 
+                title={name} 
+                subTitle={formattedTime} 
+                header={photo} 
+                footer={
+                    <ItemChipContainer tags={tags}/>
+                }
+                onClick={onItemClick}
+            />
         </div> 
     );
 }

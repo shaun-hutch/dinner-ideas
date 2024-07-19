@@ -1,10 +1,12 @@
 import './App.css';
-import DinnerList from './components/DinnerList/DInnerList';
+import DinnerList from './components/DinnerList/DinnerList';
 import { componentKey } from './helpers/componentHelpers';
 
 const App = () => {
     return (
-        <DinnerList key={componentKey('App')} />
+        <div className="body">
+            <DinnerList key={componentKey('App')} />
+        </div>
     );
 };
 

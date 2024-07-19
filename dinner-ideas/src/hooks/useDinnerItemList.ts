@@ -7,13 +7,18 @@ export const useDinnerItemList = () => {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        if (loading) {
-            getAll().then(response => {
-                setList(response);
-                setLoading(false);
-            });
+        const getData = async () => {
+            const data = await getAll();
+            setList(data);
+            setLoading(false);
         }
-    },[loading]);
+
+        if (loading) {
+            setTimeout(() => {
+                getData();
+            }, 5000);
+        }
+    }, [loading]);
 
     return { list, loading };
 }

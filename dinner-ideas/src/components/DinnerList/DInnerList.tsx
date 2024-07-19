@@ -1,12 +1,21 @@
 import { useDinnerItemList } from "../../hooks/useDinnerItemList";
 import DinnerListItem from "../DinnerListItem/DinnerListItem";
+import { Skeleton } from 'primereact/skeleton';
 
-const DinnerList = () => {
-
-    const { loading, list } = useDinnerItemList();
+const DinnerList = () => {  
+    const { list, loading } = useDinnerItemList();
 
     return (
-        <div className="body">
+        loading ? (
+            <div>
+                <Skeleton className="mb-2"></Skeleton>
+                <Skeleton width="10rem" className="mb-2"></Skeleton>
+                <Skeleton width="5rem" className="mb-2"></Skeleton>
+                <Skeleton height="2rem" className="mb-2"></Skeleton>
+                <Skeleton width="10rem" height="4rem"></Skeleton>
+            </div>
+        ) : (
+            <>
                 <div className="dinner-list">
                     {list.map(item => 
                         <DinnerListItem 
@@ -17,10 +26,11 @@ const DinnerList = () => {
                             totalTime={item.cookTime + item.prepTime} 
                             id={item.id} 
                             onClick={() => console.log('yee')} 
-                        />
+                            />
                     )}
                 </div>
-            </div>
+            </>
+        )
     )
 }
 
