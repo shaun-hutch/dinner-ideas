@@ -1,4 +1,4 @@
-import DinnerList from 'components/DinnerList';
+import DinnerList from 'components/DinnerList/DinnerList';
 import './App.css';
 
 const App = () => {

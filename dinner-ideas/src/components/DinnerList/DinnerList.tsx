@@ -1,6 +1,6 @@
 import { Skeleton } from "primereact/skeleton";
-import { useDinnerItemList } from "../hooks/useDinnerItemList";
-import DinnerListItem from "./DinnerListItem/DinnerListItem";
+import DinnerListItem from "components/DinnerListItem/DinnerListItem";
+import { useDinnerItemList } from "hooks/useDinnerItemList";
 
 const DinnerList = () => {  
     const { list, loading } = useDinnerItemList();
