@@ -1,6 +1,6 @@
+import ItemChip from "components/ItemChip/ItemChip";
 import { componentKey } from "../../helpers/componentHelpers";
 import { FoodTag } from "../../models/FoodTag"
-import ItemChip from "../ItemChip/ItemChip";
 import './ItemChipContainer.css';
 
 interface ItemChipContainerProps
