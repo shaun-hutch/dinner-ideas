@@ -4,8 +4,6 @@ import { useDinnerItemList } from "hooks/useDinnerItemList";
 import { DataView } from "primereact/dataview";
 import { DinnerItem } from "models/DinnerItem";
 import { Card } from "primereact/card";
-import { isTemplateMiddleOrTemplateTail } from "typescript";
-import { ReactNode } from "react";
 
 const DinnerList = () => {  
     const { list, loading } = useDinnerItemList();
