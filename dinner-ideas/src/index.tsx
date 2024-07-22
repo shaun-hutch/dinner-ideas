@@ -5,6 +5,8 @@ import 'primereact/resources/themes/bootstrap4-dark-blue/theme.css'
 import App from 'App';
 import { RouterProvider, createBrowserRouter } from 'react-router-dom';
 import { PrimeReactProvider } from 'primereact/api';
+import '../node_modules/primeflex/primeflex.css';
+
 
 const root = ReactDOM.createRoot(
     document.getElementById('root') as HTMLElement

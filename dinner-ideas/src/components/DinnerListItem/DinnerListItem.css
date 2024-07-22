@@ -1,6 +1,6 @@
 .dinner-list-item {
     margin: 1em;
-    transition: box-shadow 0.3s ease-in-out;
+    /* transition: box-shadow 0.3s ease-in-out; */
     border-radius: 2em;  
 
     
@@ -21,8 +21,8 @@
     }
 }
 
-.dinner-list-item:hover {
+/* .dinner-list-item:hover {
     box-shadow: 0 0 20px rgba(0, 0, 0);
     border-radius: 2em;  
     cursor: pointer;
-}
+} */

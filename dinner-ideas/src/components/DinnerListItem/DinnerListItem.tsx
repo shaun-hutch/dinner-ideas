@@ -15,7 +15,7 @@ interface DinnerItemProps {
     onClick: (id: number) => void;
 }
 
-const DinnerListItem = (props: DinnerItemProps) => {
+const DinnerListItem = (style: DinnerItemProps) => {
 
     const {
         id,
@@ -24,7 +24,7 @@ const DinnerListItem = (props: DinnerItemProps) => {
         totalTime,
         image,
         onClick
-    } = props;
+    } = style;
 
     const formattedTime = `${totalTime} mins`
     const processedImage = !!image ? `data:image/png;base64,${image}` : meta_salad;
@@ -40,9 +40,8 @@ const DinnerListItem = (props: DinnerItemProps) => {
     }, [id, onClick]);
 
     return (
-        <div className="dinner-list-item">
+        <div className="dinner-list-item sm:col-10 lg:col-4 xl:col-3 p-2">
             <Card 
-                className="md:w25rem" 
                 title={name} 
                 subTitle={formattedTime} 
                 header={photo} 
