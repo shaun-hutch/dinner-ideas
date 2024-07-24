@@ -1,13 +1,23 @@
 import { FoodTag } from "./FoodTag";
 
 export const FoodTagColor = {
-    [FoodTag.Quick]: "#00FF00",
-    [FoodTag.Vegeterian]: "#FFFF00",
-    [FoodTag.Vegan]: "#FF7F50",
-    [FoodTag.GlutenFree]: "#FFE4B5",
-    [FoodTag.Cheap]: "#FFFF00",
-    [FoodTag.LowCarb]: "#00BFFF",
-    [FoodTag.FamilyFriendly]: "#FF0000",
+    [FoodTag.Quick]: "#FFB347",
+    [FoodTag.Vegeterian]: "#77DD77",
+    [FoodTag.Vegan]: "#B2F4E6",
+    [FoodTag.GlutenFree]: "#C3B1E1",
+    [FoodTag.Cheap]: "#FFCCBA",
+    [FoodTag.LowCarb]: "#AEC6CF",
+    [FoodTag.FamilyFriendly]: "#FDFD96",
+};
+
+export const FoodTagLabel = {
+    [FoodTag.Quick]: "Quick",
+    [FoodTag.Vegeterian]: "Vegeterian",
+    [FoodTag.Vegan]: "Vegan",
+    [FoodTag.GlutenFree]: "Gluten Free",
+    [FoodTag.Cheap]: "Cheap",
+    [FoodTag.LowCarb]: "Low Carb",
+    [FoodTag.FamilyFriendly]: "Family Friendly",
 };
 
 export const ApiEndpoint = process.env.REACT_APP_API_ENDPOINT;

@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import 'index.css';
-import 'primereact/resources/themes/bootstrap4-dark-blue/theme.css'
+import 'primereact/resources/themes/lara-light-teal/theme.css'
 import App from 'App';
 import { RouterProvider, createBrowserRouter } from 'react-router-dom';
 import { PrimeReactProvider } from 'primereact/api';
