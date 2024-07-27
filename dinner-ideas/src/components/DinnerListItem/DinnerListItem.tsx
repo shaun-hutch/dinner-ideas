@@ -31,7 +31,7 @@ const DinnerListItem = (style: DinnerItemProps) => {
     
     const photo = (
         <div className="image">
-            <img src={processedImage} width="300" alt="placeholder"/>
+            <img src={processedImage} alt="placeholder"/>
         </div>
     );
 
