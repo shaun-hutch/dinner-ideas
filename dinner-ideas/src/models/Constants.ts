@@ -20,4 +20,4 @@ export const FoodTagLabel = {
     [FoodTag.FamilyFriendly]: "Family Friendly",
 };
 
-export const ApiEndpoint = process.env.REACT_APP_API_ENDPOINT;
+export const ApiEndpoint = import.meta.env.VITE_APP_API_ENDPOINT;

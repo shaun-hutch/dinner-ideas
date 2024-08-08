@@ -20,7 +20,7 @@ jobs:
         npm ci
         npm run build
       env:
-        REACT_APP_API_ENDPOINT: ${{ secrets.API_ENDPOINT }}
+        VITE_APP_API_ENDPOINT: ${{ secrets.API_ENDPOINT }}
 
     - run: echo syncing build files to S3
     - run: |
