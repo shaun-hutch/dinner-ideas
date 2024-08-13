@@ -2,4 +2,6 @@
     color: black;
     margin-left: 0.5em;
     margin-bottom: 0.5em; 
+    flex-shrink: 2;
+    font-size: small;
 }

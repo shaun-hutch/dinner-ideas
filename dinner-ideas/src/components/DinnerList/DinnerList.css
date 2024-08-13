@@ -1,3 +1,7 @@
 .loading-skeleton {
     margin: 2rem;
 }
+
+.grid {
+    justify-content: center;
+}

@@ -5,9 +5,16 @@ import { DataView } from "primereact/dataview";
 import { DinnerItem } from "models/DinnerItem";
 import { Card } from "primereact/card";
 import './DinnerList.css';
+import React from "react";
+import { useNavigate } from "react-router-dom";
 
 const DinnerList = () => {  
     const { list, loading } = useDinnerItemList();
+    const navigate = useNavigate();
+
+    const onItemClick = React.useCallback((id: string) => {
+        navigate(`/edit/${id}`);
+    }, [navigate]);
 
 
     const itemTemplate = (item: DinnerItem) => 
@@ -20,12 +27,10 @@ const DinnerList = () => {
                 tags={item.tags} 
                 totalTime={item.cookTime + item.prepTime} 
                 id={item.id} 
-                onClick={() => console.log('yee')} 
+                onClick={onItemClick} 
                 />
         );
     }
-
-    console.log('loading', loading);
 
     return (
         <Card>
@@ -44,7 +49,7 @@ export default DinnerList;
 
 
 const loadingSkeleton = [...Array(6).keys()].map(x => 
-    <div className="loading-skeleton">
+    <div className="loading-skeleton" key={`skeleton_${x}`}>
         <Skeleton width="15rem" height="15rem" className="mb-2"></Skeleton>
         <Skeleton width="10rem" className="mb-2"></Skeleton>
         <Skeleton width="15rem" className="mb-2"></Skeleton>

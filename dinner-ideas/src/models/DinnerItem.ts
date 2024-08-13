@@ -1,4 +1,5 @@
 import { BaseItem } from "./BaseItem";
+import { Dictionary } from "./Dictionary";
 import { FoodTag } from "./FoodTag";
 
 export interface DinnerItem extends BaseItem {
@@ -6,6 +7,6 @@ export interface DinnerItem extends BaseItem {
     description: string;
     prepTime: number;
     cookTime: number;
-    steps: string[];
+    steps: Dictionary<string>;
     tags: FoodTag[];
 }

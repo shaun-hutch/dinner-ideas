@@ -1,5 +1,6 @@
 export interface BaseItem {
-    id: number;
+    id: string;
+    typeAndId: string;
     createdBy: number;
     lastModifiedBy: number;
     createdDate: Date;

@@ -7,15 +7,15 @@ import ItemChipContainer from "../ItemChipContainer/ItemChipContainer";
 
 interface DinnerItemProps {
     isLoading: boolean;
-    id: number;
+    id: string;
     name: string;
     totalTime: number;
     tags: FoodTag[];
     image?: string; // s3 prefix location
-    onClick: (id: number) => void;
+    onClick: (id: string) => void;
 }
 
-const DinnerListItem = (style: DinnerItemProps) => {
+const DinnerListItem = (props: DinnerItemProps) => {
 
     const {
         id,
@@ -24,7 +24,7 @@ const DinnerListItem = (style: DinnerItemProps) => {
         totalTime,
         image,
         onClick
-    } = style;
+    } = props;
 
     const formattedTime = `${totalTime} mins`
     const processedImage = !!image ? `data:image/png;base64,${image}` : meta_salad;
@@ -40,7 +40,7 @@ const DinnerListItem = (style: DinnerItemProps) => {
     }, [id, onClick]);
 
     return (
-        <div className="dinner-list-item sm:col-10 lg:col-4 xl:col-3 p-2">
+        <div className="dinner-list-item xl:col-3 lg:col-3 sm:col-4 p-4">
             <Card 
                 title={name} 
                 subTitle={formattedTime} 

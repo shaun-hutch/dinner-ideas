@@ -9,9 +9,12 @@ interface ItemChipContainerProps
 }
 
 const ItemChipContainer = (props: ItemChipContainerProps) => {
+
+    const chips = props.tags.slice(0, 3);
+
     return (
         <div className="item-chips">
-                {props.tags.map(x => 
+                {chips.map(x => 
                     <ItemChip FoodTag={x} key={componentKey("Chip")} />
                 )}
         </div>
