@@ -13,6 +13,10 @@ const DinnerList = () => {
     const navigate = useNavigate();
 
     const onItemClick = React.useCallback((id: string) => {
+        navigate(`/view/${id}`);
+    }, [navigate]);
+
+    const onEditItemClick = React.useCallback((id: string) => {
         navigate(`/edit/${id}`);
     }, [navigate]);
 
@@ -28,6 +32,7 @@ const DinnerList = () => {
                 totalTime={item.cookTime + item.prepTime} 
                 id={item.id} 
                 onClick={onItemClick} 
+                onEditButtonClick={onEditItemClick}
                 />
         );
     }

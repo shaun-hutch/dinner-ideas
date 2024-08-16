@@ -44,6 +44,10 @@ const router = createBrowserRouter([
             {
                 path: "/edit/:dinnerItemId",
                 element: <DinnerItemEditor />
+            },
+            {
+                path: "/view/:dinnerItemId",
+                element: <DinnerItemEditor readOnly={true} />
             }
         ]
     }
