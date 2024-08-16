@@ -9,10 +9,7 @@ export const getAll = async (): Promise<DinnerItem[]> => {
         if (!response.ok) {
             throw new Error(`Error: ${response.status}, ${response}`);
         }
-
         const data: DinnerItem[] = await response.json();
-
-        console.log(data);
 
         return data;
     }

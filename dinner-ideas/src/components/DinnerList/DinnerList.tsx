@@ -1,15 +1,17 @@
 import { Skeleton } from "primereact/skeleton";
 import DinnerListItem from "components/DinnerListItem/DinnerListItem";
-import { useDinnerItemList } from "hooks/useDinnerItemList";
 import { DataView } from "primereact/dataview";
 import { DinnerItem } from "models/DinnerItem";
 import { Card } from "primereact/card";
 import './DinnerList.css';
-import React from "react";
+import React, { useContext } from "react";
 import { useNavigate } from "react-router-dom";
+import { DinnerItemContext } from "hooks/useDinnerItemListContext";
 
 const DinnerList = () => {  
-    const { list, loading } = useDinnerItemList();
+
+    const { dinnerItemList, loading } = useContext(DinnerItemContext);
+
     const navigate = useNavigate();
 
     const onItemClick = React.useCallback((id: string) => {
@@ -44,7 +46,7 @@ const DinnerList = () => {
                     {loadingSkeleton}
                 </div>
             ) : (
-                    <DataView value={list} layout={"grid"} itemTemplate={itemTemplate}/>
+                    <DataView value={dinnerItemList} layout={"grid"} itemTemplate={itemTemplate}/>
             )}
         </Card>
     )
