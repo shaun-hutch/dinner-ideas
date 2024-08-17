@@ -5,8 +5,8 @@ import React, { Dispatch, useEffect, useState } from "react";
 interface DinnerContext
 {
     dinnerItemList: DinnerItem[];
-    getDinnerItem: (id: string) => void;
-    setDinnerItemList: Dispatch<React.SetStateAction<DinnerItem[]>>;
+    getDinnerItem?: (id: string) => DinnerItem | undefined;
+    setDinnerItemList?: Dispatch<React.SetStateAction<DinnerItem[]>>;
     loading: boolean;
 }
 
@@ -37,4 +37,4 @@ export const useDiinnerItemListContext = () => {
     }
 };
 
-export const DinnerItemContext = React.createContext<DinnerContext>({ dinnerItemList: [], getDinnerItem: () => {}, setDinnerItemList: () => {}, loading: false });
+export const DinnerItemContext = React.createContext<DinnerContext>({ dinnerItemList: [], loading: false });

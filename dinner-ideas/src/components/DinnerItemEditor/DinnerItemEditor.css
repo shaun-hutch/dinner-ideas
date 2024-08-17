@@ -1,0 +1,9 @@
+.dinner-item-form-editor {
+    display: flex;
+    flex-direction: column;
+}
+
+.dinner-item-text-input {
+    margin-top: 1em;
+
+}
