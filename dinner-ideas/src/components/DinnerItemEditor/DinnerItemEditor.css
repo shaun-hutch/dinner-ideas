@@ -1,9 +1,19 @@
 .dinner-item-form-editor {
     display: flex;
     flex-direction: column;
+    margin: auto 3em;
 }
 
 .dinner-item-text-input {
-    margin-top: 1em;
+    width: 100%;
+}
 
+.dinner-item-form-field {
+    margin-top: 1.5em;
+}
+
+.dinner-item-form-buttons {
+    display: flex;
+    flex-direction: row-reverse;
+    padding: 1em;
 }
