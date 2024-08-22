@@ -1,7 +1,7 @@
 import { useNavigate, useParams } from 'react-router-dom';
 import './DinnerItemEditor.css';
 import { DinnerItemContext } from 'hooks/useDinnerItemListContext';
-import { useCallback, useContext, useEffect, useState } from 'react';
+import { useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { InputText } from 'primereact/inputtext';
 import './DinnerItemEditor.css';
 import { InputTextarea } from 'primereact/inputtextarea';
@@ -9,6 +9,11 @@ import { FloatLabel } from "primereact/floatlabel";
 import { Button } from 'primereact/button';
 import { update } from 'api/Api';
 import { DinnerItem } from 'models/DinnerItem';
+import { Dictionary } from 'models/Dictionary';
+import { FoodTag } from 'models/FoodTag';
+import { InputNumber } from 'primereact/inputnumber';
+import { MultiSelect } from 'primereact/multiselect';
+import { foodTagListItems } from 'helpers/componentHelpers';
 
 interface DinnerItemEditorProps {
     readOnly?: boolean;
@@ -24,12 +29,16 @@ const DinnerItemEditor = (props: DinnerItemEditorProps) => {
     const [loaded, setLoaded] = useState<boolean>(false);
     const [isSaving, setIsSaving] = useState<boolean>(false);
     const [dinnerItem, setDinnerItem] = useState<DinnerItem>();
-
+    
     const [name, setName] = useState<string>('');
     const [description, setDescription] = useState<string>('');
+    const [prepTime, setPrepTime] = useState<number>();
+    const [cookTime, setCookTime] = useState<number>();
+    const [steps, setSteps] = useState<Dictionary<string>>();
+    const [tags, setTags] = useState<FoodTag[]>();
 
     const { dinnerItemId } = useParams();
-    const { getDinnerItem } = useContext(DinnerItemContext);
+    const { getDinnerItem, updateDinnerItem } = useContext(DinnerItemContext);
 
     useEffect(() => {
         if (dinnerItemId && getDinnerItem) {
@@ -41,6 +50,9 @@ const DinnerItemEditor = (props: DinnerItemEditorProps) => {
                 // set all the other items
                 setName(item.name);
                 setDescription(item.description);
+                setPrepTime(item.prepTime);
+                setCookTime(item.cookTime);
+                setTags(item.tags);
             }
         }
     }, [dinnerItemId, getDinnerItem, loaded]);
@@ -54,6 +66,14 @@ const DinnerItemEditor = (props: DinnerItemEditorProps) => {
         setDescription(content);
     },[setName]);
 
+    const onPrepTimeChange = useCallback((value: number) => {
+        setPrepTime(value);
+    }, [setPrepTime]);
+
+    const onCookTimeChange = useCallback((value: number) => {
+        setCookTime(value);
+    }, [setCookTime]);
+
     const onSave = useCallback(() => {
         const payload: DinnerItem = {
             ...dinnerItem!,
@@ -65,12 +85,32 @@ const DinnerItemEditor = (props: DinnerItemEditorProps) => {
             update(payload).then((response: DinnerItem) => {
                 setIsSaving(false);
                 console.log(response);
-                navigate('/');
+                if (updateDinnerItem) {
+                    updateDinnerItem(response);
+                    navigate('/');
+                }
             }, (error) => {
                 setIsSaving(false);
                 console.error(error);
             });
-    }, [navigate, dinnerItem, setIsSaving, name, description]);
+    }, [navigate, dinnerItem, setIsSaving, name, description, updateDinnerItem]);
+
+    const totalTime = useMemo(() => {
+        if (cookTime && prepTime) {
+            const total = cookTime + prepTime;
+            if (total < 60) {
+                return `${total} mins`;
+            } else {
+                const hours = total / 60;
+                const mins = total % 60;
+                return `${hours} hours ${mins} mins`;
+            }
+        } else {
+            return "0 mins";
+        }
+    }, [cookTime, prepTime]);
+
+    const tagListItems = foodTagListItems();
 
     return (
         <div className="dinner-item-form">
@@ -93,9 +133,33 @@ const DinnerItemEditor = (props: DinnerItemEditorProps) => {
                             <label htmlFor="description">Description</label>
                         </FloatLabel>
                     </div>
+                    <div className="dinner-item-times dinner-item-form-field">
+                        <FloatLabel>
+                            <InputNumber id="prepTime" className="dinner-item-number-input" value={prepTime} suffix=" mins" onChange={e => onPrepTimeChange(e.value!)}/>
+                            <label htmlFor="prepTime">Preparation Time</label>
+                        </FloatLabel>
+                        <FloatLabel>
+                            <InputNumber id="cookTime" className="dinner-item-number-input" value={cookTime} suffix=" mins" onChange={e => onCookTimeChange(e.value!)}/>
+                            <label htmlFor="cookTime">Cooking Time</label>
+                        </FloatLabel>
+                    </div>
+                    <div className='dinner-item-total-times'>
+                        {totalTime && (
+                            <FloatLabel>
+                                <InputText id="totalTime" className="dinner-item-number-input total" value={totalTime} readOnly={true}/>
+                                <label htmlFor="totalTime">Total Time</label>
+                            </FloatLabel>
+                        )}
+                    </div>
+                    <div className="dinner-item-form-field">
+                        <FloatLabel>
+                            <MultiSelect className="dinner-item-input" id="tags" value={tags} options={tagListItems} display="chip"/>
+                            <label htmlFor="tags">Tags</label>
+                        </FloatLabel>
+                    </div>
 
                     <div className="dinner-item-form-buttons">
-                        <Button icon="pi pi-save" className="save-button" raised rounded onClick={onSave} label="Save" disabled={isSaving} />
+                        <Button icon={`pi ${isSaving ? "pi-spin pi-spinner" : "pi-save"}`} className="save-button" raised rounded onClick={onSave} label="Save" disabled={isSaving} />
                     </div>
                 </div>
             )}

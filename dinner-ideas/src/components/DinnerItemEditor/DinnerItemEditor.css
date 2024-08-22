@@ -2,6 +2,26 @@
     display: flex;
     flex-direction: column;
     margin: auto 3em;
+
+    .dinner-item-times {
+        display: flex;
+        flex-direction: row;
+    }
+
+    .dinner-item-total-times {
+        margin-top: 2em;
+        
+        .total {
+            border: none;
+            pointer-events: none;
+            padding: 0;
+            padding-left: 1em;
+        }
+    }
+
+    .dinner-item-number-input {
+        padding-right: 1em;
+    }
 }
 
 .dinner-item-text-input {
@@ -9,7 +29,7 @@
 }
 
 .dinner-item-form-field {
-    margin-top: 1.5em;
+    margin-top: 2em;
 }
 
 .dinner-item-form-buttons {
