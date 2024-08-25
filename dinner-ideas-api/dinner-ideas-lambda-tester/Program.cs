@@ -22,8 +22,8 @@ public class Program
             Name = "Soup",
             PrepTime = 20,
             Version = 1,
-            Steps = new Dictionary<string, string> {},
-            Tags = new [] { FoodTag.Cheap }
+            Steps = [],
+            Tags = [FoodTag.Cheap]
         };
 
 
