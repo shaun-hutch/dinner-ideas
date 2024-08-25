@@ -1,6 +1,7 @@
+import { Dictionary } from "./Dictionary";
 import { FoodTag } from "./FoodTag";
 
-export const FoodTagColor = {
+export const FoodTagColor: Dictionary<string> = {
     [FoodTag.Quick]: "#FFB347",
     [FoodTag.Vegeterian]: "#77DD77",
     [FoodTag.Vegan]: "#B2F4E6",
@@ -10,8 +11,8 @@ export const FoodTagColor = {
     [FoodTag.FamilyFriendly]: "#FDFD96",
 };
 
-export const FoodTagLabel = {
-    [FoodTag.Quick]: "Quick",
+export const FoodTagLabel: Dictionary<string> = {
+    [FoodTag.Quick]: "Quick" ,
     [FoodTag.Vegeterian]: "Vegeterian",
     [FoodTag.Vegan]: "Vegan",
     [FoodTag.GlutenFree]: "Gluten Free",

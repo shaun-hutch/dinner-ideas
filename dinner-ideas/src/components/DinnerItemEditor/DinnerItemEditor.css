@@ -9,12 +9,10 @@
     }
 
     .dinner-item-total-times {
-        margin-top: 2em;
-        
         .total {
             border: none;
             pointer-events: none;
-            padding: 0;
+            padding: 0.5em;
             padding-left: 1em;
         }
     }
@@ -30,6 +28,10 @@
 
 .dinner-item-form-field {
     margin-top: 2em;
+
+    .p-multiselect {
+        width: 40em;
+    }
 }
 
 .dinner-item-form-buttons {

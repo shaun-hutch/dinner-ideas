@@ -7,6 +7,11 @@ export interface DinnerItem extends BaseItem {
     description: string;
     prepTime: number;
     cookTime: number;
-    steps: Dictionary<string>;
+    steps: DinnerItemStep[];
     tags: FoodTag[];
+}
+
+export interface DinnerItemStep {
+    stepTitle: string;
+    stepDescription: string;
 }

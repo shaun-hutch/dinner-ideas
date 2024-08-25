@@ -8,12 +8,13 @@ import { InputTextarea } from 'primereact/inputtextarea';
 import { FloatLabel } from "primereact/floatlabel";
 import { Button } from 'primereact/button';
 import { update } from 'api/Api';
-import { DinnerItem } from 'models/DinnerItem';
+import { DinnerItem, DinnerItemStep } from 'models/DinnerItem';
 import { Dictionary } from 'models/Dictionary';
 import { FoodTag } from 'models/FoodTag';
 import { InputNumber } from 'primereact/inputnumber';
 import { MultiSelect } from 'primereact/multiselect';
-import { foodTagListItems } from 'helpers/componentHelpers';
+import { foodTagListItems, totalTime } from 'helpers/componentHelpers';
+import DinnerItemSteps from 'components/DinnerItemSteps/DinnerItemSteps';
 
 interface DinnerItemEditorProps {
     readOnly?: boolean;
@@ -32,10 +33,10 @@ const DinnerItemEditor = (props: DinnerItemEditorProps) => {
     
     const [name, setName] = useState<string>('');
     const [description, setDescription] = useState<string>('');
-    const [prepTime, setPrepTime] = useState<number>();
-    const [cookTime, setCookTime] = useState<number>();
-    const [steps, setSteps] = useState<Dictionary<string>>();
-    const [tags, setTags] = useState<FoodTag[]>();
+    const [prepTime, setPrepTime] = useState<number>(0);
+    const [cookTime, setCookTime] = useState<number>(0);
+    const [steps, setSteps] = useState<DinnerItemStep[]>([]);
+    const [tags, setTags] = useState<FoodTag[]>([]);
 
     const { dinnerItemId } = useParams();
     const { getDinnerItem, updateDinnerItem } = useContext(DinnerItemContext);
@@ -53,6 +54,7 @@ const DinnerItemEditor = (props: DinnerItemEditorProps) => {
                 setPrepTime(item.prepTime);
                 setCookTime(item.cookTime);
                 setTags(item.tags);
+                setSteps(item.steps);
             }
         }
     }, [dinnerItemId, getDinnerItem, loaded]);
@@ -74,41 +76,39 @@ const DinnerItemEditor = (props: DinnerItemEditorProps) => {
         setCookTime(value);
     }, [setCookTime]);
 
+    const onTagsChange = useCallback((value: number[]) => {
+        setTags(value);
+    }, [setTags]);
+
+    const onStepsChange = useCallback((value: DinnerItemStep[]) => {
+        setSteps(value);
+    }, [setSteps]);
+
     const onSave = useCallback(() => {
         const payload: DinnerItem = {
             ...dinnerItem!,
             name,
-            description
+            description,
+            tags,
+            steps
+
         };
         setIsSaving(true);
 
-            update(payload).then((response: DinnerItem) => {
-                setIsSaving(false);
-                console.log(response);
-                if (updateDinnerItem) {
-                    updateDinnerItem(response);
-                    navigate('/');
-                }
-            }, (error) => {
-                setIsSaving(false);
-                console.error(error);
-            });
-    }, [navigate, dinnerItem, setIsSaving, name, description, updateDinnerItem]);
-
-    const totalTime = useMemo(() => {
-        if (cookTime && prepTime) {
-            const total = cookTime + prepTime;
-            if (total < 60) {
-                return `${total} mins`;
-            } else {
-                const hours = total / 60;
-                const mins = total % 60;
-                return `${hours} hours ${mins} mins`;
+        update(payload).then((response: DinnerItem) => {
+            setIsSaving(false);
+            console.log(response);
+            if (updateDinnerItem) {
+                updateDinnerItem(response);
+                navigate('/');
             }
-        } else {
-            return "0 mins";
-        }
-    }, [cookTime, prepTime]);
+        }, (error) => {
+            setIsSaving(false);
+            console.error(error);
+        });
+    }, [navigate, dinnerItem, setIsSaving, name, description, tags, updateDinnerItem]);
+
+    const totalItemTime = useMemo(() => totalTime(cookTime, prepTime), [cookTime, prepTime]);
 
     const tagListItems = foodTagListItems();
 
@@ -142,20 +142,36 @@ const DinnerItemEditor = (props: DinnerItemEditorProps) => {
                             <InputNumber id="cookTime" className="dinner-item-number-input" value={cookTime} suffix=" mins" onChange={e => onCookTimeChange(e.value!)}/>
                             <label htmlFor="cookTime">Cooking Time</label>
                         </FloatLabel>
+                        <div className='dinner-item-total-times'>
+                            {totalItemTime && (
+                                <FloatLabel>
+                                    <InputText id="totalTime" className="dinner-item-number-input total" value={totalItemTime} readOnly={true}/>
+                                    <label htmlFor="totalTime">Total Time</label>
+                                </FloatLabel>
+                            )}
+                        </div>
                     </div>
-                    <div className='dinner-item-total-times'>
-                        {totalTime && (
-                            <FloatLabel>
-                                <InputText id="totalTime" className="dinner-item-number-input total" value={totalTime} readOnly={true}/>
-                                <label htmlFor="totalTime">Total Time</label>
-                            </FloatLabel>
-                        )}
-                    </div>
-                    <div className="dinner-item-form-field">
+                    <div className="dinner-item-form-field multi-select">
                         <FloatLabel>
-                            <MultiSelect className="dinner-item-input" id="tags" value={tags} options={tagListItems} display="chip"/>
+                            <MultiSelect 
+                                className="dinner-item-input" 
+                                id="tags" 
+                                value={tags} 
+                                options={tagListItems} 
+                                display="chip" 
+                                maxSelectedLabels={3} 
+                                placeholder="Select up to 3 Tags" 
+                                onChange={e => onTagsChange(e.value)} 
+                                selectionLimit={3}
+                                showSelectAll={false} 
+                                showClear={false}
+                                panelHeaderTemplate={() => <div style={{display: 'none'}}/>} />
                             <label htmlFor="tags">Tags</label>
                         </FloatLabel>
+                    </div>
+
+                    <div className="dinner-item-form-field">
+                        <DinnerItemSteps steps={steps} onStepsChange={onStepsChange} />
                     </div>
 
                     <div className="dinner-item-form-buttons">
