@@ -25,7 +25,7 @@ export const useDiinnerItemListContext = () => {
     useEffect(() => {
         const getData = async () => {
             const data = await getAll();
-            setDinnerItemList(data);
+            setDinnerItemList(populateStepIds(data));
             setLoading(false);
         }
 
@@ -42,5 +42,14 @@ export const useDiinnerItemListContext = () => {
         loading
     }
 };
+
+const populateStepIds = (items: DinnerItem[]): DinnerItem[] => 
+    items.map(x => {
+        x.steps.map(y => {
+        y.id = crypto.randomUUID();
+        return y;
+    });
+    return x;
+});
 
 export const DinnerItemContext = React.createContext<DinnerContext>({ dinnerItemList: [], loading: false });

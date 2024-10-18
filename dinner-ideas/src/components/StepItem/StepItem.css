@@ -1,0 +1,11 @@
+.dinner-item-step {
+    display: flex
+}
+
+.remove-button {
+    top: 1em;
+    right: 1em;
+    z-index: 69;
+    width: 2em;
+    height: 2em;
+}

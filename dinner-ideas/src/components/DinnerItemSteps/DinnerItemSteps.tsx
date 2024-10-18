@@ -1,6 +1,8 @@
-import { Dictionary } from 'models/Dictionary';
 import './DinnerItemSteps.css';
 import { DinnerItemStep } from 'models/DinnerItem';
+import StepItem from 'components/StepItem/StepItem';
+import { useCallback, useEffect, useState } from 'react';
+import { Button } from 'primereact/button';
 
 interface DinnerItemStepsProps {
     steps: DinnerItemStep[];
@@ -10,25 +12,37 @@ interface DinnerItemStepsProps {
 const DinnerItemSteps = (props: DinnerItemStepsProps) => {
     const { steps } = props;
 
+    const [itemSteps, setItemSteps] = useState<DinnerItemStep[]>([]);
 
+    const onRemove = useCallback((id: string) => {
+        setItemSteps(prevItems => [...prevItems.filter(x => x.id !== id)]);
+    }, [itemSteps]);
 
-    const step = (title: string, description: string) => {
-        return (
-            <li>
-                <p>{title}</p>
-                <p>{description}</p>
-            </li>
-        );
-    };
+    const onAdd = useCallback(() => {
+        setItemSteps(prevItems => [...prevItems, {
+            id: crypto.randomUUID(),
+            stepDescription: '',
+            stepTitle: ''
+        }])
+    }, []);
+
+    useEffect(() => {
+        setItemSteps(steps);
+    },[steps]);
 
     return (
         <div className="dinner-item-steps">
-            <ul className="dinner-item-steps-list">
-                {
-                    steps.map(s => step(s.stepTitle, s.stepDescription))
-                }
-                
-            </ul>
+            <ol className="dinner-item-steps-list">
+                    {itemSteps.map(s => 
+                        <>
+                            <StepItem title={s.stepTitle} description={s.stepDescription} id={s.id} onRemove={onRemove} key={crypto.randomUUID()}/>
+                        </>
+                    )}
+            </ol>
+
+            <div className="dinner-item-add-action">
+                <Button icon="pi pi-plus" className="remove-button" severity="success" raised rounded onClick={onAdd}/>
+            </div>
 
 
         </div>
