@@ -3,19 +3,21 @@ import { FloatLabel } from "primereact/floatlabel";
 import { InputText } from "primereact/inputtext";
 import { InputTextarea } from "primereact/inputtextarea";
 import { useCallback, useEffect, useState } from "react";
+import './StepItem.css';
 
 interface StepItemProps {
     title: string;
     description: string;
     id: string;
     onRemove: (id: string) => void;
+    onUpdate: (title: string, description: string, id: string) => void;
 }
 
 const StepItem = (props: StepItemProps) => {
-    const { title, description, id, onRemove } = props;
+    const { title, description, id, onRemove, onUpdate } = props;
 
-    const [stepTitle, setStepTitle] = useState<string>();
-    const [stepDescription, setStepDescription] = useState<string>();
+    const [stepTitle, setStepTitle] = useState<string>('');
+    const [stepDescription, setStepDescription] = useState<string>('');
     const [stepId, setStepId] = useState<string>('');
 
     useEffect(() => {
@@ -25,6 +27,11 @@ const StepItem = (props: StepItemProps) => {
             setStepId(id);
         }
     }, [title, description, id]);
+
+    useEffect(() => {
+        console.log('in effect');
+        onUpdate(stepTitle, stepDescription, stepId);
+    }, [stepTitle, stepDescription, stepId, onUpdate]);
 
     return (
         <li>

@@ -59,30 +59,9 @@ const DinnerItemEditor = (props: DinnerItemEditorProps) => {
         }
     }, [dinnerItemId, getDinnerItem, loaded]);
 
-    const onNameChange = useCallback((content: string) => {
-        console.log('name change', content);
-        setName(content);
-    },[setName]);
-
-    const onDescriptionChange = useCallback((content: string) => {
-        setDescription(content);
-    },[setName]);
-
-    const onPrepTimeChange = useCallback((value: number) => {
-        setPrepTime(value);
-    }, [setPrepTime]);
-
-    const onCookTimeChange = useCallback((value: number) => {
-        setCookTime(value);
-    }, [setCookTime]);
-
-    const onTagsChange = useCallback((value: number[]) => {
-        setTags(value);
-    }, [setTags]);
-
-    const onStepsChange = useCallback((value: DinnerItemStep[]) => {
-        setSteps(value);
-    }, [setSteps]);
+    useEffect(() => {
+        console.log('steps', steps);
+    }, [steps])
 
     const onSave = useCallback(() => {
         const payload: DinnerItem = {
@@ -106,7 +85,7 @@ const DinnerItemEditor = (props: DinnerItemEditorProps) => {
             setIsSaving(false);
             console.error(error);
         });
-    }, [navigate, dinnerItem, setIsSaving, name, description, tags, updateDinnerItem]);
+    }, [navigate, dinnerItem, setIsSaving, name, description, tags, steps, updateDinnerItem]);
 
     const totalItemTime = useMemo(() => totalTime(cookTime, prepTime), [cookTime, prepTime]);
 
@@ -123,23 +102,23 @@ const DinnerItemEditor = (props: DinnerItemEditorProps) => {
                 <div className="dinner-item-form-editor">
                     <div className="dinner-item-form-field">
                         <FloatLabel>
-                            <InputText id="name" className="dinner-item-text-input" value={name} onChange={e => onNameChange(e.target.value)} />
+                            <InputText id="name" className="dinner-item-text-input" value={name} onChange={e => setName(e.target.value)} />
                             <label htmlFor="name">Name</label>
                         </FloatLabel>
                     </div>
                     <div className="dinner-item-form-field">
                         <FloatLabel>
-                            <InputTextarea id="description" className="dinner-item-text-input" value={description} onChange={e => onDescriptionChange(e.target.value)}/>
+                            <InputTextarea id="description" className="dinner-item-text-input" value={description} onChange={e => setDescription(e.target.value)}/>
                             <label htmlFor="description">Description</label>
                         </FloatLabel>
                     </div>
                     <div className="dinner-item-times dinner-item-form-field">
                         <FloatLabel>
-                            <InputNumber id="prepTime" className="dinner-item-number-input" value={prepTime} suffix=" mins" onChange={e => onPrepTimeChange(e.value!)}/>
+                            <InputNumber id="prepTime" className="dinner-item-number-input" value={prepTime} suffix=" mins" onChange={e => setPrepTime(e.value!)}/>
                             <label htmlFor="prepTime">Preparation Time</label>
                         </FloatLabel>
                         <FloatLabel>
-                            <InputNumber id="cookTime" className="dinner-item-number-input" value={cookTime} suffix=" mins" onChange={e => onCookTimeChange(e.value!)}/>
+                            <InputNumber id="cookTime" className="dinner-item-number-input" value={cookTime} suffix=" mins" onChange={e => setCookTime(e.value!)}/>
                             <label htmlFor="cookTime">Cooking Time</label>
                         </FloatLabel>
                         <div className='dinner-item-total-times'>
@@ -161,7 +140,7 @@ const DinnerItemEditor = (props: DinnerItemEditorProps) => {
                                 display="chip" 
                                 maxSelectedLabels={3} 
                                 placeholder="Select up to 3 Tags" 
-                                onChange={e => onTagsChange(e.value)} 
+                                onChange={e => setTags(e.value)} 
                                 selectionLimit={3}
                                 showSelectAll={false} 
                                 showClear={false}
@@ -171,7 +150,7 @@ const DinnerItemEditor = (props: DinnerItemEditorProps) => {
                     </div>
 
                     <div className="dinner-item-form-field">
-                        <DinnerItemSteps steps={steps} onStepsChange={onStepsChange} />
+                        <DinnerItemSteps steps={steps} onStepsChange={setSteps} />
                     </div>
 
                     <div className="dinner-item-form-buttons">

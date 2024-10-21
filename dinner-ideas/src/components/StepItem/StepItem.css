@@ -1,11 +1,20 @@
 .dinner-item-step {
-    display: flex
+    display: flex;
+
+}
+
+.dinner-item-fields {
+    flex-grow: 2;
 }
 
 .remove-button {
-    top: 1em;
-    right: 1em;
     z-index: 69;
     width: 2em;
     height: 2em;
+}
+
+.dinner-item-delete-action {
+    display: flex;
+    align-items: center;
+    padding: 1em;
 }
