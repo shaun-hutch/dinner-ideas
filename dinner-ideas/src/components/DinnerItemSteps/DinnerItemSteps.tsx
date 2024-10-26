@@ -11,14 +11,11 @@ interface DinnerItemStepsProps {
 
 const DinnerItemSteps = (props: DinnerItemStepsProps) => {
     const { steps, onStepsChange } = props;
-
-    const [loaded, setLoaded] = useState<boolean>(false);
-    const [itemSteps, setItemSteps] = useState<DinnerItemStep[]>([]);
+    const [itemSteps, setItemSteps] = useState<DinnerItemStep[]>(steps);
 
     const onRemove = useCallback((id: string) => {
         setItemSteps(prevItems => [...prevItems.filter(x => x.id !== id)]);
-        onStepsChange(itemSteps);
-    }, [itemSteps, onStepsChange]);
+    }, []);
 
     const onAdd = useCallback(() => {
         setItemSteps(prevItems => [...prevItems, {
@@ -26,27 +23,22 @@ const DinnerItemSteps = (props: DinnerItemStepsProps) => {
             stepDescription: '',
             stepTitle: ''
         }]);
-        onStepsChange(itemSteps);
-    }, [itemSteps, onStepsChange]);
+    }, []);
 
     const onUpdate = useCallback((title: string, description: string, id: string) => {
-        const index = itemSteps.findIndex(x => x.id === id);
-        if (index > -1) {
-            itemSteps[index] = {
-                id,
-                stepDescription: description,
-                stepTitle: title
-            };
-            onStepsChange(itemSteps);
-        }
-    }, [itemSteps, onStepsChange]);
+        // todo update this to set the item in the list
+        // or recreate the list each time? surely no 
+        const newItem = {
+            id,
+            stepDescription: description,
+            stepTitle: title
+        };
 
-    useEffect(() => {
-        if (!loaded && steps) {
-            setItemSteps(steps);
-            setLoaded(true);
-        }
-    },[steps, loaded]);
+        setItemSteps(prevItems => 
+            prevItems.map(prevItem => prevItem.id === id ? newItem : prevItem)
+        );
+
+    }, []);
 
     return (
         <div className="dinner-item-steps">

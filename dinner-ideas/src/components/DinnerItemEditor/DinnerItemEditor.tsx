@@ -59,10 +59,6 @@ const DinnerItemEditor = (props: DinnerItemEditorProps) => {
         }
     }, [dinnerItemId, getDinnerItem, loaded]);
 
-    useEffect(() => {
-        console.log('steps', steps);
-    }, [steps])
-
     const onSave = useCallback(() => {
         const payload: DinnerItem = {
             ...dinnerItem!,
@@ -76,7 +72,6 @@ const DinnerItemEditor = (props: DinnerItemEditorProps) => {
 
         update(payload).then((response: DinnerItem) => {
             setIsSaving(false);
-            console.log(response);
             if (updateDinnerItem) {
                 updateDinnerItem(response);
                 navigate('/');
