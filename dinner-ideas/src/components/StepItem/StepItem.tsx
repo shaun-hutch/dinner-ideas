@@ -2,8 +2,7 @@ import { Button } from "primereact/button";
 import { FloatLabel } from "primereact/floatlabel";
 import { InputText } from "primereact/inputtext";
 import { InputTextarea } from "primereact/inputtextarea";
-import { useCallback, useEffect, useState } from "react";
-import { debounce } from 'lodash';
+import { useCallback, useState } from "react";
 import './StepItem.css';
 
 interface StepItemProps {
