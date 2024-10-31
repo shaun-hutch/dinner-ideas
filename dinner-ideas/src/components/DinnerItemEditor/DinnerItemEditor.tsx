@@ -70,6 +70,8 @@ const DinnerItemEditor = (props: DinnerItemEditorProps) => {
         };
         setIsSaving(true);
 
+        console.log('payload dinner item', payload);
+
         update(payload).then((response: DinnerItem) => {
             setIsSaving(false);
             if (updateDinnerItem) {
@@ -145,7 +147,7 @@ const DinnerItemEditor = (props: DinnerItemEditorProps) => {
                     </div>
 
                     <div className="dinner-item-form-field">
-                        <DinnerItemSteps steps={steps} onStepsChange={setSteps} />
+                        <DinnerItemSteps steps={steps} onStepsChange={setSteps} loaded={loaded} />
                     </div>
 
                     <div className="dinner-item-form-buttons">

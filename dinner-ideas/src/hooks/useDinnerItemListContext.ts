@@ -1,5 +1,5 @@
 import { getAll, update } from "api/Api";
-import { DinnerItem } from "models/DinnerItem";
+import { DinnerItem, DinnerItemStep } from "models/DinnerItem";
 import React, { Dispatch, useEffect, useState } from "react";
 
 interface DinnerContext
@@ -25,7 +25,7 @@ export const useDiinnerItemListContext = () => {
     useEffect(() => {
         const getData = async () => {
             const data = await getAll();
-            setDinnerItemList(populateStepIds(data));
+            setDinnerItemList(data);
             setLoading(false);
         }
 
@@ -42,14 +42,5 @@ export const useDiinnerItemListContext = () => {
         loading
     }
 };
-
-const populateStepIds = (items: DinnerItem[]): DinnerItem[] => 
-    items.map(x => {
-        x.steps.map(y => {
-        y.id = crypto.randomUUID();
-        return y;
-    });
-    return x;
-});
 
 export const DinnerItemContext = React.createContext<DinnerContext>({ dinnerItemList: [], loading: false });

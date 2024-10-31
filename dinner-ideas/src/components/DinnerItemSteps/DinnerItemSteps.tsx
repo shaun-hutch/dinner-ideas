@@ -3,22 +3,24 @@ import { DinnerItemStep } from 'models/DinnerItem';
 import StepItem from 'components/StepItem/StepItem';
 import { useCallback, useEffect, useState } from 'react';
 import { Button } from 'primereact/button';
+import { Skeleton } from 'primereact/skeleton';
 
 interface DinnerItemStepsProps {
     steps: DinnerItemStep[];
     onStepsChange: (value: DinnerItemStep[]) => void;
+    loaded: boolean;
 }
 
 const DinnerItemSteps = (props: DinnerItemStepsProps) => {
-    const { steps, onStepsChange } = props;
-    const [itemSteps, setItemSteps] = useState<DinnerItemStep[]>(steps);
+    const { steps: initialSteps, onStepsChange, loaded } = props;
+    const [localSteps, setLocalSteps] = useState<DinnerItemStep[]>([]);
 
     const onRemove = useCallback((id: string) => {
-        setItemSteps(prevItems => [...prevItems.filter(x => x.id !== id)]);
+        setLocalSteps(prevItems => [...prevItems.filter(x => x.id !== id)]);
     }, []);
 
     const onAdd = useCallback(() => {
-        setItemSteps(prevItems => [...prevItems, {
+        setLocalSteps(prevItems => [...prevItems, {
             id: crypto.randomUUID(),
             stepDescription: '',
             stepTitle: ''
@@ -26,29 +28,40 @@ const DinnerItemSteps = (props: DinnerItemStepsProps) => {
     }, []);
 
     const onUpdate = useCallback((title: string, description: string, id: string) => {
-        // todo update this to set the item in the list
-        // or recreate the list each time? surely no 
         const newItem = {
             id,
             stepDescription: description,
             stepTitle: title
         };
 
-        setItemSteps(prevItems => 
+        console.log(title, description, 'results');
+
+        setLocalSteps(prevItems => 
             prevItems.map(prevItem => prevItem.id === id ? newItem : prevItem)
         );
 
-    }, []);
+        console.log('local steps', localSteps);
+
+        onStepsChange(localSteps);
+    }, [onStepsChange, localSteps]);
+
+    useEffect(() => {
+        if (loaded) {
+            setLocalSteps(initialSteps);
+        } 
+
+    }, [loaded]);
 
     return (
         <div className="dinner-item-steps">
             <h4>Steps</h4>
             <ol className="dinner-item-steps-list">
-                    {itemSteps.map(s => 
+                    {!loaded ? loadingSkeleton :
+                    (localSteps.map(s => 
                         <>
                             <StepItem title={s.stepTitle} description={s.stepDescription} id={s.id} onRemove={onRemove} onUpdate={onUpdate} key={crypto.randomUUID()}/>
                         </>
-                    )}
+                    ))}
             </ol>
 
             <div className="dinner-item-add-action">
@@ -60,5 +73,14 @@ const DinnerItemSteps = (props: DinnerItemStepsProps) => {
     )
 
 };
+
+const loadingSkeleton = [...Array(3).keys()].map(x => 
+    <div className="loading-skeleton" key={`skeleton_${x}`}>
+        <Skeleton width="30rem" className="mb-1"></Skeleton>
+        <Skeleton width="50rem" className="mb-2"></Skeleton>
+        <Skeleton width="50rem" className="mb-2"></Skeleton>
+        <Skeleton width="50rem" className="mb-2"></Skeleton>
+    </div>
+);
 
 export default DinnerItemSteps;
