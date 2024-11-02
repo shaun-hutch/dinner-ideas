@@ -59,6 +59,10 @@ const DinnerItemEditor = (props: DinnerItemEditorProps) => {
         }
     }, [dinnerItemId, getDinnerItem, loaded]);
 
+    useEffect(() => {
+        steps.map((x, i) => console.log(i, x.stepDescription, x.stepTitle));
+    },[steps]);
+
     const onSave = useCallback(() => {
         const payload: DinnerItem = {
             ...dinnerItem!,

@@ -20,8 +20,6 @@ const StepItem = (props: StepItemProps) => {
     const [stepDescription, setStepDescription] = useState<string>(description);
     const [stepId] = useState<string>(id);
 
-    console.log('step id', id);
-
     const handleBlur = useCallback((titleValue: string, descriptionValue: string) => {
 
         console.log(titleValue, descriptionValue);

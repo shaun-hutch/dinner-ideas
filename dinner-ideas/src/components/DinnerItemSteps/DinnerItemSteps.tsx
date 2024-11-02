@@ -16,16 +16,27 @@ const DinnerItemSteps = (props: DinnerItemStepsProps) => {
     const [localSteps, setLocalSteps] = useState<DinnerItemStep[]>([]);
 
     const onRemove = useCallback((id: string) => {
-        setLocalSteps(prevItems => [...prevItems.filter(x => x.id !== id)]);
-    }, []);
+        const filtered = localSteps.filter(x => x.id !== id);
+
+        setLocalSteps(filtered);
+        onStepsChange(filtered);
+
+    }, [localSteps, onStepsChange]);
 
     const onAdd = useCallback(() => {
-        setLocalSteps(prevItems => [...prevItems, {
-            id: crypto.randomUUID(),
-            stepDescription: '',
-            stepTitle: ''
-        }]);
-    }, []);
+        const newSteps = [
+            ...localSteps,
+            {
+                id: crypto.randomUUID(),
+                stepDescription: '',
+                stepTitle: ''
+            }
+        ];
+
+        setLocalSteps(newSteps);
+        onStepsChange(newSteps);
+
+    }, [localSteps, onStepsChange]);
 
     const onUpdate = useCallback((title: string, description: string, id: string) => {
         const newItem = {
@@ -34,14 +45,12 @@ const DinnerItemSteps = (props: DinnerItemStepsProps) => {
             stepTitle: title
         };
 
-        console.log(title, description, 'results');
+        const indexToUpdate = localSteps.findIndex(x => x.id === id);
+        if (indexToUpdate > -1) {
+            localSteps[indexToUpdate] = newItem;
+        }
 
-        setLocalSteps(prevItems => 
-            prevItems.map(prevItem => prevItem.id === id ? newItem : prevItem)
-        );
-
-        console.log('local steps', localSteps);
-
+        setLocalSteps(localSteps);
         onStepsChange(localSteps);
     }, [onStepsChange, localSteps]);
 
@@ -58,9 +67,7 @@ const DinnerItemSteps = (props: DinnerItemStepsProps) => {
             <ol className="dinner-item-steps-list">
                     {!loaded ? loadingSkeleton :
                     (localSteps.map(s => 
-                        <>
-                            <StepItem title={s.stepTitle} description={s.stepDescription} id={s.id} onRemove={onRemove} onUpdate={onUpdate} key={crypto.randomUUID()}/>
-                        </>
+                        <StepItem title={s.stepTitle} description={s.stepDescription} id={s.id} onRemove={onRemove} onUpdate={onUpdate} key={crypto.randomUUID()}/>
                     ))}
             </ol>
 
