@@ -9,10 +9,11 @@ interface DinnerItemStepsProps {
     steps: DinnerItemStep[];
     onStepsChange: (value: DinnerItemStep[]) => void;
     loaded: boolean;
+    readOnly: boolean | undefined;
 }
 
 const DinnerItemSteps = (props: DinnerItemStepsProps) => {
-    const { steps: initialSteps, onStepsChange, loaded } = props;
+    const { steps: initialSteps, onStepsChange, loaded, readOnly } = props;
     const [localSteps, setLocalSteps] = useState<DinnerItemStep[]>([]);
 
     const onRemove = useCallback((id: string) => {
@@ -67,14 +68,15 @@ const DinnerItemSteps = (props: DinnerItemStepsProps) => {
             <ol className="dinner-item-steps-list">
                     {!loaded ? loadingSkeleton :
                     (localSteps.map(s => 
-                        <StepItem title={s.stepTitle} description={s.stepDescription} id={s.id} onRemove={onRemove} onUpdate={onUpdate} key={crypto.randomUUID()}/>
+                        <StepItem title={s.stepTitle} description={s.stepDescription} id={s.id} onRemove={onRemove} onUpdate={onUpdate} key={crypto.randomUUID()} readOnly={readOnly}/>
                     ))}
             </ol>
 
-            <div className="dinner-item-add-action">
-                <Button icon="pi pi-plus" className="remove-button" severity="success" raised rounded onClick={onAdd}/>
-            </div>
-
+            {!readOnly && (
+                <div className="dinner-item-add-action">
+                    <Button icon="pi pi-plus" className="remove-button" severity="success" raised rounded onClick={onAdd}/>
+                </div>
+            )}
 
         </div>
     )

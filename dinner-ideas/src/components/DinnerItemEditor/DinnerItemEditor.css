@@ -33,13 +33,28 @@
         width: 40em;
     }
 
-    /* .p-inputtext {
-        width: 30em;
-    } */
+    .p-multiselect[readonly] {
+        border: 0;
+
+        .p-multiselect-trigger {
+            display: none;
+        }
+    }
 }
 
 .dinner-item-form-buttons {
     display: flex;
     flex-direction: row-reverse;
     padding: 1em;
+}
+
+input[readonly],
+textarea[readonly] {
+  border: none;             /* Removes the border */
+  outline: none;            /* Prevents focus outline */
+  background-color: transparent; /* Optional: Makes background transparent */
+  color: #333;              /* Optional: Set text color */
+  cursor: default;          /* Changes cursor to indicate non-editable */
+  pointer-events: none;     /* Prevents focus and user interactions */
+  resize: none;
 }
