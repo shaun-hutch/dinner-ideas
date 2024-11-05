@@ -10,10 +10,11 @@ interface DinnerItemStepsProps {
     onStepsChange: (value: DinnerItemStep[]) => void;
     loaded: boolean;
     readOnly: boolean | undefined;
+    create: boolean | undefined;
 }
 
 const DinnerItemSteps = (props: DinnerItemStepsProps) => {
-    const { steps: initialSteps, onStepsChange, loaded, readOnly } = props;
+    const { steps: initialSteps, onStepsChange, loaded, readOnly, create } = props;
     const [localSteps, setLocalSteps] = useState<DinnerItemStep[]>([]);
 
     const onRemove = useCallback((id: string) => {
@@ -66,7 +67,7 @@ const DinnerItemSteps = (props: DinnerItemStepsProps) => {
         <div className="dinner-item-steps">
             <h4>Steps</h4>
             <ol className="dinner-item-steps-list">
-                    {!loaded ? loadingSkeleton :
+                    {!loaded && !create ? loadingSkeleton :
                     (localSteps.map(s => 
                         <StepItem title={s.stepTitle} description={s.stepDescription} id={s.id} onRemove={onRemove} onUpdate={onUpdate} key={crypto.randomUUID()} readOnly={readOnly}/>
                     ))}

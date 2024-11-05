@@ -7,9 +7,8 @@ import './DinnerItemEditor.css';
 import { InputTextarea } from 'primereact/inputtextarea';
 import { FloatLabel } from "primereact/floatlabel";
 import { Button } from 'primereact/button';
-import { update } from 'api/Api';
+import { add, update } from 'api/Api';
 import { DinnerItem, DinnerItemStep } from 'models/DinnerItem';
-import { Dictionary } from 'models/Dictionary';
 import { FoodTag } from 'models/FoodTag';
 import { InputNumber } from 'primereact/inputnumber';
 import { MultiSelect } from 'primereact/multiselect';
@@ -18,13 +17,15 @@ import DinnerItemSteps from 'components/DinnerItemSteps/DinnerItemSteps';
 
 interface DinnerItemEditorProps {
     readOnly?: boolean;
+    create?: boolean; 
 }
 
 const DinnerItemEditor = (props: DinnerItemEditorProps) => {
     const navigate = useNavigate();
 
     const {
-        readOnly
+        readOnly,
+        create
     } = props;
 
     const [loaded, setLoaded] = useState<boolean>(false);
@@ -39,7 +40,7 @@ const DinnerItemEditor = (props: DinnerItemEditorProps) => {
     const [tags, setTags] = useState<FoodTag[]>([]);
 
     const { dinnerItemId } = useParams();
-    const { getDinnerItem, updateDinnerItem } = useContext(DinnerItemContext);
+    const { getDinnerItem, updateDinnerItem, addDinnerItem } = useContext(DinnerItemContext);
 
     useEffect(() => {
         if (dinnerItemId && getDinnerItem) {
@@ -76,16 +77,31 @@ const DinnerItemEditor = (props: DinnerItemEditorProps) => {
 
         console.log('payload dinner item', payload);
 
-        update(payload).then((response: DinnerItem) => {
-            setIsSaving(false);
-            if (updateDinnerItem) {
-                updateDinnerItem(response);
-                navigate('/');
-            }
-        }, (error) => {
-            setIsSaving(false);
-            console.error(error);
-        });
+        if (create) {
+            add(payload).then((response: DinnerItem) => {
+                setIsSaving(false);
+                if (addDinnerItem) {
+                    addDinnerItem(response);
+                    navigate('/');
+                }
+            }, (error) => {
+                setIsSaving(false);
+                console.error(error);
+            });
+        } else {
+
+            update(payload).then((response: DinnerItem) => {
+                setIsSaving(false);
+                if (updateDinnerItem) {
+                    updateDinnerItem(response);
+                    navigate('/');
+                }
+            }, (error) => {
+                setIsSaving(false);
+                console.error(error);
+            });
+        }
+
     }, [navigate, dinnerItem, setIsSaving, name, description, tags, steps, updateDinnerItem]);
 
     const totalItemTime = useMemo(() => totalTime(cookTime, prepTime), [cookTime, prepTime]);
@@ -146,7 +162,7 @@ const DinnerItemEditor = (props: DinnerItemEditorProps) => {
                     </div>
 
                     <div className="dinner-item-form-field">
-                        <DinnerItemSteps steps={steps} onStepsChange={setSteps} loaded={loaded} readOnly={readOnly} />
+                        <DinnerItemSteps steps={steps} onStepsChange={setSteps} loaded={loaded} readOnly={readOnly} create={create} />
                     </div>
 
                     {!readOnly && (

@@ -30,7 +30,7 @@ const App = () => {
                 },
                 {
                     path: "/create",
-                    element: <>create page</>
+                    element: <DinnerItemEditor create={true} />
                 },
                 {
                     path: "/generate",

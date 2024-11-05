@@ -7,6 +7,7 @@ interface DinnerContext
     dinnerItemList: DinnerItem[];
     getDinnerItem?: (id: string) => DinnerItem | undefined;
     updateDinnerItem?: (item: DinnerItem) => void;
+    addDinnerItem?: (item: DinnerItem) => void;
     setDinnerItemList?: Dispatch<React.SetStateAction<DinnerItem[]>>;
     loading: boolean;
 }
@@ -21,6 +22,9 @@ export const useDiinnerItemListContext = () => {
             dinnerItemList[index] = item;
         }
     };
+    const addDinnerItem = (item: DinnerItem) => {
+        dinnerItemList.push(item);
+    }
 
     useEffect(() => {
         const getData = async () => {
@@ -39,6 +43,7 @@ export const useDiinnerItemListContext = () => {
         getDinnerItem,
         updateDinnerItem,
         setDinnerItemList,
+        addDinnerItem,
         loading
     }
 };
