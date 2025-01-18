@@ -105,6 +105,8 @@ public class DinnerItemService : IDinnerItemService
         var random = new Random();
         var generatedItems = allItems.OrderBy(x => random.Next()).Take(count);
 
+        Console.WriteLine($"Generated {count} items");
+
         return generatedItems;
     }
 }

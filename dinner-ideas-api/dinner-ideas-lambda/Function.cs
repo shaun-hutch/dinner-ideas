@@ -57,7 +57,7 @@ public class Function
                     if (path == "/generate")
                     {
                         var generateRequest = JsonConvert.DeserializeObject<DinnerGenerateRequest>(apiGatewayEvent.Body);
-                        var generatedItems = await dinnerItemService.GenerateItems(generateRequest.Count);
+                        var generatedItems = await dinnerItemService.GenerateItems(generateRequest!.Count);
                         bodyResponse = JsonConvert.SerializeObject(generatedItems);
                     }
                     else
