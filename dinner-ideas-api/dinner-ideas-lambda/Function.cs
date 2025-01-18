@@ -54,14 +54,16 @@ public class Function
                     }
                     break;
                 case "POST":
-                    if (path == "/generate")
+                    if (path.Contains("generate"))
                     {
+                        context.Logger.LogInformation($"generating random item list");
                         var generateRequest = JsonConvert.DeserializeObject<DinnerGenerateRequest>(apiGatewayEvent.Body);
                         var generatedItems = await dinnerItemService.GenerateItems(generateRequest!.Count);
                         bodyResponse = JsonConvert.SerializeObject(generatedItems);
                     }
                     else
                     {
+                        context.Logger.LogInformation($"creating item");
                         var createItem = JsonConvert.DeserializeObject<DinnerItem>(apiGatewayEvent.Body);
                         var postResponse = await dinnerItemService.CreateItem(createItem!);
                         bodyResponse = JsonConvert.SerializeObject(postResponse);
