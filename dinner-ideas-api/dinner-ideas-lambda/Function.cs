@@ -27,6 +27,7 @@ public class Function
     {
         var dinnerItemService = provider.GetRequiredService<IDinnerItemService>();
         var routeParams = apiGatewayEvent.PathParameters;
+        var path = apiGatewayEvent.Path;
         var bodyResponse = "";
         var statusCode = (int)HttpStatusCode.OK;
         
@@ -53,11 +54,18 @@ public class Function
                     }
                     break;
                 case "POST":
-                    var createItem = JsonConvert.DeserializeObject<DinnerItem>(apiGatewayEvent.Body);
-
-                    var postResponse = await dinnerItemService.CreateItem(createItem!);
-
-                    bodyResponse = JsonConvert.SerializeObject(postResponse);
+                    if (path == "/generate")
+                    {
+                        var generateRequest = JsonConvert.DeserializeObject<DinnerGenerateRequest>(apiGatewayEvent.Body);
+                        var generatedItems = await dinnerItemService.GenerateItems(generateRequest.Count);
+                        bodyResponse = JsonConvert.SerializeObject(generatedItems);
+                    }
+                    else
+                    {
+                        var createItem = JsonConvert.DeserializeObject<DinnerItem>(apiGatewayEvent.Body);
+                        var postResponse = await dinnerItemService.CreateItem(createItem!);
+                        bodyResponse = JsonConvert.SerializeObject(postResponse);
+                    }
                     break;
                 case "PUT":
                     var updateItem = JsonConvert.DeserializeObject<DinnerItem>(apiGatewayEvent.Body);

@@ -14,6 +14,8 @@ public interface IDinnerItemService
     Task<DinnerItem> CreateItem(DinnerItem item);
     Task<DinnerItem> UpdateItem(DinnerItem item);
     Task<bool> DeleteItem(Guid id);
+
+    Task<IEnumerable<DinnerItem>> GenerateItems(int count);
 }
 
 public class DinnerItemService : IDinnerItemService
@@ -94,5 +96,15 @@ public class DinnerItemService : IDinnerItemService
             Console.WriteLine($"Unable to create item, Exception: {ex}");
             throw;
         }
+    }
+
+    public async Task<IEnumerable<DinnerItem>> GenerateItems(int count)
+    {
+        var allItems = await GetItems();
+
+        var random = new Random();
+        var generatedItems = allItems.OrderBy(x => random.Next()).Take(count);
+
+        return generatedItems;
     }
 }
