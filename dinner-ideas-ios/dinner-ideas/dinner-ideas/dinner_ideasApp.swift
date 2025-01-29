@@ -9,9 +9,28 @@ import SwiftUI
 
 @main
 struct dinner_ideasApp: App {
+    
+    @StateObject private var store = DinnerItemStore()
+    
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            DinnerItemsView(dinnerItems: $store.items)
+//                Task {
+//                    do {
+//                        try await store.save(items: store.items)
+//                    } catch {
+//                        Alert(title: Text("Error"), message: Text("Error saving items."))
+//                    }
+//                }
+            
+            .task {
+                do {
+                    try await store.load()
+                } catch {
+                    print("error!")
+                }
+            }
         }
     }
 }
+    

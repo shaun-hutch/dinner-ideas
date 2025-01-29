@@ -12,22 +12,21 @@ struct DinnerItemsView: View {
     
     var body: some View {
         NavigationStack {
-            VStack {
-                Text("Welcome to Dinner Ideas!")
-                    .padding()
-                    .font(.title)
+            List($dinnerItems) { $dinnerItem in
+                Text(dinnerItem.name)
+                    .font(.headline)
+                Text(dinnerItem.description)
+                    .font(.caption)
+                Text("\(dinnerItem.prepTime) mins")
                 
             }
             .navigationTitle(Text("Dinner Ideas"))
             .navigationBarTitleDisplayMode(.large)
             
         }
-            
-        
-        
     }
 }
 
 #Preview {
-    DinnerItemsView()
+    DinnerItemsView(dinnerItems: .constant(DinnerItem.sampleItems()))
 }
