@@ -41,7 +41,7 @@ struct DinnerItem : BaseItem {
 }
 
 extension DinnerItem {
-    static func sampleItems() -> [DinnerItem] {
+    static var sampleItems : [DinnerItem] {
         return [
             DinnerItem(
                 createdBy: 1,

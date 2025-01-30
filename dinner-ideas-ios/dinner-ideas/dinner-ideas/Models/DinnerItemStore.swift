@@ -24,7 +24,7 @@ class DinnerItemStore: ObservableObject {
         let task = Task<[DinnerItem], Error> {
             let fileURL = try Self.fileURL()
             guard let data = try? Data(contentsOf: fileURL) else {
-                return DinnerItem.sampleItems()
+                return DinnerItem.sampleItems
             }
             
             let dinnerItems = try JSONDecoder().decode([DinnerItem].self, from: data)

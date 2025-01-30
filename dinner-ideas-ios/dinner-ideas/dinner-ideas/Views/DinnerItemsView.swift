@@ -13,11 +13,7 @@ struct DinnerItemsView: View {
     var body: some View {
         NavigationStack {
             List($dinnerItems) { $dinnerItem in
-                Text(dinnerItem.name)
-                    .font(.headline)
-                Text(dinnerItem.description)
-                    .font(.caption)
-                Text("\(dinnerItem.prepTime) mins")
+                DinnerItemCardView(item: dinnerItem)
                 
             }
             .navigationTitle(Text("Dinner Ideas"))
@@ -28,5 +24,5 @@ struct DinnerItemsView: View {
 }
 
 #Preview {
-    DinnerItemsView(dinnerItems: .constant(DinnerItem.sampleItems()))
+    DinnerItemsView(dinnerItems: .constant(DinnerItem.sampleItems))
 }
