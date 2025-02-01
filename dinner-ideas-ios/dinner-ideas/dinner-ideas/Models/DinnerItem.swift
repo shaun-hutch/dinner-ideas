@@ -23,8 +23,9 @@ struct DinnerItem : BaseItem {
     var steps: [DinnerItemStep]
     var tags: [FoodTag]
     var totalTime: Int { return prepTime + cookTime }
+    var image: String
     
-    init(createdBy: Int, lastModifiedBy: Int, createdDate: Date, lastModifiedDate: Date, version: Int? = nil, id: UUID, name: String, description: String, prepTime: Int, cookTime: Int, steps: [DinnerItemStep], tags: [FoodTag]) {
+    init(createdBy: Int, lastModifiedBy: Int, createdDate: Date, lastModifiedDate: Date, version: Int? = nil, id: UUID, name: String, description: String, prepTime: Int, cookTime: Int, steps: [DinnerItemStep], tags: [FoodTag], image: String) {
         self.createdBy = createdBy
         self.lastModifiedBy = lastModifiedBy
         self.createdDate = createdDate
@@ -37,6 +38,15 @@ struct DinnerItem : BaseItem {
         self.cookTime = cookTime
         self.steps = steps
         self.tags = tags
+        self.image = image
+    }
+    
+    static func formatTimeToHoursAndMinutes(time: Int) -> String {
+        if (time < 60) {
+            return "\(time) mins"
+        } else {
+            return "\(time / 60 == 1 ? "\(time / 60) hour" : "\(time / 60) hours") \(time % 60 == 0 ? "" : "\(time % 60) mins")"
+        }
     }
 }
 
@@ -57,7 +67,8 @@ extension DinnerItem {
                     DinnerItemStep(stepTitle: "Boil pasta", stepDescription: "Cook pasta in salted boiling water until al dente."),
                     DinnerItemStep(stepTitle: "Prepare sauce", stepDescription: "Sauté onions, garlic, and ground beef, then add tomatoes and simmer.")
                 ],
-                tags: [.FamilyFriendly, .Cheap]
+                tags: [.FamilyFriendly, .Cheap],
+                image: ""
             ),
             
             DinnerItem(
@@ -74,7 +85,8 @@ extension DinnerItem {
                     DinnerItemStep(stepTitle: "Grill chicken", stepDescription: "Season and grill chicken breast until cooked through."),
                     DinnerItemStep(stepTitle: "Assemble salad", stepDescription: "Chop fresh vegetables and mix with dressing.")
                 ],
-                tags: [.LowCarb, .Quick]
+                tags: [.LowCarb, .Quick],
+                image: ""
             ),
             
             DinnerItem(
@@ -91,7 +103,8 @@ extension DinnerItem {
                     DinnerItemStep(stepTitle: "Chop vegetables", stepDescription: "Cut bell peppers, carrots, and broccoli into bite-sized pieces."),
                     DinnerItemStep(stepTitle: "Stir-fry ingredients", stepDescription: "Sauté vegetables in a hot pan with soy sauce and garlic.")
                 ],
-                tags: [.Vegeterian, .Quick]
+                tags: [.Vegeterian, .Quick],
+                image: ""
             )
         ]
     }

@@ -13,12 +13,13 @@ struct DinnerItemsView: View {
     var body: some View {
         NavigationStack {
             List($dinnerItems) { $dinnerItem in
-                DinnerItemCardView(item: dinnerItem)
+                NavigationLink(destination: DetailView(item: $dinnerItem)) {
+                    DinnerItemCardView(item: dinnerItem)                    
+                }
                 
             }
             .navigationTitle(Text("Dinner Ideas"))
             .navigationBarTitleDisplayMode(.large)
-            
         }
     }
 }
