@@ -108,5 +108,9 @@ extension DinnerItem {
             )
         ]
     }
+    
+    static var emptyDinnerItem: DinnerItem {
+        DinnerItem(createdBy: 1, lastModifiedBy: 1, createdDate: Date(), lastModifiedDate: Date(), id: UUID(), name: "", description: "", prepTime: 0, cookTime: 0, steps: [], tags: [], image: "")
+    }
 }
 

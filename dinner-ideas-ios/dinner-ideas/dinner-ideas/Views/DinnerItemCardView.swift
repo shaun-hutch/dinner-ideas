@@ -12,15 +12,7 @@ struct DinnerItemCardView : View {
     
     var body: some View {
         VStack {
-            if let image = (UIImage(named: item.image)) {
-                Image(uiImage: image)
-                    .scaledToFill()
-                    .frame(width: 150, height: 150)
-            } else {
-                Image(systemName: "fork.knife.circle")
-                    .font(.system(size: 150))
-                    .scaledToFill()
-            }
+            DinnerItemImageView(image: item.image)
             HStack {
                 VStack {
                     HStack {

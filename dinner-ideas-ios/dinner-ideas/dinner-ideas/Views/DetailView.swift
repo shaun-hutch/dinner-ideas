@@ -10,8 +10,15 @@ import SwiftUI
 struct DetailView: View {
     @Binding var item: DinnerItem
     
+    @State private var editingItem = DinnerItem.emptyDinnerItem
+    @State private var isPresentingEditView = false
+    
     var body: some View {
         List {
+            VStack {
+                DinnerItemImageView(image: item.image)
+                    .frame(maxWidth: .infinity, alignment: .center)
+            }.listRowBackground(Color.clear)
             Section(header: Text("Description")) {
                 Text(item.description)
             }
@@ -51,8 +58,22 @@ struct DetailView: View {
                     }
                 }
             }
-            
-            .navigationBarTitle(item.name)
+        }
+        .navigationBarTitle(Text(item.name))
+        .navigationBarTitleDisplayMode(.large)
+        .toolbar {
+            Button(action: {
+                isPresentingEditView = true
+                editingItem = item
+                
+            }) {
+                Image(systemName: "pencil")
+            }
+        }
+        .sheet(isPresented: $isPresentingEditView) {
+            NavigationStack {
+                DetailEditView(item: $editingItem)
+            }
         }
     }
 }

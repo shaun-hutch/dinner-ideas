@@ -14,7 +14,7 @@ struct DinnerItemsView: View {
         NavigationStack {
             List($dinnerItems) { $dinnerItem in
                 NavigationLink(destination: DetailView(item: $dinnerItem)) {
-                    DinnerItemCardView(item: dinnerItem)                    
+                    DinnerItemCardView(item: dinnerItem)
                 }
                 
             }
