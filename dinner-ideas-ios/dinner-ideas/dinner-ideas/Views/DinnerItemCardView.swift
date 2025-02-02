@@ -24,8 +24,9 @@ struct DinnerItemCardView : View {
                         ForEach (item.tags, id: \.self) { tag in
                             FoodTagView(tag: tag)
                         }
-                    }.frame(maxWidth: .infinity, alignment: .leading)
-                        .padding(5)
+                    }
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(5)
                 }
                 Spacer()
                 Text("\(item.totalTime) mins")

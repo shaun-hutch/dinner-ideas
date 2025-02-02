@@ -67,7 +67,7 @@ extension DinnerItem {
                     DinnerItemStep(stepTitle: "Boil pasta", stepDescription: "Cook pasta in salted boiling water until al dente."),
                     DinnerItemStep(stepTitle: "Prepare sauce", stepDescription: "Sauté onions, garlic, and ground beef, then add tomatoes and simmer.")
                 ],
-                tags: [.FamilyFriendly, .Cheap],
+                tags: [.FamilyFriendly, .Cheap, .Vegan],
                 image: ""
             ),
             

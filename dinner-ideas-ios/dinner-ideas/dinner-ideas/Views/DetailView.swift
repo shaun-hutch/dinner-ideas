@@ -68,6 +68,7 @@ struct DetailView: View {
                 
             }) {
                 Image(systemName: "pencil")
+                    .fontWeight(.bold)
             }
         }
         .sheet(isPresented: $isPresentingEditView) {
