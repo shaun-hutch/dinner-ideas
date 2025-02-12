@@ -67,13 +67,26 @@ struct DetailView: View {
                 editingItem = item
                 
             }) {
-                Image(systemName: "pencil")
-                    .fontWeight(.bold)
+                Text("Edit")
             }
         }
         .sheet(isPresented: $isPresentingEditView) {
             NavigationStack {
                 DetailEditView(item: $editingItem)
+                    .navigationTitle(item.name)
+                    .toolbar {
+                        ToolbarItem(placement: .cancellationAction) {
+                            Button("Cancel") {
+                                isPresentingEditView = false
+                            }
+                        }
+                        ToolbarItem(placement: .confirmationAction) {
+                            Button("Done") {
+                                isPresentingEditView = false
+                                item = editingItem
+                            }
+                        }
+                    }
             }
         }
     }

@@ -21,19 +21,13 @@ struct DetailEditView: View {
     // state type for focus
     @FocusState private var isFocused: Bool
     
-    
-    
-    var prepTimeNumeric: Int { Int(prepTime) ?? 0 }
-    var cookTimeNumeric: Int { Int(cookTime) ?? 0 }
-    
-    
-    
     var body: some View {
         NavigationStack {
             Form {
                 Section(header: Text("Name")) {
                     TextField("Enter the recipe name", text: $item.name)
                         .focused($isFocused)
+                        .onSubmit { submit() }
                 }
                 Section(header: Text("Description")) {
                     TextEditor(text: $item.description)
@@ -45,6 +39,12 @@ struct DetailEditView: View {
                         TextField("Time taken for preparation", text: $prepTime)
                             .keyboardType(.numberPad)
                             .focused($isFocused)
+                            .onChange(of: prepTime) {
+                                if let intValue = Int(prepTime) {
+                                    item.prepTime = intValue
+                                }
+                            }
+                            .onSubmit { submit() }
                         Text("minutes")
                     }
                 }
@@ -53,6 +53,12 @@ struct DetailEditView: View {
                         TextField("Time taken for cooking", text: $cookTime)
                             .keyboardType(.numberPad)
                             .focused($isFocused)
+                            .onChange(of: cookTime) {
+                                if let intValue = Int(cookTime) {
+                                    item.cookTime = intValue
+                                }
+                            }
+                            .onSubmit { submit() }
                         Text("minutes")
                     }
                 }
@@ -79,37 +85,58 @@ struct DetailEditView: View {
                             Text(step.stepDescription)
                         }
                     }
+                    .onDelete(perform: deleteStep)
                 }
                 Section(header: Text("New step title & description")) {
                     TextField("Title", text: $stepTitle)
                         .focused($isFocused)
+                        .onSubmit { submit() }
                     HStack {
                         TextEditor(text: $stepDescription)
                             .frame(height: 120)
                             .focused($isFocused)
+                            .onSubmit { submit() }
                         Button(action: {
+                            print("adding item: \(stepTitle), \(stepDescription)")
                             withAnimation {
                                 let step = DinnerItemStep(stepTitle: stepTitle, stepDescription: stepDescription)
-                                item.steps.append(step)
+                                if item.steps.isEmpty {
+                                    item.steps = [step]
+                                } else {
+                                    item .steps.append(step)
+                                }
                                 stepTitle = ""
                                 stepDescription = ""
                             }
                         }) {
                             Image(systemName: "plus.circle")
                         }
-                        .disabled(stepTitle.isEmpty && stepDescription.isEmpty)
+                        .disabled(stepButtonDisabled())
+                        .allowsHitTesting(true)
                     }
                 }
-            }
-            .onTapGesture {
-                isFocused = false
             }
         }
         .onAppear {
             prepTime = String(item.prepTime)
             cookTime = String(item.cookTime)
         }
-        
+        .navigationBarTitle(Text(item.name))
+        .navigationBarTitleDisplayMode(.large)        
+    }
+    
+    private func deleteStep(at offsets: IndexSet) {
+        item.steps.remove(atOffsets: offsets)
+    }
+    
+    private func stepButtonDisabled() -> Bool {
+        return
+            stepTitle.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ||
+            stepDescription.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+    }
+    
+    private func submit() {
+        isFocused = false
     }
 }
 
