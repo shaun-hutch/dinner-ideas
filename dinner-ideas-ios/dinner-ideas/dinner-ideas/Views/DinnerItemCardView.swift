@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct DinnerItemCardView : View {
-    @State var item: DinnerItem
+    let item: DinnerItem
     
     var body: some View {
         VStack {

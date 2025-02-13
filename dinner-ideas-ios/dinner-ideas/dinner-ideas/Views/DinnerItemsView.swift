@@ -32,6 +32,13 @@ struct DinnerItemsView: View {
                     .tint(.red)
                 }
             }
+            .toolbar {
+                Button(action: {
+                    isPresentingNewDinnerItemView = true
+                }) {
+                    Image(systemName: "plus")
+                }
+            }
             .alert(isPresented: $showAlert) {
                 Alert(
                     title: Text("Delete Item"),
@@ -49,10 +56,12 @@ struct DinnerItemsView: View {
             .navigationBarTitleDisplayMode(.large)
         }
         .sheet(isPresented: $isPresentingNewDinnerItemView) {
-            Text("New Item")
+            NewDinnerItemSheet(items: $dinnerItems, isPresentingSheet: $isPresentingNewDinnerItemView)
         }
+        // this basically saves the data when the app is not active on screen
         .onChange(of: scenePhase) { _, newPhase in
             if newPhase == .inactive {
+                print("app not in foreground")
                 saveAction()
             }
         }

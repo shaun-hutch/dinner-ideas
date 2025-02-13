@@ -10,8 +10,8 @@ import SwiftUI
 struct DetailEditView: View {
     @Binding var item: DinnerItem
     
-    @State private var prepTime: String = "0"
-    @State private var cookTime: String = "0"
+    @State private var prepTime: String = ""
+    @State private var cookTime: String = ""
     
     @State private var stepTitle: String = ""
     @State private var stepDescription: String = ""
@@ -20,6 +20,11 @@ struct DetailEditView: View {
     
     // state type for focus
     @FocusState private var isFocused: Bool
+    @FocusState private var focusedField: Field?
+    
+    enum Field {
+        case stepTitle, stepDescription
+    }
     
     var body: some View {
         NavigationStack {
@@ -34,6 +39,9 @@ struct DetailEditView: View {
                         .frame(height: 120)
                         .focused($isFocused)
                 }
+                .onTapGesture {
+                    isFocused = false
+                }
                 Section(header: Text("Preparation Time")) {
                     HStack {
                         TextField("Time taken for preparation", text: $prepTime)
@@ -44,9 +52,13 @@ struct DetailEditView: View {
                                     item.prepTime = intValue
                                 }
                             }
-                            .onSubmit { submit() }
+                            .submitLabel(.next)
+                            
                         Text("minutes")
                     }
+                }
+                .onTapGesture {
+                    isFocused = false
                 }
                 Section(header: Text("Cooking Time")) {
                     HStack {
@@ -58,19 +70,27 @@ struct DetailEditView: View {
                                     item.cookTime = intValue
                                 }
                             }
-                            .onSubmit { submit() }
                         Text("minutes")
                     }
                 }
+                .onTapGesture {
+                    isFocused = false
+                }
                 Section(header: Text("Tags")) {
                     HStack {
-                        ForEach(item.tags) { tag in
-                            FoodTagView(tag: tag)
+                        if item.tags.isEmpty {
+                            Text("Tap to add tags...")
+                            Spacer()
+                        } else {
+                            ForEach(item.tags) { tag in
+                                FoodTagView(tag: tag)
+                            }
                         }
                     }
+                    .contentShape(RoundedRectangle(cornerRadius: 5))
                     .onTapGesture {
+                        print("tapping picker")
                         showPicker = true
-                        print("showing picker")
                     }
                     .sheet(isPresented: $showPicker) {
                         TagPicker(selectedTags: $item.tags)
@@ -87,15 +107,18 @@ struct DetailEditView: View {
                     }
                     .onDelete(perform: deleteStep)
                 }
+                .onTapGesture {
+                    isFocused = false
+                }
                 Section(header: Text("New step title & description")) {
                     TextField("Title", text: $stepTitle)
-                        .focused($isFocused)
-                        .onSubmit { submit() }
+                        .focused($focusedField, equals: .stepTitle)
+                        .onSubmit { focusedField = .stepDescription }
+                        
                     HStack {
                         TextEditor(text: $stepDescription)
                             .frame(height: 120)
-                            .focused($isFocused)
-                            .onSubmit { submit() }
+                            .focused($focusedField, equals: .stepDescription)
                         Button(action: {
                             print("adding item: \(stepTitle), \(stepDescription)")
                             withAnimation {
@@ -107,6 +130,7 @@ struct DetailEditView: View {
                                 }
                                 stepTitle = ""
                                 stepDescription = ""
+                                focusedField = .stepTitle
                             }
                         }) {
                             Image(systemName: "plus.circle")
@@ -139,7 +163,6 @@ struct DetailEditView: View {
         isFocused = false
     }
 }
-
 
 
 
