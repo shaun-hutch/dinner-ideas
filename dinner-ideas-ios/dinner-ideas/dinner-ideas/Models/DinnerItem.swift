@@ -23,7 +23,7 @@ struct DinnerItem : BaseItem {
     var steps: [DinnerItemStep]
     var tags: [FoodTag]
     var totalTime: Int { return prepTime + cookTime }
-    var image: String
+    var image: String?
     
     init(createdBy: Int, lastModifiedBy: Int, createdDate: Date, lastModifiedDate: Date, version: Int? = nil, id: UUID, name: String, description: String, prepTime: Int, cookTime: Int, steps: [DinnerItemStep], tags: [FoodTag], image: String) {
         self.createdBy = createdBy

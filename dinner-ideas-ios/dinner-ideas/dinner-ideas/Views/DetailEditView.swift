@@ -29,6 +29,13 @@ struct DetailEditView: View {
     var body: some View {
         NavigationStack {
             Form {
+                Section(header: Text("Image")) {
+                    VStack {
+                        DinnerItemImageView(canEdit: true, fileName: $item.image)                        
+                    }
+                    .frame(maxWidth: .infinity)
+                }
+                
                 Section(header: Text("Name")) {
                     TextField("Enter the recipe name", text: $item.name)
                         .focused($isFocused)

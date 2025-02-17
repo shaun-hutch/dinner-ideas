@@ -12,7 +12,7 @@ struct DinnerItemCardView : View {
     
     var body: some View {
         VStack {
-            DinnerItemImageView(image: item.image)
+            DinnerItemImageView(canEdit: false, fileName: .constant(item.image))
             HStack {
                 VStack {
                     HStack {
@@ -33,8 +33,6 @@ struct DinnerItemCardView : View {
                     .padding(5)
             }
         }
-        
-        
     }
 }
 
