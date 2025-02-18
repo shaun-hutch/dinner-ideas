@@ -8,18 +8,23 @@
 import SwiftUI
 import PhotosUI
 import AVFoundation
+import ImagePlayground
 
 struct DinnerItemImageView: View {
     let canEdit: Bool
     @Binding var fileName: String?
+    @Binding var imageGenerationConcept: String
     
     @State var selectedItem: PhotosPickerItem? = nil
     @State var selectedImage: UIImage? = nil
     
     @State var isShowingCamera: Bool = false
     @State var isShowingPicker: Bool = false
+    @State var isShowingImagePlayground: Bool = false
     
     @State private var isShowingPermissionAlert = false
+    
+    @Environment(\.supportsImagePlayground) var supportsImagePlayground
     
     var body: some View {
         VStack {
@@ -62,6 +67,17 @@ struct DinnerItemImageView: View {
                         Text("Choose from Library")
                     }
                 }
+                if supportsImagePlayground {
+                    Button(action: {
+                        isShowingImagePlayground = true
+                    }) {
+                        HStack {
+                            Image(systemName: "apple.image.playground")
+                            Text("Generate from Playground")
+                        }
+                    }
+                }
+
             
             } label: {
                 Text("Select")
@@ -83,9 +99,19 @@ struct DinnerItemImageView: View {
             .photosPicker(isPresented: $isShowingPicker, selection: $selectedItem, matching: .images, preferredItemEncoding: .automatic)
             .task(id: selectedItem) {
                 if let data = try? await selectedItem?.loadTransferable(type: Data.self),
-                   let uiImage = UIImage(data: data) {
-                    selectedImage = uiImage
-                    saveImageToAppStorage(image: selectedImage)
+                    let uiImage = UIImage(data: data) {
+                        selectedImage = uiImage
+                        saveImageToAppStorage(image: selectedImage)
+                }
+            }
+            
+            // image playground sheet
+            .imagePlaygroundSheet(isPresented: $isShowingImagePlayground, concept: imageGenerationConcept) { url in
+                if let data = try? Data(contentsOf: url) {
+                    if let uiImage = UIImage(data: data) {
+                        selectedImage = uiImage
+                        saveImageToAppStorage(image: selectedImage)
+                    }
                 }
             }
         }
@@ -149,5 +175,5 @@ struct DinnerItemImageView: View {
 }
 
 #Preview {
-    DinnerItemImageView(canEdit: true, fileName: .constant(""))
+    DinnerItemImageView(canEdit: true, fileName: .constant(""), imageGenerationConcept: .constant("Chicken Salad"))
 }

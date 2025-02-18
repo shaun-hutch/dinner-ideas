@@ -31,7 +31,7 @@ struct DetailEditView: View {
             Form {
                 Section(header: Text("Image")) {
                     VStack {
-                        DinnerItemImageView(canEdit: true, fileName: $item.image)                        
+                        DinnerItemImageView(canEdit: true, fileName: $item.image, imageGenerationConcept: $item.name)
                     }
                     .frame(maxWidth: .infinity)
                 }

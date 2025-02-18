@@ -16,7 +16,7 @@ struct DetailView: View {
     var body: some View {
         List {
             VStack {
-                DinnerItemImageView(canEdit: false, fileName: $item.image)
+                DinnerItemImageView(canEdit: false, fileName: $item.image, imageGenerationConcept: .constant(""))
                     .frame(maxWidth: .infinity, alignment: .center)
             }.listRowBackground(Color.clear)
             Section(header: Text("Description")) {

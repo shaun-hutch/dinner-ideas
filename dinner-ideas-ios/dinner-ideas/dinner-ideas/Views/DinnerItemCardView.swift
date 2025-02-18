@@ -12,7 +12,7 @@ struct DinnerItemCardView : View {
     
     var body: some View {
         VStack {
-            DinnerItemImageView(canEdit: false, fileName: .constant(item.image))
+            DinnerItemImageView(canEdit: false, fileName: .constant(item.image), imageGenerationConcept: .constant(""))
             HStack {
                 VStack {
                     HStack {
