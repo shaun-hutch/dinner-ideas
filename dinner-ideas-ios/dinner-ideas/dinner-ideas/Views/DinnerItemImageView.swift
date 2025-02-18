@@ -16,6 +16,8 @@ struct DinnerItemImageView: View {
     @Binding var imageGenerationConcept: String
     
     @State var selectedItem: PhotosPickerItem? = nil
+    @State var lastProcessedItem: PhotosPickerItem? = nil
+    
     @State var selectedImage: UIImage? = nil
     
     @State var isShowingCamera: Bool = false
@@ -98,7 +100,12 @@ struct DinnerItemImageView: View {
             // picker to show photos
             .photosPicker(isPresented: $isShowingPicker, selection: $selectedItem, matching: .images, preferredItemEncoding: .automatic)
             .task(id: selectedItem) {
-                if let data = try? await selectedItem?.loadTransferable(type: Data.self),
+                guard let selectedItem, selectedItem != lastProcessedItem else { return }
+                
+                // to prevent the picker from trying to save again
+                lastProcessedItem = selectedItem
+                
+                if let data = try? await selectedItem.loadTransferable(type: Data.self),
                     let uiImage = UIImage(data: data) {
                         selectedImage = uiImage
                         saveImageToAppStorage(image: selectedImage)
@@ -131,11 +138,14 @@ struct DinnerItemImageView: View {
     private func saveImageToAppStorage(image: UIImage?) {
         guard let data = image?.jpegData(compressionQuality: 0.8) else { return }
 
-        fileName = UUID().uuidString + ".jpg" // Unique file name
+        print("fileName: \(fileName ?? "")")
+        if fileName == nil || fileName!.isEmpty {
+            fileName = UUID().uuidString + ".jpg" // Unique file name
+        }
         let fileURL = getDocumentsDirectory().appendingPathComponent(fileName ?? "")
 
         do {
-            try data.write(to: fileURL)
+            try data.write(to: fileURL, options: .atomic)
             print("saving file: \(fileURL.path)")
         } catch {
             print("Error saving image: \(error)")
@@ -144,7 +154,6 @@ struct DinnerItemImageView: View {
     
     func loadImage() {
         let fileURL = getDocumentsDirectory().appendingPathComponent(fileName ?? "")
-        print("loading file: \(fileURL.path)")
 
         if let data = try? Data(contentsOf: fileURL), let image = UIImage(data: data) {
             selectedImage = image

@@ -28,4 +28,16 @@ struct FileHelper {
             return ""
         }
     }
+    
+    static func deleteImage(fileName: String?) {
+        guard let fileName else { return }
+        
+        let fileURL = getFileUrl(fileName: fileName)
+        do {
+            print("Delete image \(fileURL.path)")
+            try FileManager.default.removeItem(at: fileURL)
+        } catch {
+            print("Error deleting image: \(error)")
+        }
+    }
 }

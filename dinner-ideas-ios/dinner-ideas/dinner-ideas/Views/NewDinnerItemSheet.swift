@@ -19,6 +19,9 @@ public struct NewDinnerItemSheet: View {
                     ToolbarItem(placement: .cancellationAction) {
                         Button("Dismiss") {
                             isPresentingSheet = false
+                            if newDinnerItem.image != nil {
+                                FileHelper.deleteImage(fileName: newDinnerItem.image)
+                            }
                         }
                     }
                     ToolbarItem(placement: .confirmationAction) {

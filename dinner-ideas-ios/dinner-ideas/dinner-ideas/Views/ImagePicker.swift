@@ -41,7 +41,12 @@ struct ImagePicker : UIViewControllerRepresentable {
         func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey: Any]) {
             if let image = info[.originalImage] as? UIImage {
                 parent.selectedImage = image
-                parent.fileName = UUID().uuidString + ".jpg"
+                
+                
+                print("fileName: \(parent.fileName ?? "")")
+                if parent.fileName == nil || parent.fileName!.isEmpty {
+                    parent.fileName = UUID().uuidString + ".jpg"
+                }
                 
                 // Save to storage
                 parent.saveImageToAppStorage(image: image)
@@ -56,9 +61,11 @@ struct ImagePicker : UIViewControllerRepresentable {
         let fileURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
             .first!
             .appendingPathComponent(fileName ?? "")
+        
+        print(fileURL.path)
 
         do {
-            try data.write(to: fileURL)
+            try data.write(to: fileURL, options: .atomic)
             print("saving file from camera: \(fileURL.path)")
         } catch {
             print("Error saving image: \(error)")
