@@ -14,15 +14,17 @@ struct FileHelper {
         return self.documentsUrl.appendingPathComponent(fileName)
     }
     
-    static func saveImage(image: UIImage) -> String {
-        guard let data = image.jpegData(compressionQuality: 0.8) else { return "" }
+    static func saveImage(image: UIImage?) -> String {
+        guard let data = image?.jpegData(compressionQuality: 0.8) else { return "" }
         
         let fileName = UUID().uuidString + ".jpg"
         let fileURL = getFileUrl(fileName: fileName)
 
         do {
-            try data.write(to: fileURL)
-            return fileURL.path
+            try data.write(to: fileURL, options: .atomic)
+            print ("Saved image \(fileURL.path)")
+            print ("filename: \(fileName)")
+            return fileName
         } catch {
             print("Error saving image: \(error)")
             return ""

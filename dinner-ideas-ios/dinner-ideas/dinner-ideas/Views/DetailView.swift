@@ -78,12 +78,16 @@ struct DetailView: View {
                         ToolbarItem(placement: .cancellationAction) {
                             Button("Cancel") {
                                 isPresentingEditView = false
+                                
                             }
                         }
                         ToolbarItem(placement: .confirmationAction) {
                             Button("Done") {
+                                
                                 isPresentingEditView = false
                                 item = editingItem
+//                                FileHelper.deleteImage(fileName: item.image)
+
                             }
                         }
                     }

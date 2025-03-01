@@ -18,6 +18,8 @@ struct DetailEditView: View {
     
     @State private var showPicker: Bool = false
     
+    @State private var tempImage: String? // temp filename for image
+    
     // state type for focus
     @FocusState private var isFocused: Bool
     @FocusState private var focusedField: Field?
@@ -31,7 +33,7 @@ struct DetailEditView: View {
             Form {
                 Section(header: Text("Image")) {
                     VStack {
-                        DinnerItemImageView(canEdit: true, fileName: $item.image, imageGenerationConcept: $item.name)
+                        DinnerItemImageView(canEdit: true, fileName: $tempImage, imageGenerationConcept: $item.name)
                     }
                     .frame(maxWidth: .infinity)
                 }
@@ -151,7 +153,11 @@ struct DetailEditView: View {
         .onAppear {
             prepTime = String(item.prepTime)
             cookTime = String(item.cookTime)
+            tempImage = item.image
         }
+        .onChange(of: tempImage, {
+            item.image = tempImage
+        })
         .navigationBarTitle(Text(item.name))
         .navigationBarTitleDisplayMode(.large)        
     }

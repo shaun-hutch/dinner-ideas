@@ -108,7 +108,7 @@ struct DinnerItemImageView: View {
                 if let data = try? await selectedItem.loadTransferable(type: Data.self),
                     let uiImage = UIImage(data: data) {
                         selectedImage = uiImage
-                        saveImageToAppStorage(image: selectedImage)
+                        saveImage(image: selectedImage)
                 }
             }
             
@@ -117,7 +117,7 @@ struct DinnerItemImageView: View {
                 if let data = try? Data(contentsOf: url) {
                     if let uiImage = UIImage(data: data) {
                         selectedImage = uiImage
-                        saveImageToAppStorage(image: selectedImage)
+                        saveImage(image: selectedImage)
                     }
                 }
             }
@@ -133,24 +133,12 @@ struct DinnerItemImageView: View {
         
         isShowingCamera = true
     }
-
     
-    private func saveImageToAppStorage(image: UIImage?) {
-        guard let data = image?.jpegData(compressionQuality: 0.8) else { return }
-
-        print("fileName: \(fileName ?? "")")
-        if fileName == nil || fileName!.isEmpty {
-            fileName = UUID().uuidString + ".jpg" // Unique file name
-        }
-        let fileURL = getDocumentsDirectory().appendingPathComponent(fileName ?? "")
-
-        do {
-            try data.write(to: fileURL, options: .atomic)
-            print("saving file: \(fileURL.path)")
-        } catch {
-            print("Error saving image: \(error)")
-        }
+    private func saveImage(image: UIImage?) {
+        fileName = FileHelper.saveImage(image: image)
+        print("filename change: \(fileName ?? "")")
     }
+
     
     func loadImage() {
         let fileURL = getDocumentsDirectory().appendingPathComponent(fileName ?? "")
