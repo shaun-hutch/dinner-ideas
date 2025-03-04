@@ -10,9 +10,11 @@ import SwiftUI
 struct DinnerItemCardView : View {
     let item: DinnerItem
     
+    @State var image: UIImage?
+    
     var body: some View {
         VStack {
-            DinnerItemImageView(canEdit: false, fileName: .constant(item.image), imageGenerationConcept: .constant(""))
+            DinnerItemImageView(canEdit: false, imageGenerationConcept: .constant(""), selectedImage: $image)
             HStack {
                 VStack {
                     HStack {
@@ -31,7 +33,14 @@ struct DinnerItemCardView : View {
                 Spacer()
                 Text("\(item.totalTime) mins")
                     .padding(5)
+                
             }
+        }
+        .onAppear {
+            image = FileHelper.loadImage(fileName: item.image ?? "")
+        }
+        .onChange(of: item.image) { newImage, _ in
+            image = FileHelper.loadImage(fileName: newImage ?? "")
         }
     }
 }

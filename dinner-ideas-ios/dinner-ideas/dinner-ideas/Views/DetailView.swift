@@ -10,14 +10,18 @@ import SwiftUI
 struct DetailView: View {
     @Binding var item: DinnerItem
     
+    @State var itemImage: UIImage?
+    @State var tempImage: UIImage?
+    
     @State private var editingItem = DinnerItem.emptyDinnerItem
     @State private var isPresentingEditView = false
     
     var body: some View {
         List {
             VStack {
-                DinnerItemImageView(canEdit: false, fileName: $item.image, imageGenerationConcept: .constant(""))
+                DinnerItemImageView(canEdit: false, imageGenerationConcept: .constant(""), selectedImage: $tempImage)
                     .frame(maxWidth: .infinity, alignment: .center)
+                    .id(item.image)
             }.listRowBackground(Color.clear)
             Section(header: Text("Description")) {
                 Text(item.description)
@@ -65,29 +69,34 @@ struct DetailView: View {
             Button(action: {
                 isPresentingEditView = true
                 editingItem = item
-                
+                tempImage = itemImage
             }) {
                 Text("Edit")
             }
         }
+        .onAppear {
+            itemImage = FileHelper.loadImage(fileName: item.image ?? "")
+            tempImage = itemImage
+        }
         .sheet(isPresented: $isPresentingEditView) {
             NavigationStack {
-                DetailEditView(item: $editingItem)
+                DetailEditView(item: $editingItem, itemImage: $tempImage)
                     .navigationTitle(item.name)
                     .toolbar {
                         ToolbarItem(placement: .cancellationAction) {
                             Button("Cancel") {
                                 isPresentingEditView = false
-                                
+                                tempImage = itemImage
                             }
                         }
                         ToolbarItem(placement: .confirmationAction) {
                             Button("Done") {
-                                
                                 isPresentingEditView = false
                                 item = editingItem
-//                                FileHelper.deleteImage(fileName: item.image)
-
+                                
+                                itemImage = tempImage
+                                item.image = FileHelper.saveImage(image: tempImage)
+                                
                             }
                         }
                     }

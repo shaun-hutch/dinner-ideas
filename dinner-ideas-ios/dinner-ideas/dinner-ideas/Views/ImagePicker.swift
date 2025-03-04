@@ -13,7 +13,6 @@ struct ImagePicker : UIViewControllerRepresentable {
     var sourceType: UIImagePickerController.SourceType
     
     @Binding var selectedImage: UIImage?
-    @Binding var fileName: String?
     
     @Environment(\.presentationMode) private var presentationMode
     
@@ -41,7 +40,6 @@ struct ImagePicker : UIViewControllerRepresentable {
         func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey: Any]) {
             if let image = info[.originalImage] as? UIImage {
                 parent.selectedImage = image
-                parent.fileName = FileHelper.saveImage(image: image)
             }
             parent.presentationMode.wrappedValue.dismiss()
         }

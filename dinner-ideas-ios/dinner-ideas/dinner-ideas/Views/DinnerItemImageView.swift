@@ -12,13 +12,10 @@ import ImagePlayground
 
 struct DinnerItemImageView: View {
     let canEdit: Bool
-    @Binding var fileName: String?
     @Binding var imageGenerationConcept: String
+    @Binding var selectedImage: UIImage?
     
     @State var selectedItem: PhotosPickerItem? = nil
-    @State var lastProcessedItem: PhotosPickerItem? = nil
-    
-    @State var selectedImage: UIImage? = nil
     
     @State var isShowingCamera: Bool = false
     @State var isShowingPicker: Bool = false
@@ -42,12 +39,6 @@ struct DinnerItemImageView: View {
                     .scaledToFill()
                     .cornerRadius(20)
             }
-        }
-        .onAppear {
-            loadImage()
-        }
-        .onChange(of: fileName) {
-            loadImage()
         }
         if canEdit {
             Menu {
@@ -87,7 +78,7 @@ struct DinnerItemImageView: View {
 
             // sheet to show camera
             .sheet(isPresented: $isShowingCamera) {
-                ImagePicker(sourceType: .camera, selectedImage: $selectedImage, fileName: $fileName)
+                ImagePicker(sourceType: .camera, selectedImage: $selectedImage)
             }
             
             // alert to show if camera permission is denied
@@ -100,15 +91,9 @@ struct DinnerItemImageView: View {
             // picker to show photos
             .photosPicker(isPresented: $isShowingPicker, selection: $selectedItem, matching: .images, preferredItemEncoding: .automatic)
             .task(id: selectedItem) {
-                guard let selectedItem, selectedItem != lastProcessedItem else { return }
-                
-                // to prevent the picker from trying to save again
-                lastProcessedItem = selectedItem
-                
-                if let data = try? await selectedItem.loadTransferable(type: Data.self),
+                if let data = try? await selectedItem?.loadTransferable(type: Data.self),
                     let uiImage = UIImage(data: data) {
                         selectedImage = uiImage
-                        saveImage(image: selectedImage)
                 }
             }
             
@@ -117,7 +102,6 @@ struct DinnerItemImageView: View {
                 if let data = try? Data(contentsOf: url) {
                     if let uiImage = UIImage(data: data) {
                         selectedImage = uiImage
-                        saveImage(image: selectedImage)
                     }
                 }
             }
@@ -132,24 +116,6 @@ struct DinnerItemImageView: View {
         }
         
         isShowingCamera = true
-    }
-    
-    private func saveImage(image: UIImage?) {
-        fileName = FileHelper.saveImage(image: image)
-        print("filename change: \(fileName ?? "")")
-    }
-
-    
-    func loadImage() {
-        let fileURL = getDocumentsDirectory().appendingPathComponent(fileName ?? "")
-
-        if let data = try? Data(contentsOf: fileURL), let image = UIImage(data: data) {
-            selectedImage = image
-        }
-    }
-    
-    private func getDocumentsDirectory() -> URL {
-        FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
     }
     
     // permissions check
@@ -172,5 +138,5 @@ struct DinnerItemImageView: View {
 }
 
 #Preview {
-    DinnerItemImageView(canEdit: true, fileName: .constant(""), imageGenerationConcept: .constant("Chicken Salad"))
+    DinnerItemImageView(canEdit: true, imageGenerationConcept: .constant("Chicken Salad"), selectedImage: .constant(UIImage(systemName: "person.circle")!))
 }

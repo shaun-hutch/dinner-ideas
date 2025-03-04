@@ -9,6 +9,7 @@ import SwiftUI
 
 struct DetailEditView: View {
     @Binding var item: DinnerItem
+    @Binding var itemImage: UIImage?
     
     @State private var prepTime: String = ""
     @State private var cookTime: String = ""
@@ -17,8 +18,6 @@ struct DetailEditView: View {
     @State private var stepDescription: String = ""
     
     @State private var showPicker: Bool = false
-    
-    @State private var tempImage: String? // temp filename for image
     
     // state type for focus
     @FocusState private var isFocused: Bool
@@ -33,7 +32,7 @@ struct DetailEditView: View {
             Form {
                 Section(header: Text("Image")) {
                     VStack {
-                        DinnerItemImageView(canEdit: true, fileName: $tempImage, imageGenerationConcept: $item.name)
+                        DinnerItemImageView(canEdit: true, imageGenerationConcept: $item.name, selectedImage: $itemImage)
                     }
                     .frame(maxWidth: .infinity)
                 }
@@ -98,7 +97,6 @@ struct DetailEditView: View {
                     }
                     .contentShape(RoundedRectangle(cornerRadius: 5))
                     .onTapGesture {
-                        print("tapping picker")
                         showPicker = true
                     }
                     .sheet(isPresented: $showPicker) {
@@ -129,7 +127,6 @@ struct DetailEditView: View {
                             .frame(height: 120)
                             .focused($focusedField, equals: .stepDescription)
                         Button(action: {
-                            print("adding item: \(stepTitle), \(stepDescription)")
                             withAnimation {
                                 let step = DinnerItemStep(stepTitle: stepTitle, stepDescription: stepDescription)
                                 if item.steps.isEmpty {
@@ -153,13 +150,10 @@ struct DetailEditView: View {
         .onAppear {
             prepTime = String(item.prepTime)
             cookTime = String(item.cookTime)
-            tempImage = item.image
         }
-        .onChange(of: tempImage, {
-            item.image = tempImage
-        })
+
         .navigationBarTitle(Text(item.name))
-        .navigationBarTitleDisplayMode(.large)        
+        .navigationBarTitleDisplayMode(.large)
     }
     
     private func deleteStep(at offsets: IndexSet) {
@@ -180,5 +174,5 @@ struct DetailEditView: View {
 
 
 #Preview {
-    DetailEditView(item: .constant(DinnerItem.sampleItems[0]))
+    DetailEditView(item: .constant(DinnerItem.sampleItems[0]), itemImage: .constant(UIImage(systemName: "photo")!))
 }

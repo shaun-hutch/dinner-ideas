@@ -27,10 +27,8 @@ struct TagPicker: View {
                     .contentShape(Rectangle())
                     .onTapGesture {
                         if (selectedTags.contains(tag)) {
-                            print("Removing \(tag)")
                             selectedTags.remove(at: selectedTags.firstIndex(of: tag)!)
                         } else {
-                            print("Adding \(tag)")
                             selectedTags.append(tag)
                         }
                     }

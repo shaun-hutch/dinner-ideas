@@ -9,23 +9,22 @@ import SwiftUI
 
 public struct NewDinnerItemSheet: View {
     @State private var newDinnerItem: DinnerItem = DinnerItem.emptyDinnerItem
+    @State private var itemImage: UIImage?
     @Binding var items: [DinnerItem]
     @Binding var isPresentingSheet: Bool
     
     public var body: some View {
         NavigationStack {
-            DetailEditView(item: $newDinnerItem)
+            DetailEditView(item: $newDinnerItem, itemImage: $itemImage)
                 .toolbar {
                     ToolbarItem(placement: .cancellationAction) {
                         Button("Dismiss") {
                             isPresentingSheet = false
-                            if newDinnerItem.image != nil {
-                                FileHelper.deleteImage(fileName: newDinnerItem.image)
-                            }
                         }
                     }
                     ToolbarItem(placement: .confirmationAction) {
                         Button("Add") {
+                            newDinnerItem.image = FileHelper.saveImage(image: itemImage)
                             items.append(newDinnerItem)
                             isPresentingSheet = false
                         }
