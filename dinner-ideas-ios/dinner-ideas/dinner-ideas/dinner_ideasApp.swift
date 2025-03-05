@@ -14,13 +14,23 @@ struct dinner_ideasApp: App {
     
     var body: some Scene {
         WindowGroup {
-            DinnerItemsView(dinnerItems: $store.items) {
-                Task {
-                    do {
-                        try await store.save(items: store.items)
-                    } catch {
-                        print("error saving items")
+            TabView {
+                Tab("Dinner Items", systemImage: "fork.knife.circle") {
+                    DinnerItemsView(dinnerItems: $store.items) {
+                        Task {
+                            do {
+                                try await store.save(items: store.items)
+                            } catch {
+                                print("error saving items")
+                            }
+                        }
                     }
+                }
+                Tab("Generate", systemImage: "note.text.badge.plus") {
+                    Text("Generate view")
+                }
+                Tab("History", systemImage: "clock") {
+                    Text("History")
                 }
             }
             .task {
