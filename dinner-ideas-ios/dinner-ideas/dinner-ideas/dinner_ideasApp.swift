@@ -27,7 +27,7 @@ struct dinner_ideasApp: App {
                     }
                 }
                 Tab("Generate", systemImage: "note.text.badge.plus") {
-                    Text("Generate view")
+                    GenerateView(dinnerItems: store.items)
                 }
                 Tab("History", systemImage: "clock") {
                     Text("History")
