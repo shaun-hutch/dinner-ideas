@@ -29,124 +29,142 @@ struct DetailEditView: View {
     
     var body: some View {
         NavigationStack {
-            Form {
-                Section(header: Text("Image")) {
-                    VStack {
-                        DinnerItemImageView(canEdit: true, imageGenerationConcept: $item.name, selectedImage: $itemImage)
-                    }
-                    .frame(maxWidth: .infinity)
+            ZStack {
+                if let image = itemImage {
+                    Image(uiImage: image)
+                        .resizable()
+                        .blur(radius: 20)
+                        .opacity(0.7)
+                } else {
+                    Rectangle()
+                        .fill(Color.gray.opacity(0.3))
+                        .blur(radius: 20)
+                        .opacity(0.7)
                 }
-                
-                Section(header: Text("Name")) {
-                    TextField("Enter the recipe name", text: $item.name)
-                        .focused($isFocused)
-                        .onSubmit { submit() }
-                }
-                Section(header: Text("Description")) {
-                    TextEditor(text: $item.description)
-                        .frame(height: 120)
-                        .focused($isFocused)
-                }
-                .onTapGesture {
-                    isFocused = false
-                }
-                Section(header: Text("Preparation Time")) {
-                    HStack {
-                        TextField("Time taken for preparation", text: $prepTime)
-                            .keyboardType(.numberPad)
-                            .focused($isFocused)
-                            .onChange(of: prepTime) {
-                                if let intValue = Int(prepTime) {
-                                    item.prepTime = intValue
-                                }
-                            }
-                            .submitLabel(.next)
-                            
-                        Text("minutes")
-                    }
-                }
-                .onTapGesture {
-                    isFocused = false
-                }
-                Section(header: Text("Cooking Time")) {
-                    HStack {
-                        TextField("Time taken for cooking", text: $cookTime)
-                            .keyboardType(.numberPad)
-                            .focused($isFocused)
-                            .onChange(of: cookTime) {
-                                if let intValue = Int(cookTime) {
-                                    item.cookTime = intValue
-                                }
-                            }
-                        Text("minutes")
-                    }
-                }
-                .onTapGesture {
-                    isFocused = false
-                }
-                Section(header: Text("Tags")) {
-                    HStack {
-                        if item.tags.isEmpty {
-                            Text("Tap to add tags...")
-                            Spacer()
-                        } else {
-                            ForEach(item.tags) { tag in
-                                FoodTagView(tag: tag)
-                            }
+
+                Form {
+                    Section(header: Text("Image")) {
+                        VStack {
+                            DinnerItemImageView(canEdit: true, imageGenerationConcept: $item.name, selectedImage: $itemImage)
                         }
+                        .frame(maxWidth: .infinity)
                     }
-                    .contentShape(RoundedRectangle(cornerRadius: 5))
-                    .onTapGesture {
-                        showPicker = true
+                    
+                    Section(header: Text("Name")) {
+                        TextField("Enter the recipe name", text: $item.name)
+                            .focused($isFocused)
+                            .onSubmit { submit() }
                     }
-                    .sheet(isPresented: $showPicker) {
-                        TagPicker(selectedTags: $item.tags)
-                    }
-                }
-                
-                Section(header: Text("Steps")) {
-                    ForEach(item.steps) { step in
-                        VStack(alignment: .leading) {
-                            Text(step.stepTitle)
-                                .font(.headline)
-                            Text(step.stepDescription)
-                        }
-                    }
-                    .onDelete(perform: deleteStep)
-                }
-                .onTapGesture {
-                    isFocused = false
-                }
-                Section(header: Text("New step title & description")) {
-                    TextField("Title", text: $stepTitle)
-                        .focused($focusedField, equals: .stepTitle)
-                        .onSubmit { focusedField = .stepDescription }
-                        
-                    HStack {
-                        TextEditor(text: $stepDescription)
+                    Section(header: Text("Description")) {
+                        TextEditor(text: $item.description)
                             .frame(height: 120)
-                            .focused($focusedField, equals: .stepDescription)
-                        Button(action: {
-                            withAnimation {
-                                let step = DinnerItemStep(stepTitle: stepTitle, stepDescription: stepDescription)
-                                if item.steps.isEmpty {
-                                    item.steps = [step]
-                                } else {
-                                    item .steps.append(step)
+                            .focused($isFocused)
+                    }
+                    .onTapGesture {
+                        isFocused = false
+                    }
+                    Section(header: Text("Preparation Time")) {
+                        HStack {
+                            TextField("Time taken for preparation", text: $prepTime)
+                                .keyboardType(.numberPad)
+                                .focused($isFocused)
+                                .onChange(of: prepTime) {
+                                    if let intValue = Int(prepTime) {
+                                        item.prepTime = intValue
+                                    }
                                 }
-                                stepTitle = ""
-                                stepDescription = ""
-                                focusedField = .stepTitle
-                            }
-                        }) {
-                            Image(systemName: "plus.circle")
+                                .submitLabel(.next)
+                            
+                            Text("minutes")
                         }
-                        .disabled(stepButtonDisabled())
-                        .allowsHitTesting(true)
+                    }
+                    .onTapGesture {
+                        isFocused = false
+                    }
+                    Section(header: Text("Cooking Time")) {
+                        HStack {
+                            TextField("Time taken for cooking", text: $cookTime)
+                                .keyboardType(.numberPad)
+                                .focused($isFocused)
+                                .onChange(of: cookTime) {
+                                    if let intValue = Int(cookTime) {
+                                        item.cookTime = intValue
+                                    }
+                                }
+                            Text("minutes")
+                        }
+                    }
+                    .onTapGesture {
+                        isFocused = false
+                    }
+                    Section(header: Text("Tags")) {
+                        HStack {
+                            if item.tags.isEmpty {
+                                Text("Tap to add tags...")
+                                Spacer()
+                            } else {
+                                ForEach(item.tags) { tag in
+                                    FoodTagView(tag: tag)
+                                }
+                            }
+                        }
+                        .contentShape(RoundedRectangle(cornerRadius: 5))
+                        .onTapGesture {
+                            showPicker = true
+                        }
+                        .sheet(isPresented: $showPicker) {
+                            TagPicker(selectedTags: $item.tags)
+                        }
+                    }
+                    
+                    Section(header: Text("Steps")) {
+                        ForEach(item.steps) { step in
+                            VStack(alignment: .leading) {
+                                Text(step.stepTitle)
+                                    .font(.headline)
+                                Text(step.stepDescription)
+                            }
+                        }
+                        .onDelete(perform: deleteStep)
+                    }
+                    .onTapGesture {
+                        isFocused = false
+                    }
+                    Section(header: Text("New step title & description")) {
+                        TextField("Title", text: $stepTitle)
+                            .focused($focusedField, equals: .stepTitle)
+                            .onSubmit { focusedField = .stepDescription }
+                        
+                        HStack {
+                            TextEditor(text: $stepDescription)
+                                .frame(height: 120)
+                                .focused($focusedField, equals: .stepDescription)
+                            Button(action: {
+                                withAnimation {
+                                    let step = DinnerItemStep(stepTitle: stepTitle, stepDescription: stepDescription)
+                                    if item.steps.isEmpty {
+                                        item.steps = [step]
+                                    } else {
+                                        item .steps.append(step)
+                                    }
+                                    stepTitle = ""
+                                    stepDescription = ""
+                                    focusedField = .stepTitle
+                                }
+                            }) {
+                                Image(systemName: "plus.circle")
+                            }
+                            .disabled(stepButtonDisabled())
+                            .allowsHitTesting(true)
+                        }
                     }
                 }
+                .scrollContentBackground(.hidden)
+                .background(Color.clear)
             }
         }
+            
+        
         .onAppear {
             prepTime = String(item.prepTime)
             cookTime = String(item.cookTime)
