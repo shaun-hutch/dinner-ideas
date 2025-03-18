@@ -192,5 +192,5 @@ struct DetailEditView: View {
 
 
 #Preview {
-    DetailEditView(item: .constant(DinnerItem.sampleItems[0]), itemImage: .constant(UIImage(systemName: "photo")!))
+    DetailEditView(item: .constant(DinnerItem.sampleItems[0]), itemImage: .constant(nil))
 }

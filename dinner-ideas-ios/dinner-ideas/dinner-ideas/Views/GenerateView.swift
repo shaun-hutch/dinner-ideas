@@ -13,22 +13,22 @@ struct GenerateView: View {
     @State private var generated: Bool = false
     @State private var generatedItems: [DinnerItem] = []
     @State private var loading: Bool = false
+    @State private var generatedDate: Date?
+    
+    let saveAction: () -> Void
     
     var body: some View {
         VStack {
             Spacer()
             if !generated {
             } else {
-                
+                DinnerItemsView(dinnerItems: .constant(generatedItems), saveAction: saveAction)
             }
             Button(action: {
-                generated = true
                 loading = true
-                
-                DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-                    loading = false
-                }
-                    
+                generateDinnerItems()
+                loading = false
+                generated = true
             }) {
                 withAnimation {
                     HStack {
@@ -44,9 +44,19 @@ struct GenerateView: View {
             }
             .padding(10)
         }
+        .navigationTitle(generatedDate?.description ?? "Generate")
     }
+    
+    
+    private func generateDinnerItems() {
+        let count = min(3, dinnerItems.count)
+        generatedItems = Array(dinnerItems.shuffled().prefix(count))
+    }
+    
 }
 
 #Preview {
-    GenerateView(dinnerItems: DinnerItem.sampleItems)
+    GenerateView(dinnerItems: DinnerItem.sampleItems, saveAction: {})
 }
+
+

@@ -16,10 +16,10 @@ struct dinner_ideasApp: App {
         WindowGroup {
             TabView {
                 Tab("Dinner Items", systemImage: "fork.knife.circle") {
-                    DinnerItemsView(dinnerItems: $store.items) {
+                    DinnerItemsView(dinnerItems: $store.savedItems) {
                         Task {
                             do {
-                                try await store.save(items: store.items)
+                                try await store.save(items: store.savedItems)
                             } catch {
                                 print("error saving items")
                             }
@@ -27,12 +27,19 @@ struct dinner_ideasApp: App {
                     }
                 }
                 Tab("Generate", systemImage: "note.text.badge.plus") {
-                    GenerateView(dinnerItems: store.items)
+                    GenerateView(dinnerItems: store.savedItems) {
+                        Task {
+                            do {
+                                try await store.
+                            }
+                        }
+                    }
                 }
                 Tab("History", systemImage: "clock") {
                     Text("History")
                 }
             }
+            .background(.ultraThinMaterial)
             .task {
                 do {
                     try await store.load()

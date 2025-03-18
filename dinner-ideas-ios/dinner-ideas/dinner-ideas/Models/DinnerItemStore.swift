@@ -9,7 +9,8 @@ import SwiftUI
 
 @MainActor
 class DinnerItemStore: ObservableObject {
-    @Published var items: [DinnerItem] = []
+    @Published var savedItems: [DinnerItem] = []
+    @Published var generatedItems: [DinnerItemGeneratedWeek] = []
     
     private static func fileURL() throws -> URL {
         try FileManager.default.url(
@@ -33,7 +34,7 @@ class DinnerItemStore: ObservableObject {
         }
         
         let items = try await task.value
-        self.items = items
+        self.savedItems = items
     }
     
     func save(items: [DinnerItem]) async throws {
