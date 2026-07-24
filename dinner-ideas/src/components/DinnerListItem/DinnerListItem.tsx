@@ -12,7 +12,7 @@ interface DinnerItemProps {
     name: string;
     totalTime: number;
     tags: FoodTag[];
-    image?: string; // s3 prefix location
+    imageKey?: string;
     onClick: (id: string) => void;
     onEditButtonClick: (id: string) => void;
 }
@@ -24,17 +24,19 @@ const DinnerListItem = (props: DinnerItemProps) => {
         name,
         tags,
         totalTime,
-        image,
+        imageKey,
         onClick,
         onEditButtonClick
     } = props;
 
     const formattedTime = `${totalTime} mins`
-    const processedImage = !!image ? `data:image/png;base64,${image}` : meta_salad;
+    const processedImage = imageKey
+        ? `https://shaun-web-app-bucket.s3.us-west-1.amazonaws.com/${imageKey}`
+        : meta_salad;
     
     const photo = (
         <div className="image">
-            <img src={processedImage} alt="placeholder"/>
+            <img src={processedImage} alt={name}/>
         </div>
     );
 
