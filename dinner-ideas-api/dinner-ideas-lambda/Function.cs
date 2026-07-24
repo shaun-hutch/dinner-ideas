@@ -212,7 +212,7 @@ public class Function
         services.AddScoped<IDynamoObjectService, DynamoObjectService>();
         services.AddScoped<IDatabaseClientService, DatabaseClientService>();
         services.AddSingleton<IS3Service, S3Service>();
-        services.AddSingleton<IAuthService, AuthService>();
+        services.AddScoped<IAuthService, AuthService>();
 
         JsonConvert.DefaultSettings = () => new JsonSerializerSettings
         {

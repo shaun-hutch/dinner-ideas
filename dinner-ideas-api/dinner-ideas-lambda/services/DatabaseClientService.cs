@@ -10,6 +10,7 @@ public interface IDatabaseClientService
 {
     Task<T> GetItem<T>(Guid id) where T : BaseItem;
     Task<IEnumerable<T>> GetItems<T>(int ownerId) where T : BaseItem;
+    Task<IEnumerable<T>> ScanAsync<T>(ScanRequest request) where T : BaseItem;
     Task<T> CreateItem<T>(T item) where T : BaseItem;
     Task<T> UpdateItem<T>(T item) where T : BaseItem;
     Task<bool> DeleteItem<T>(Guid id) where T : BaseItem;
@@ -114,6 +115,22 @@ public class DatabaseClientService : IDatabaseClientService
         var response = await _dynamoDBClient.ScanAsync(request);
 
         Console.WriteLine(response.Items.Count);
+
+        var result = new List<T>();
+        if (response.Items.Count > 0)
+            foreach (var item in response.Items)
+            {
+                var converted = _dynamoObjectService.FromAttributeMap<T>(item);
+                result.Add(converted);
+            }
+
+        return result;
+    }
+
+    public async Task<IEnumerable<T>> ScanAsync<T>(ScanRequest request) where T : BaseItem
+    {
+        request.TableName = Constants.TABLE_NAME;
+        var response = await _dynamoDBClient.ScanAsync(request);
 
         var result = new List<T>();
         if (response.Items.Count > 0)

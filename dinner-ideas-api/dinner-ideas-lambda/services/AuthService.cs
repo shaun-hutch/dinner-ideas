@@ -2,9 +2,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
-using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.Model;
-using Amazon;
 using dinner_ideas_lambda.models;
 using Microsoft.IdentityModel.Tokens;
 
@@ -19,31 +17,28 @@ public interface IAuthService
 
 public class AuthService : IAuthService
 {
-    private readonly AmazonDynamoDBClient _dynamoDBClient;
+    private readonly IDatabaseClientService _db;
     private readonly string _jwtSecret;
-    private const string TABLE_NAME = Constants.TABLE_NAME;
 
-    public AuthService()
+    public AuthService(IDatabaseClientService db)
     {
-        _dynamoDBClient = new AmazonDynamoDBClient(RegionEndpoint.USWest1);
-        _jwtSecret = Environment.GetEnvironmentVariable("JWT_SECRET") ?? throw new InvalidOperationException("JWT_SECRET not configured");
+        _db = db;
+        _jwtSecret = Environment.GetEnvironmentVariable("JWT_SECRET")
+            ?? throw new InvalidOperationException("JWT_SECRET not configured");
     }
 
     public async Task<AuthResponse> Register(string email, string password)
     {
-        // Check if user already exists
         var existingUser = await GetUserByEmail(email);
         if (existingUser != null)
             throw new InvalidOperationException("A user with this email already exists");
 
-        // Hash password
         var salt = GenerateSalt();
         var passwordHash = HashPassword(password, salt);
 
-        var userId = Guid.NewGuid();
         var user = new User
         {
-            Id = userId,
+            Id = Guid.NewGuid(),
             Email = email.ToLowerInvariant().Trim(),
             PasswordHash = passwordHash,
             Salt = salt,
@@ -54,21 +49,7 @@ public class AuthService : IAuthService
             Version = 1
         };
 
-        var dict = new Dictionary<string, AttributeValue>
-        {
-            { Constants.ID_KEY, new AttributeValue { S = user.TypeAndId } },
-            { "id", new AttributeValue { S = user.Id.ToString() } },
-            { "email", new AttributeValue { S = user.Email } },
-            { "passwordHash", new AttributeValue { S = user.PasswordHash } },
-            { "salt", new AttributeValue { S = user.Salt } },
-            { "createdBy", new AttributeValue { N = "1" } },
-            { "lastModifiedBy", new AttributeValue { N = "1" } },
-            { "createdDate", new AttributeValue { S = user.CreatedDate.ToString("o") } },
-            { "lastModifiedDate", new AttributeValue { S = user.LastModifiedDate.ToString("o") } },
-            { "version", new AttributeValue { N = "1" } }
-        };
-
-        await _dynamoDBClient.PutItemAsync(TABLE_NAME, dict);
+        await _db.CreateItem(user);
 
         var token = GenerateJwt(user);
         return new AuthResponse
@@ -147,7 +128,6 @@ public class AuthService : IAuthService
         var normalized = email.ToLowerInvariant().Trim();
         var request = new ScanRequest
         {
-            TableName = TABLE_NAME,
             FilterExpression = "#type = :type AND email = :email",
             ExpressionAttributeNames = new Dictionary<string, string>
             {
@@ -155,27 +135,13 @@ public class AuthService : IAuthService
             },
             ExpressionAttributeValues = new Dictionary<string, AttributeValue>
             {
-                { ":type", new AttributeValue { S = $"User|" } },
+                { ":type", new AttributeValue { S = "User|" } },
                 { ":email", new AttributeValue { S = normalized } }
             }
         };
 
-        var response = await _dynamoDBClient.ScanAsync(request);
-        if (response.Items.Count == 0) return null;
-
-        var item = response.Items[0];
-        return new User
-        {
-            Id = Guid.Parse(item["id"].S),
-            Email = item["email"].S,
-            PasswordHash = item["passwordHash"].S,
-            Salt = item["salt"].S,
-            CreatedBy = int.Parse(item["createdBy"].N),
-            LastModifiedBy = int.Parse(item["lastModifiedBy"].N),
-            CreatedDate = DateTime.Parse(item["createdDate"].S),
-            LastModifiedDate = DateTime.Parse(item["lastModifiedDate"].S),
-            Version = int.Parse(item["version"].N)
-        };
+        var results = await _db.ScanAsync<User>(request);
+        return results.FirstOrDefault();
     }
 
     private static string GenerateSalt()
