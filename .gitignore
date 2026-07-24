@@ -478,4 +478,18 @@ $RECYCLE.BIN/
 
 node_modules/
 frontend/dinner-ideas/build/
+
+# Vite build output
+dist/
+
+# Lambda deployment artifacts
+function.zip
+
+# Environment files (secrets)
+.env
+.env.*
+!.env.example
+
+# Hermes temp files
+.hermes-tmp*/
 *.zip
