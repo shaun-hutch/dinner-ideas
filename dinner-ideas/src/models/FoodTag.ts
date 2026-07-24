@@ -1,6 +1,6 @@
 export enum FoodTag {
     Quick,
-    Vegeterian,
+    Vegetarian,
     Vegan,
     GlutenFree,
     Cheap,

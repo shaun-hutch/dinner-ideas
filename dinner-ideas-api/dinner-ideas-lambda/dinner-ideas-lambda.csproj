@@ -16,7 +16,9 @@
     <PackageReference Include="Amazon.Lambda.Serialization.SystemTextJson" Version="2.5.0" />
     <PackageReference Include="Amazon.Lambda.DynamoDBEvents" Version="3.1.0" />
     <PackageReference Include="AWSSDK.DynamoDBV2" Version="3.7.400.0" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.0" />
+    <PackageReference Include="AWSSDK.S3" Version="3.7.400.0" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.10" />
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.0.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
   </ItemGroup>
   <ItemGroup>

@@ -1,0 +1,39 @@
+.generate-container {
+    max-width: 900px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+}
+
+.generate-content {
+    text-align: center;
+}
+
+.generate-description {
+    color: var(--text-color-secondary);
+    margin-bottom: 2rem;
+    font-size: 1.1rem;
+}
+
+.generate-action {
+    margin-bottom: 2rem;
+}
+
+.generate-results {
+    margin-top: 2rem;
+    text-align: left;
+}
+
+.generate-results h3 {
+    margin-bottom: 1rem;
+    text-align: center;
+}
+
+.generate-empty {
+    margin-top: 2rem;
+    padding: 2rem;
+}
+
+.generate-empty p {
+    margin-bottom: 1rem;
+    color: var(--text-color-secondary);
+}

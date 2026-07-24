@@ -9,6 +9,8 @@ public class DinnerItem : BaseItem
     public required int CookTime { get; set; }
     public DinnerItemStep[] Steps { get; set; } = [];
     public FoodTag[] Tags { get; set; } = [];
+    public Ingredient[] Ingredients { get; set; } = [];
+    public string? ImageKey { get; set; }
     public int TotalTime => PrepTime + CookTime;
 
 }

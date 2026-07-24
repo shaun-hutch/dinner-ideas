@@ -1,0 +1,42 @@
+.auth-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: calc(100vh - 100px);
+    padding: 2rem;
+}
+
+.auth-card {
+    width: 100%;
+    max-width: 420px;
+}
+
+.auth-field {
+    margin-bottom: 1.5rem;
+}
+
+.auth-input {
+    width: 100%;
+}
+
+.auth-error {
+    color: var(--red-500);
+    margin-bottom: 1rem;
+    font-size: 0.9rem;
+    padding: 0.5rem;
+    background: var(--red-50);
+    border-radius: 4px;
+}
+
+.auth-buttons {
+    margin-top: 1rem;
+}
+
+.auth-buttons .p-button {
+    width: 100%;
+}
+
+.auth-toggle {
+    margin-top: 1rem;
+    text-align: center;
+}

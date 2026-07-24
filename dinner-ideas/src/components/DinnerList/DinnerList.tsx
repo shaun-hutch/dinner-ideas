@@ -32,6 +32,7 @@ const DinnerList = () => {
                 name={item.name} 
                 tags={item.tags} 
                 totalTime={item.cookTime + item.prepTime} 
+                imageKey={item.imageKey}
                 id={item.id} 
                 onClick={onItemClick} 
                 onEditButtonClick={onEditItemClick}
