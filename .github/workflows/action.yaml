@@ -43,6 +43,11 @@ jobs:
         cd ./dinner-ideas-api
         ./zip.sh
         ./update-lambda.sh
+    - name: Set Lambda JWT secret
+      run: |
+        aws lambda update-function-configuration \
+          --function-name dinner-ideas-lambda-api \
+          --environment "Variables={JWT_SECRET=${{ secrets.JWT_SECRET }}}"
     env:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
