@@ -90,19 +90,27 @@ public class Function
             var dinnerItemService = provider.GetRequiredService<IDinnerItemService>();
             var routeParams = apiGatewayEvent.PathParameters;
 
+            // Extract a GUID id from the last path segment if present
+            // (e.g., /dinner-ideas-db/550e8400-e29b-41d4-a716-446655440000).
+            // Uses the raw path rather than API Gateway path parameters so the
+            // Lambda works with {proxy+} greedy routing, HTTP API $default, etc.
+            Guid? TryGetIdFromPath(string p)
+            {
+                var segments = p.Trim('/').Split('/');
+                if (segments.Length >= 2 && Guid.TryParse(segments.Last(), out var parsed))
+                    return parsed;
+                return null;
+            }
+            var pathId = TryGetIdFromPath(path);
+
             switch (apiGatewayEvent.HttpMethod)
             {
                 case "GET":
-                    if (routeParams?.TryGetValue("id", out var id) == true)
+                    if (pathId.HasValue)
                     {
-                        context.Logger.LogInformation($"contains id: {id}");
-                        if (Guid.TryParse(id, out var parsed))
-                        {
-                            var itemResponse = await dinnerItemService.GetItem(parsed);
-                            bodyResponse = JsonConvert.SerializeObject(itemResponse);
-                        }
-                        else
-                            context.Logger.LogWarning($"{id} not a valid guid");
+                        context.Logger.LogInformation($"GET item by id: {pathId.Value}");
+                        var itemResponse = await dinnerItemService.GetItem(pathId.Value);
+                        bodyResponse = JsonConvert.SerializeObject(itemResponse);
                     }
                     else
                     {
@@ -149,16 +157,17 @@ public class Function
                     bodyResponse = JsonConvert.SerializeObject(putResponse);
                     break;
                 case "DELETE":
-                    if (routeParams?.TryGetValue("id", out var deleteId) == true)
+                    if (pathId.HasValue)
                     {
-                        context.Logger.LogInformation($"contains id for deletion: {deleteId}");
-                        if (Guid.TryParse(deleteId, out var parsed))
-                        {
-                            var deleted = await dinnerItemService.DeleteItem(parsed);
-                            bodyResponse = JsonConvert.SerializeObject(deleted);
-                        }
-                        else
-                            context.Logger.LogWarning($"{deleteId} not a valid guid");
+                        context.Logger.LogInformation($"DELETE item by id: {pathId.Value}");
+                        var deleted = await dinnerItemService.DeleteItem(pathId.Value);
+                        bodyResponse = JsonConvert.SerializeObject(deleted);
+                    }
+                    else
+                    {
+                        context.Logger.LogWarning("DELETE called without a valid GUID id in path");
+                        statusCode = (int)HttpStatusCode.BadRequest;
+                        bodyResponse = JsonConvert.SerializeObject(new { error = "Item id is required for DELETE" });
                     }
                     break;
             }

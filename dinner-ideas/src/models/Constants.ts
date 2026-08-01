@@ -21,4 +21,7 @@ export const FoodTagLabel: Dictionary<string> = {
     [FoodTag.FamilyFriendly]: "Family Friendly",
 };
 
-export const ApiEndpoint = import.meta.env.VITE_APP_API_ENDPOINT;
+// API base path — uses relative URL in production (routed through CloudFront).
+// Falls back to the VITE_APP_API_ENDPOINT env var for local development or
+// direct API Gateway access.
+export const ApiEndpoint = import.meta.env.VITE_APP_API_ENDPOINT || '/api';

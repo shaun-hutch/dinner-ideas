@@ -14,18 +14,19 @@ public interface IS3Service
 public class S3Service : IS3Service
 {
     private readonly IAmazonS3 _s3Client;
-    private const string BUCKET_NAME = "shaun-web-app-bucket";
+    private readonly string _bucketName;
 
     public S3Service()
     {
         _s3Client = new AmazonS3Client(RegionEndpoint.USWest1);
+        _bucketName = Environment.GetEnvironmentVariable("IMAGE_BUCKET_NAME") ?? "dinner-ideas-images";
     }
 
     public string GenerateUploadUrl(string key, string contentType, TimeSpan expiry)
     {
         var request = new GetPreSignedUrlRequest
         {
-            BucketName = BUCKET_NAME,
+            BucketName = _bucketName,
             Key = key,
             Verb = HttpVerb.PUT,
             Expires = DateTime.UtcNow.Add(expiry),
@@ -37,6 +38,6 @@ public class S3Service : IS3Service
 
     public string GetImageUrl(string key)
     {
-        return $"https://{BUCKET_NAME}.s3.us-west-1.amazonaws.com/{key}";
+        return $"https://{_bucketName}.s3.us-west-1.amazonaws.com/{key}";
     }
 }

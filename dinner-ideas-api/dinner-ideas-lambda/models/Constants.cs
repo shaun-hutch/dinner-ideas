@@ -2,7 +2,8 @@ namespace dinner_ideas_lambda.models;
 
 public class Constants
 {
-    public const string TABLE_NAME = "dinner-ideas-table";
+    public static string TABLE_NAME =>
+        Environment.GetEnvironmentVariable("TABLE_NAME") ?? "dinner-ideas-table";
 
     public const string ID_KEY = "typeAndId";
 }

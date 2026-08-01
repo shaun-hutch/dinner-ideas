@@ -1,0 +1,318 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: >
+  Dinner Ideas Backend Stack
+  Resources: Lambda function, API Gateway REST API, DynamoDB table,
+  Image S3 bucket, IAM execution role.
+
+Parameters:
+  StageName:
+    Type: String
+    Default: prod
+    Description: API Gateway stage name (e.g., prod, staging).
+
+  JwtSecret:
+    Type: String
+    NoEcho: true
+    Description: JWT signing secret for auth tokens.
+    MinLength: 16
+
+Resources:
+  # =========================================================================
+  # DynamoDB Table — stores dinner items
+  # =========================================================================
+  DinnerItemsTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: dinner-ideas-table
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: typeAndId
+          AttributeType: S
+        - AttributeName: id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: typeAndId
+          KeyType: HASH
+        - AttributeName: id
+          KeyType: RANGE
+      PointInTimeRecoverySpecification:
+        PointInTimeRecoveryEnabled: true
+      Tags:
+        - Key: Application
+          Value: dinner-ideas
+
+  # =========================================================================
+  # Image S3 Bucket — user-uploaded dinner images (pre-signed URL uploads)
+  # =========================================================================
+  ImageBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub 'dinner-ideas-images-${AWS::AccountId}-${AWS::Region}'
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      OwnershipControls:
+        Rules:
+          - ObjectOwnership: BucketOwnerEnforced
+      CorsConfiguration:
+        CorsRules:
+          - AllowedHeaders:
+              - '*'
+            AllowedMethods:
+              - GET
+              - PUT
+              - POST
+              - DELETE
+            AllowedOrigins:
+              - '*'
+            MaxAge: 3600
+      LifecycleConfiguration:
+        Rules:
+          - Id: ExpireIncompleteUploads
+            Status: Enabled
+            AbortIncompleteMultipartUpload:
+              DaysAfterInitiation: 7
+          - Id: ExpireOldObjects
+            Status: Enabled
+            ExpirationInDays: 90
+            NoncurrentVersionExpirationInDays: 30
+      Tags:
+        - Key: Application
+          Value: dinner-ideas
+
+  # =========================================================================
+  # Lambda Execution Role
+  # =========================================================================
+  LambdaExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: dinner-ideas-lambda-execution-role
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+      Policies:
+        - PolicyName: DinnerItemsDynamoDBAccess
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - dynamodb:GetItem
+                  - dynamodb:PutItem
+                  - dynamodb:UpdateItem
+                  - dynamodb:DeleteItem
+                  - dynamodb:Query
+                  - dynamodb:Scan
+                Resource: !GetAtt DinnerItemsTable.Arn
+        - PolicyName: ImageBucketS3Access
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - s3:PutObject
+                  - s3:GetObject
+                  - s3:DeleteObject
+                Resource: !Sub
+                  - '${BucketArn}/*'
+                  - BucketArn: !GetAtt ImageBucket.Arn
+              - Effect: Allow
+                Action:
+                  - s3:ListBucket
+                Resource: !GetAtt ImageBucket.Arn
+
+  # =========================================================================
+  # Lambda Function
+  # =========================================================================
+  DinnerIdeasLambda:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: dinner-ideas-lambda-api
+      Description: Dinner Ideas API — .NET 10 Lambda, arm64
+      Runtime: provided.al2023
+      Architectures:
+        - arm64
+      Handler: bootstrap
+      Role: !GetAtt LambdaExecutionRole.Arn
+      MemorySize: 512
+      Timeout: 30
+      Environment:
+        Variables:
+          TABLE_NAME: !Ref DinnerItemsTable
+          IMAGE_BUCKET_NAME: !Ref ImageBucket
+          JWT_SECRET: !Ref JwtSecret
+      Tags:
+        - Key: Application
+          Value: dinner-ideas
+      # Code.S3Bucket and Code.S3Key are set by 'aws cloudformation package'
+
+  # =========================================================================
+  # API Gateway REST API (v1) — proxy integration to Lambda
+  # =========================================================================
+  ApiGatewayRestApi:
+    Type: AWS::ApiGateway::RestApi
+    Properties:
+      Name: dinner-ideas-api
+      Description: Dinner Ideas REST API
+      EndpointConfiguration:
+        Types:
+          - REGIONAL
+      MinimumCompressionSize: 1024
+
+  # Greedy proxy resource: {proxy+} captures all path segments
+  ProxyResource:
+    Type: AWS::ApiGateway::Resource
+    Properties:
+      RestApiId: !Ref ApiGatewayRestApi
+      ParentId: !GetAtt ApiGatewayRestApi.RootResourceId
+      PathPart: '{proxy+}'
+
+  # ANY method on {proxy+} — forwards all HTTP methods to Lambda
+  ProxyMethod:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      RestApiId: !Ref ApiGatewayRestApi
+      ResourceId: !Ref ProxyResource
+      HttpMethod: ANY
+      AuthorizationType: NONE
+      RequestParameters:
+        method.request.path.proxy: true
+      Integration:
+        Type: AWS_PROXY
+        IntegrationHttpMethod: POST
+        Uri: !Sub
+          - 'arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${LambdaArn}/invocations'
+          - LambdaArn: !GetAtt DinnerIdeasLambda.Arn
+        PassthroughBehavior: WHEN_NO_MATCH
+        RequestParameters:
+          integration.request.path.proxy: method.request.path.proxy
+
+  # OPTIONS method on {proxy+} — CORS preflight support
+  OptionsMethod:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      RestApiId: !Ref ApiGatewayRestApi
+      ResourceId: !Ref ProxyResource
+      HttpMethod: OPTIONS
+      AuthorizationType: NONE
+      Integration:
+        Type: MOCK
+        PassthroughBehavior: WHEN_NO_MATCH
+        RequestTemplates:
+          application/json: '{"statusCode": 200}'
+        IntegrationResponses:
+          - StatusCode: '200'
+            ResponseParameters:
+              method.response.header.Access-Control-Allow-Headers: '''Content-Type,Authorization,X-Amz-Date,X-Api-Key,X-Amz-Security-Token'''
+              method.response.header.Access-Control-Allow-Methods: '''GET,POST,PUT,DELETE,OPTIONS'''
+              method.response.header.Access-Control-Allow-Origin: '''*'''
+            ResponseTemplates:
+              application/json: ''
+      MethodResponses:
+        - StatusCode: '200'
+          ResponseParameters:
+            method.response.header.Access-Control-Allow-Headers: true
+            method.response.header.Access-Control-Allow-Methods: true
+            method.response.header.Access-Control-Allow-Origin: true
+
+  # Deployment — depends on the methods being created first
+  ApiDeployment:
+    Type: AWS::ApiGateway::Deployment
+    DependsOn:
+      - ProxyMethod
+      - OptionsMethod
+    Properties:
+      RestApiId: !Ref ApiGatewayRestApi
+      Description: !Sub 'Deployment for stage ${StageName}'
+
+  ApiStage:
+    Type: AWS::ApiGateway::Stage
+    Properties:
+      RestApiId: !Ref ApiGatewayRestApi
+      DeploymentId: !Ref ApiDeployment
+      StageName: !Ref StageName
+      MethodSettings:
+        - HttpMethod: '*'
+          ResourcePath: '/*'
+          LoggingLevel: OFF
+
+  # =========================================================================
+  # Lambda permission — allows API Gateway to invoke the function
+  # =========================================================================
+  ApiGatewayLambdaPermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName: !Ref DinnerIdeasLambda
+      Principal: apigateway.amazonaws.com
+      SourceArn: !Sub
+        - 'arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${ApiId}/*/*/*'
+        - ApiId: !Ref ApiGatewayRestApi
+
+  # =========================================================================
+  # Also allow OPTIONS on root path for CORS preflight
+  # =========================================================================
+  RootOptionsMethod:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      RestApiId: !Ref ApiGatewayRestApi
+      ResourceId: !GetAtt ApiGatewayRestApi.RootResourceId
+      HttpMethod: OPTIONS
+      AuthorizationType: NONE
+      Integration:
+        Type: MOCK
+        PassthroughBehavior: WHEN_NO_MATCH
+        RequestTemplates:
+          application/json: '{"statusCode": 200}'
+        IntegrationResponses:
+          - StatusCode: '200'
+            ResponseParameters:
+              method.response.header.Access-Control-Allow-Headers: '''Content-Type,Authorization,X-Amz-Date,X-Api-Key,X-Amz-Security-Token'''
+              method.response.header.Access-Control-Allow-Methods: '''GET,POST,PUT,DELETE,OPTIONS'''
+              method.response.header.Access-Control-Allow-Origin: '''*'''
+            ResponseTemplates:
+              application/json: ''
+      MethodResponses:
+        - StatusCode: '200'
+          ResponseParameters:
+            method.response.header.Access-Control-Allow-Headers: true
+            method.response.header.Access-Control-Allow-Methods: true
+            method.response.header.Access-Control-Allow-Origin: true
+
+# ===========================================================================
+# Outputs
+# ===========================================================================
+Outputs:
+  ApiGatewayUrl:
+    Description: API Gateway invoke URL (without stage — CloudFront adds the stage as origin path)
+    Value: !Sub 'https://${ApiGatewayRestApi}.execute-api.${AWS::Region}.amazonaws.com'
+    Export:
+      Name: !Sub '${AWS::StackName}-ApiGatewayUrl'
+
+  ApiGatewayFullUrl:
+    Description: API Gateway invoke URL including stage
+    Value: !Sub 'https://${ApiGatewayRestApi}.execute-api.${AWS::Region}.amazonaws.com/${StageName}'
+
+  LambdaFunctionName:
+    Description: Lambda function name
+    Value: !Ref DinnerIdeasLambda
+
+  LambdaFunctionArn:
+    Description: Lambda function ARN
+    Value: !GetAtt DinnerIdeasLambda.Arn
+
+  DinnerItemsTableName:
+    Description: DynamoDB table name
+    Value: !Ref DinnerItemsTable
+
+  ImageBucketName:
+    Description: S3 bucket for user-uploaded images
+    Value: !Ref ImageBucket
