@@ -76,20 +76,10 @@ dotnet publish ./dinner-ideas-lambda \
     --runtime linux-arm64 \
     --configuration Release
 
-# .NET publish with --runtime outputs directly to bin/Release/<tfm>/<rid>/
 PUBLISH_DIR="$LAMBDA_PROJECT/bin/Release/net10.0/linux-arm64"
 
-# The 'provided.al2023' Lambda runtime looks for a 'bootstrap' executable
-# at the zip root.  .NET self-contained publish produces a native binary
-# (named after the assembly) but not the bootstrap shim.  Create one that
-# simply execs the native binary.
-BOOTSTRAP="$PUBLISH_DIR/bootstrap"
-if [ ! -f "$BOOTSTRAP" ]; then
-    echo '#!/bin/sh' > "$BOOTSTRAP"
-    echo 'exec /var/task/dinner-ideas-lambda' >> "$BOOTSTRAP"
-    chmod +x "$BOOTSTRAP"
-fi
-
+# Remove any stale bootstrap — managed runtime uses the handler string, not bootstrap
+rm -f "$PUBLISH_DIR/bootstrap"
 echo "  Build complete."
 
 # ---- Step 3: Create deployment zip ----

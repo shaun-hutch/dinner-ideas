@@ -137,10 +137,10 @@ Resources:
     Properties:
       FunctionName: dinner-ideas-lambda-api
       Description: Dinner Ideas API — .NET 10 Lambda, arm64
-      Runtime: provided.al2023
+      Runtime: dotnet10
       Architectures:
         - arm64
-      Handler: bootstrap
+      Handler: dinner-ideas-lambda::dinner_ideas_lambda.Function::FunctionHandler
       Role: !GetAtt LambdaExecutionRole.Arn
       MemorySize: 512
       Timeout: 30

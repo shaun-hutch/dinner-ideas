@@ -26,7 +26,7 @@ Resources:
       BucketName: !Sub 'dinner-ideas-app-${AWS::AccountId}-${AWS::Region}'
       PublicAccessBlockConfiguration:
         BlockPublicAcls: true
-        BlockPublicPolicy: true
+        BlockPublicPolicy: false
         IgnorePublicAcls: true
         RestrictPublicBuckets: true
       OwnershipControls:
@@ -38,7 +38,6 @@ Resources:
 
   # =========================================================================
   # CloudFront Origin Access Control — secure S3 access
-  # OAC handles S3 access without needing a separate bucket policy.
   # =========================================================================
   S3OriginAccessControl:
     Type: AWS::CloudFront::OriginAccessControl
@@ -49,29 +48,22 @@ Resources:
         SigningBehavior: always
         SigningProtocol: sigv4
 
-  # =========================================================================
-  # CloudFront Function — strips /api prefix before forwarding to API Gateway
-  # This allows the frontend to use relative /api/* URLs while the Lambda
-  # receives the original path structure it expects.
-  # =========================================================================
-  ApiPathRewriteFunction:
-    Type: AWS::CloudFront::Function
+  # Bucket policy — grants read access ONLY to the CloudFront distribution
+  AppBucketPolicy:
+    Type: AWS::S3::BucketPolicy
     Properties:
-      Name: dinner-ideas-api-path-rewrite
-      AutoPublish: true
-      FunctionConfig:
-        Comment: Strips /api prefix from URI before forwarding to API Gateway origin
-        Runtime: cloudfront-js-2.0
-      FunctionCode: |
-        function handler(event) {
-            var request = event.request;
-            if (request.uri.startsWith('/api/')) {
-                request.uri = request.uri.substring(4);  // remove '/api'
-            } else if (request.uri === '/api') {
-                request.uri = '/';
-            }
-            return request;
-        }
+      Bucket: !Ref AppBucket
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: cloudfront.amazonaws.com
+            Action: s3:GetObject
+            Resource: !Sub '${AppBucket.Arn}/*'
+            Condition:
+              StringEquals:
+                'AWS:SourceArn': !Sub 'arn:aws:cloudfront::${AWS::AccountId}:distribution/${CloudFrontDistribution}'
 
   # =========================================================================
   # CloudFront Distribution
@@ -103,13 +95,10 @@ Resources:
               OriginProtocolPolicy: https-only
               OriginSSLProtocols:
                 - TLSv1.2
-            OriginCustomHeaders:
-              - HeaderName: X-Forwarded-Origin
-                HeaderValue: CloudFront
 
         # ---- Cache Behaviors ----
-
-        # API behavior: /api/* → API Gateway (no caching, path rewrite)
+        # /api/* → API Gateway (no caching). The Lambda uses Contains()/path-segment
+        # routing so the full path works natively — no path rewrite needed.
         DefaultCacheBehavior:
           TargetOriginId: S3Origin
           ViewerProtocolPolicy: redirect-to-https
@@ -144,9 +133,6 @@ Resources:
             CachePolicyId: 4135ea2d-6df8-44a3-9df3-4b5a84be39ad
             # Managed policy: AllViewer (forward all headers/query/cookies)
             OriginRequestPolicyId: 216adef6-5c7f-47e4-b989-5492eafa07d3
-            FunctionAssociations:
-              - EventType: viewer-request
-                FunctionARN: !GetAtt ApiPathRewriteFunction.FunctionARN
 
         # ---- Custom Error Responses (SPA routing) ----
         # Return index.html with 200 for 403 (S3 returns 403 for missing objects
