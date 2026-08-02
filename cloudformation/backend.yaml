@@ -239,10 +239,6 @@ Resources:
       RestApiId: !Ref ApiGatewayRestApi
       DeploymentId: !Ref ApiDeployment
       StageName: !Ref StageName
-      MethodSettings:
-        - HttpMethod: '*'
-          ResourcePath: '/*'
-          LoggingLevel: OFF
 
   # =========================================================================
   # Lambda permission — allows API Gateway to invoke the function

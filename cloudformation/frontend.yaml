@@ -36,25 +36,9 @@ Resources:
         - Key: Application
           Value: dinner-ideas
 
-  # Bucket policy — grants read access ONLY to the CloudFront distribution
-  AppBucketPolicy:
-    Type: AWS::S3::BucketPolicy
-    Properties:
-      Bucket: !Ref AppBucket
-      PolicyDocument:
-        Version: '2012-10-17'
-        Statement:
-          - Effect: Allow
-            Principal:
-              Service: cloudfront.amazonaws.com
-            Action: s3:GetObject
-            Resource: !Sub '${AppBucket.Arn}/*'
-            Condition:
-              StringEquals:
-                'AWS:SourceArn': !Sub 'arn:aws:cloudfront::${AWS::AccountId}:distribution/${CloudFrontDistribution}'
-
   # =========================================================================
   # CloudFront Origin Access Control — secure S3 access
+  # OAC handles S3 access without needing a separate bucket policy.
   # =========================================================================
   S3OriginAccessControl:
     Type: AWS::CloudFront::OriginAccessControl
@@ -138,10 +122,9 @@ Resources:
           Compress: true
           CachePolicyId: 658327ea-f89d-4fab-a63d-7e88639e58f6   # CachingOptimized
           OriginRequestPolicyId: 88a5eaf4-2fd4-4709-b370-b4c650ea3fcf  # CORS-S3Origin
-          FunctionAssociations: []
 
-        # Ordered behaviors evaluated BEFORE default
-        OrderedCacheBehaviors:
+        # Additional cache behaviors evaluated BEFORE default
+        CacheBehaviors:
           - PathPattern: /api/*
             TargetOriginId: ApiGatewayOrigin
             ViewerProtocolPolicy: redirect-to-https
