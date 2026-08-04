@@ -1,0 +1,35 @@
+.discover-container {
+    max-width: 900px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+}
+
+.discover-content {
+    display: flex;
+    flex-direction: column;
+}
+
+.discover-description {
+    color: var(--text-color-secondary);
+    margin-bottom: 1.5rem;
+    font-size: 1.1rem;
+}
+
+.discover-search {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.discover-results h3 {
+    margin-bottom: 1rem;
+}
+
+.discover-result-item {
+    background: var(--surface-card);
+    border: 1px solid var(--surface-border);
+}
+
+.discover-empty,
+.discover-suggestions {
+    margin-top: 2rem;
+}

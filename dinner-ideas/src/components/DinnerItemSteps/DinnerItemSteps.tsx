@@ -49,11 +49,11 @@ const DinnerItemSteps = (props: DinnerItemStepsProps) => {
 
         const indexToUpdate = localSteps.findIndex(x => x.id === id);
         if (indexToUpdate > -1) {
-            localSteps[indexToUpdate] = newItem;
+            const updated = [...localSteps];
+            updated[indexToUpdate] = newItem;
+            setLocalSteps(updated);
+            onStepsChange(updated);
         }
-
-        setLocalSteps(localSteps);
-        onStepsChange(localSteps);
     }, [onStepsChange, localSteps]);
 
     useEffect(() => {

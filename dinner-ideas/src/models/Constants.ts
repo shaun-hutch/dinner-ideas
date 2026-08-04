@@ -22,3 +22,5 @@ export const FoodTagLabel: Dictionary<string> = {
 };
 
 export const ApiEndpoint = import.meta.env.VITE_APP_API_ENDPOINT;
+
+export const ImageBaseUrl = import.meta.env.VITE_IMAGE_BASE_URL || "";

@@ -1,0 +1,173 @@
+[
+  {
+    "name": "One-Pan Chicken & Veggies",
+    "description": "Juicy chicken thighs roasted with seasonal vegetables on a single sheet pan. Minimal cleanup, maximum flavour — the perfect weeknight dinner.",
+    "prepTime": 10,
+    "cookTime": 35,
+    "tags": ["Quick", "Cheap", "FamilyFriendly"],
+    "steps": [
+      { "stepTitle": "Preheat & prep", "stepDescription": "Preheat oven to 200°C. Line a large baking tray with baking paper." },
+      { "stepTitle": "Season chicken", "stepDescription": "Pat chicken thighs dry with paper towel. Rub with olive oil, salt, pepper, smoked paprika, and garlic powder." },
+      { "stepTitle": "Chop vegetables", "stepDescription": "Cut potatoes into 2cm chunks, carrots into batons, and red onion into wedges. Toss with olive oil, salt, and rosemary." },
+      { "stepTitle": "Arrange on tray", "stepDescription": "Spread vegetables on the tray, nestle chicken thighs among them skin-side up." },
+      { "stepTitle": "Roast", "stepDescription": "Roast for 30–35 minutes until chicken is golden and cooked through (internal temp 74°C). Rest 5 minutes before serving." }
+    ],
+    "ingredients": [
+      { "name": "Chicken thighs (bone-in, skin-on)", "amount": 4, "measurement": "Amount" },
+      { "name": "Potatoes", "amount": 500, "measurement": "Grams" },
+      { "name": "Carrots", "amount": 3, "measurement": "Amount" },
+      { "name": "Red onion", "amount": 1, "measurement": "Amount" },
+      { "name": "Olive oil", "amount": 3, "measurement": "Tablespoon" },
+      { "name": "Smoked paprika", "amount": 2, "measurement": "Teaspoon" },
+      { "name": "Garlic powder", "amount": 1, "measurement": "Teaspoon" },
+      { "name": "Dried rosemary", "amount": 1, "measurement": "Teaspoon" }
+    ]
+  },
+  {
+    "name": "Speedy Beef Stir-Fry",
+    "description": "Tender strips of beef with crisp vegetables in a savoury soy-ginger sauce. Faster than takeaway and twice as satisfying.",
+    "prepTime": 15,
+    "cookTime": 10,
+    "tags": ["Quick", "Cheap"],
+    "steps": [
+      { "stepTitle": "Prep ingredients", "stepDescription": "Slice beef sirloin thinly against the grain. Mince garlic and ginger. Slice capsicum and broccoli into bite-sized pieces." },
+      { "stepTitle": "Make stir-fry sauce", "stepDescription": "Combine soy sauce, oyster sauce, cornflour, and ¼ cup water in a small bowl. Whisk until smooth." },
+      { "stepTitle": "Sear the beef", "stepDescription": "Heat 1 tbsp oil in a wok over high heat until smoking. Sear beef in a single layer for 1 minute per side. Remove and set aside." },
+      { "stepTitle": "Cook vegetables", "stepDescription": "Add remaining oil to the wok. Stir-fry garlic and ginger for 30 seconds, then add vegetables. Cook for 3–4 minutes until tender-crisp." },
+      { "stepTitle": "Combine & serve", "stepDescription": "Return beef to the wok, pour in sauce, and toss for 1 minute until glossy. Serve immediately over steamed rice." }
+    ],
+    "ingredients": [
+      { "name": "Beef sirloin steak", "amount": 400, "measurement": "Grams" },
+      { "name": "Broccoli florets", "amount": 200, "measurement": "Grams" },
+      { "name": "Red capsicum", "amount": 1, "measurement": "Amount" },
+      { "name": "Garlic cloves", "amount": 3, "measurement": "Amount" },
+      { "name": "Fresh ginger", "amount": 2, "measurement": "Teaspoon" },
+      { "name": "Soy sauce", "amount": 3, "measurement": "Tablespoon" },
+      { "name": "Oyster sauce", "amount": 2, "measurement": "Tablespoon" },
+      { "name": "Cornflour", "amount": 1, "measurement": "Tablespoon" },
+      { "name": "Vegetable oil", "amount": 2, "measurement": "Tablespoon" }
+    ]
+  },
+  {
+    "name": "Creamy Tomato & Basil Pasta",
+    "description": "A rich, velvety tomato sauce with fresh basil, finished with a splash of cream. Simple comfort food that never disappoints.",
+    "prepTime": 5,
+    "cookTime": 20,
+    "tags": ["Quick", "Vegetarian", "Cheap"],
+    "steps": [
+      { "stepTitle": "Cook pasta", "stepDescription": "Bring a large pot of salted water to the boil. Cook penne according to packet directions until al dente. Reserve ½ cup pasta water before draining." },
+      { "stepTitle": "Sauté aromatics", "stepDescription": "While pasta cooks, heat olive oil in a large pan over medium heat. Sauté minced garlic for 1 minute until fragrant." },
+      { "stepTitle": "Build the sauce", "stepDescription": "Add crushed tomatoes, a pinch of sugar, salt, and pepper. Simmer for 10 minutes, stirring occasionally." },
+      { "stepTitle": "Finish with cream & basil", "stepDescription": "Stir in cream and torn fresh basil leaves. Add drained pasta and toss to coat, adding splashes of reserved pasta water to loosen the sauce if needed." },
+      { "stepTitle": "Serve", "stepDescription": "Divide among bowls and top with grated Parmesan and extra basil." }
+    ],
+    "ingredients": [
+      { "name": "Penne pasta", "amount": 300, "measurement": "Grams" },
+      { "name": "Crushed tomatoes", "amount": 400, "measurement": "Grams" },
+      { "name": "Garlic cloves", "amount": 3, "measurement": "Amount" },
+      { "name": "Fresh basil leaves", "amount": 15, "measurement": "Amount" },
+      { "name": "Thickened cream", "amount": 100, "measurement": "Millilitres" },
+      { "name": "Olive oil", "amount": 2, "measurement": "Tablespoon" },
+      { "name": "Parmesan cheese (grated)", "amount": 50, "measurement": "Grams" },
+      { "name": "Sugar", "amount": 1, "measurement": "Teaspoon" }
+    ]
+  },
+  {
+    "name": "Loaded Beef Nachos",
+    "description": "Crispy corn chips piled high with seasoned beef, melted cheese, fresh salsa, and creamy guacamole. Perfect for sharing — or not.",
+    "prepTime": 10,
+    "cookTime": 15,
+    "tags": ["Quick", "FamilyFriendly"],
+    "steps": [
+      { "stepTitle": "Brown the beef", "stepDescription": "Heat a large frying pan over medium-high heat. Cook beef mince, breaking it up with a wooden spoon, until browned." },
+      { "stepTitle": "Season the mince", "stepDescription": "Add taco seasoning and ¼ cup water. Simmer for 3–4 minutes until thickened." },
+      { "stepTitle": "Layer the nachos", "stepDescription": "Spread corn chips on a large baking tray. Scatter seasoned beef over the chips, then top generously with shredded cheese." },
+      { "stepTitle": "Bake", "stepDescription": "Bake at 180°C for 8–10 minutes until cheese is melted and bubbly." },
+      { "stepTitle": "Add fresh toppings", "stepDescription": "Top with diced tomato, sliced jalapeños, sour cream, guacamole, and fresh coriander. Serve immediately." }
+    ],
+    "ingredients": [
+      { "name": "Beef mince", "amount": 500, "measurement": "Grams" },
+      { "name": "Corn chips", "amount": 300, "measurement": "Grams" },
+      { "name": "Taco seasoning", "amount": 2, "measurement": "Tablespoon" },
+      { "name": "Shredded cheese blend", "amount": 200, "measurement": "Grams" },
+      { "name": "Tomato (diced)", "amount": 2, "measurement": "Amount" },
+      { "name": "Sour cream", "amount": 100, "measurement": "Millilitres" },
+      { "name": "Jalapeños (sliced)", "amount": 2, "measurement": "Amount" },
+      { "name": "Fresh coriander", "amount": 1, "measurement": "Amount" }
+    ]
+  },
+  {
+    "name": "Simple Fish Tacos",
+    "description": "Lightly spiced white fish in warm tortillas with crunchy slaw and zesty lime crema. Fresh, fast, and full of flavour.",
+    "prepTime": 15,
+    "cookTime": 10,
+    "tags": ["Quick", "LowCarb"],
+    "steps": [
+      { "stepTitle": "Make the slaw", "stepDescription": "Shred red cabbage and grate carrot. Toss with lime juice, a pinch of salt, and chopped coriander. Set aside." },
+      { "stepTitle": "Make lime crema", "stepDescription": "Mix sour cream with lime zest, lime juice, and a pinch of salt. Thin with a little water if needed." },
+      { "stepTitle": "Season the fish", "stepDescription": "Pat fish fillets dry. Rub with cumin, smoked paprika, salt, and a drizzle of olive oil." },
+      { "stepTitle": "Cook the fish", "stepDescription": "Heat a non-stick pan over medium-high heat. Cook fish for 3–4 minutes per side until flaky. Break into large chunks." },
+      { "stepTitle": "Assemble tacos", "stepDescription": "Warm tortillas in a dry pan. Fill with fish, slaw, and a drizzle of lime crema. Serve with lime wedges." }
+    ],
+    "ingredients": [
+      { "name": "White fish fillets (snapper or hoki)", "amount": 500, "measurement": "Grams" },
+      { "name": "Small flour tortillas", "amount": 8, "measurement": "Amount" },
+      { "name": "Red cabbage", "amount": 200, "measurement": "Grams" },
+      { "name": "Carrot", "amount": 1, "measurement": "Amount" },
+      { "name": "Lime", "amount": 3, "measurement": "Amount" },
+      { "name": "Sour cream", "amount": 100, "measurement": "Millilitres" },
+      { "name": "Ground cumin", "amount": 1, "measurement": "Teaspoon" },
+      { "name": "Smoked paprika", "amount": 1, "measurement": "Teaspoon" }
+    ]
+  },
+  {
+    "name": "Vegetable Frittata",
+    "description": "A golden, oven-baked egg dish packed with seasonal vegetables and cheese. Equally good hot for dinner or cold for lunch the next day.",
+    "prepTime": 10,
+    "cookTime": 25,
+    "tags": ["Vegetarian", "Cheap", "LowCarb", "GlutenFree"],
+    "steps": [
+      { "stepTitle": "Preheat oven", "stepDescription": "Preheat oven to 180°C. Grease a 20cm oven-safe frying pan or baking dish." },
+      { "stepTitle": "Sauté vegetables", "stepDescription": "Heat olive oil in the pan over medium heat. Sauté diced onion, capsicum, and courgette for 5 minutes until softened. Add baby spinach and cook until wilted." },
+      { "stepTitle": "Whisk eggs", "stepDescription": "In a large bowl, whisk eggs, milk, salt, pepper, and half the cheese until well combined." },
+      { "stepTitle": "Combine & bake", "stepDescription": "Pour egg mixture over the vegetables in the pan. Sprinkle remaining cheese on top. Transfer to oven and bake for 20–25 minutes until puffed and golden." },
+      { "stepTitle": "Rest & serve", "stepDescription": "Let the frittata rest for 5 minutes before slicing. Serve with a simple green salad." }
+    ],
+    "ingredients": [
+      { "name": "Eggs", "amount": 8, "measurement": "Amount" },
+      { "name": "Milk", "amount": 60, "measurement": "Millilitres" },
+      { "name": "Onion (diced)", "amount": 1, "measurement": "Amount" },
+      { "name": "Red capsicum (diced)", "amount": 1, "measurement": "Amount" },
+      { "name": "Courgette (diced)", "amount": 1, "measurement": "Amount" },
+      { "name": "Baby spinach", "amount": 100, "measurement": "Grams" },
+      { "name": "Cheddar cheese (grated)", "amount": 100, "measurement": "Grams" },
+      { "name": "Olive oil", "amount": 1, "measurement": "Tablespoon" }
+    ]
+  },
+  {
+    "name": "Honey-Soy Salmon Bowl",
+    "description": "Glazed salmon fillets on a bed of steamed rice with edamame, avocado, and cucumber. A fresh, balanced bowl that feels like a treat.",
+    "prepTime": 10,
+    "cookTime": 15,
+    "tags": ["Quick", "LowCarb"],
+    "steps": [
+      { "stepTitle": "Cook rice", "stepDescription": "Rinse jasmine rice and cook according to packet directions. Keep warm." },
+      { "stepTitle": "Make honey-soy glaze", "stepDescription": "Whisk together soy sauce, honey, minced garlic, grated ginger, and sesame oil in a small bowl." },
+      { "stepTitle": "Cook salmon", "stepDescription": "Heat a non-stick pan over medium heat. Place salmon fillets skin-side down, cook for 4 minutes. Flip, pour glaze over, and cook 3 more minutes until caramelised." },
+      { "stepTitle": "Prep fresh toppings", "stepDescription": "Slice avocado, cucumber, and spring onions. Cook edamame according to packet directions." },
+      { "stepTitle": "Assemble bowls", "stepDescription": "Divide rice between bowls. Top with salmon, avocado, cucumber, edamame, and spring onion. Drizzle with any remaining glaze and sprinkle sesame seeds." }
+    ],
+    "ingredients": [
+      { "name": "Salmon fillets", "amount": 4, "measurement": "Amount" },
+      { "name": "Jasmine rice", "amount": 300, "measurement": "Grams" },
+      { "name": "Soy sauce", "amount": 3, "measurement": "Tablespoon" },
+      { "name": "Honey", "amount": 2, "measurement": "Tablespoon" },
+      { "name": "Garlic clove (minced)", "amount": 2, "measurement": "Amount" },
+      { "name": "Fresh ginger (grated)", "amount": 1, "measurement": "Teaspoon" },
+      { "name": "Sesame oil", "amount": 1, "measurement": "Teaspoon" },
+      { "name": "Avocado", "amount": 2, "measurement": "Amount" },
+      { "name": "Cucumber", "amount": 1, "measurement": "Amount" },
+      { "name": "Edamame (shelled)", "amount": 100, "measurement": "Grams" }
+    ]
+  }
+]

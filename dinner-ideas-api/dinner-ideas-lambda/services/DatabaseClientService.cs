@@ -151,7 +151,6 @@ public class DatabaseClientService : IDatabaseClientService
         if (existingItem is null)
             throw new ArgumentNullException(nameof(item));
 
-        item.CreatedDate = utcNow;
         item.LastModifiedDate = utcNow;
 
         var dict = _dynamoObjectService.ToAttributeMap(item);

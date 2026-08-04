@@ -23,6 +23,11 @@ const Navbar = () => {
             label: 'Generate',
             icon: 'pi pi-sync',
             command: () => navigate('/generate')
+        },
+        {
+            label: 'Discover',
+            icon: 'pi pi-globe',
+            command: () => navigate('/discover')
         }
     ];
 

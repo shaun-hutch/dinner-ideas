@@ -1,11 +1,22 @@
 .dinner-list-item {
-    margin: 1em;
+    margin: 0.5em;
     position: relative;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
     
     .p-card {
         height: inherit;
         display: flex;
         flex-direction: column;
+        border-radius: var(--radius);
+        overflow: hidden;
+        box-shadow: var(--card-shadow);
+        transition: box-shadow 0.2s ease, transform 0.2s ease;
+    }
+
+    .p-card:hover {
+        box-shadow: var(--card-shadow-hover);
+        transform: translateY(-2px);
+        cursor: pointer;
     }
 
     .p-card-body {
@@ -23,21 +34,23 @@
     }
 
     img {
-        border-radius: 6px 6px 0 0;
+        border-radius: var(--radius) var(--radius) 0 0;
+        height: 180px;
+        object-fit: cover;
     }
 
     .edit-button {
         position: absolute;
-        top: 1em;
-        right: 1em;
-        z-index: 69;
-        width: 2em;
-        height: 2em;
+        top: 0.75em;
+        right: 0.75em;
+        z-index: 10;
+        width: 2.2em;
+        height: 2.2em;
+        opacity: 0;
+        transition: opacity 0.2s ease;
+    }
+
+    &:hover .edit-button {
+        opacity: 1;
     }
 }
-
-/* .dinner-list-item:hover {
-    box-shadow: 0 0 20px rgba(0, 0, 0);
-    border-radius: 2em;  
-    cursor: pointer;
-} */

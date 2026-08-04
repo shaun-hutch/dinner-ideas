@@ -69,6 +69,8 @@ const DinnerItemEditor = (props: DinnerItemEditorProps) => {
             ...dinnerItem!,
             name,
             description,
+            prepTime,
+            cookTime,
             tags,
             steps
 
