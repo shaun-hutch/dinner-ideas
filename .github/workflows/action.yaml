@@ -19,7 +19,7 @@ jobs:
     name: Deploy Backend
     runs-on: ubuntu-latest
     outputs:
-      api-gateway-url: ${{ steps.backend-outputs.outputs.api_gateway_url }}
+      api-cf-url: ${{ steps.backend-outputs.outputs.api_cf_url }}
     steps:
       - name: Checkout
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683  # v4.2.2
@@ -47,13 +47,13 @@ jobs:
       - name: Capture outputs
         id: backend-outputs
         run: |
-          API_URL=$(aws cloudformation describe-stacks \
+          API_CF_URL=$(aws cloudformation describe-stacks \
             --stack-name dinner-ideas-backend \
             --region us-west-1 \
-            --query 'Stacks[0].Outputs[?OutputKey==`ApiGatewayUrl`].OutputValue' \
+            --query 'Stacks[0].Outputs[?OutputKey==`ApiCloudFrontUrl`].OutputValue' \
             --output text)
-          echo "api_gateway_url=$API_URL" >> $GITHUB_OUTPUT
-          echo "API Gateway URL: $API_URL"
+          echo "api_cf_url=$API_CF_URL" >> $GITHUB_OUTPUT
+          echo "API CloudFront URL: $API_CF_URL"
 
   # ==========================================================================
   # Frontend: Build React/Vite app + deploy CloudFormation stack

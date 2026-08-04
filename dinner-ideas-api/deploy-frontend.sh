@@ -4,10 +4,9 @@
 # Idempotent deploy for the Dinner Ideas frontend stack.
 #
 # What it does:
-#   1. Builds the React/Vite frontend (relative paths, no API endpoint env needed)
-#   2. Retrieves the API Gateway domain from the backend CloudFormation stack
-#   3. Deploys/updates the frontend CloudFormation stack (S3 bucket, CloudFront
-#      distribution with OAC and dual origins)
+#   1. Retrieves the API CloudFront URL from the backend stack
+#   2. Builds the React/Vite frontend with the API endpoint
+#   3. Deploys/updates the frontend CloudFormation stack (S3 + CloudFront for SPA)
 #   4. Syncs built files to the app S3 bucket
 #   5. Invalidates the CloudFront cache so new content is served immediately
 #
@@ -40,32 +39,29 @@ echo " Stage:       $STAGE"
 echo " Region:      $REGION"
 echo "==============================================="
 
-# ---- Step 1: Build the React frontend ----
+# ---- Step 1: Retrieve API CloudFront URL from backend stack ----
 echo ""
-echo "[1/5] Building React frontend..."
-cd "$FRONTEND_DIR"
-npm ci
-npm run build
-echo "  Build complete. Output: $FRONTEND_DIR/dist"
-
-# ---- Step 2: Retrieve API Gateway domain from backend stack ----
-echo ""
-echo "[2/5] Retrieving API Gateway URL from backend stack ($BACKEND_STACK_NAME)..."
-API_GATEWAY_URL=$(aws cloudformation describe-stacks \
+echo "[1/5] Retrieving API CloudFront URL from backend stack ($BACKEND_STACK_NAME)..."
+API_CF_URL=$(aws cloudformation describe-stacks \
     --stack-name "$BACKEND_STACK_NAME" \
     --region "$REGION" \
-    --query 'Stacks[0].Outputs[?OutputKey==`ApiGatewayUrl`].OutputValue' \
+    --query 'Stacks[0].Outputs[?OutputKey==`ApiCloudFrontUrl`].OutputValue' \
     --output text 2>/dev/null || echo "")
 
-if [ -z "$API_GATEWAY_URL" ] || [ "$API_GATEWAY_URL" = "None" ]; then
-    echo "  ERROR: Could not retrieve API Gateway URL from backend stack '$BACKEND_STACK_NAME'."
+if [ -z "$API_CF_URL" ] || [ "$API_CF_URL" = "None" ]; then
+    echo "  ERROR: Could not retrieve API CloudFront URL from backend stack '$BACKEND_STACK_NAME'."
     echo "  Make sure the backend stack is deployed first."
     exit 1
 fi
+echo "  API CloudFront URL: $API_CF_URL"
 
-# Extract just the domain (strip https://)
-API_GATEWAY_DOMAIN=$(echo "$API_GATEWAY_URL" | sed -e 's|^https://||' -e 's|/$||')
-echo "  API Gateway domain: $API_GATEWAY_DOMAIN"
+# ---- Step 2: Build the React frontend ----
+echo ""
+echo "[2/5] Building React frontend..."
+cd "$FRONTEND_DIR"
+npm ci
+VITE_APP_API_ENDPOINT="$API_CF_URL" npm run build
+echo "  Build complete. Output: $FRONTEND_DIR/dist"
 
 # ---- Step 3: Deploy frontend CloudFormation stack (S3 + CloudFront) ----
 echo ""
@@ -75,9 +71,6 @@ aws cloudformation deploy \
     --template-file "$CFN_TEMPLATE" \
     --stack-name "$FRONTEND_STACK_NAME" \
     --capabilities CAPABILITY_IAM \
-    --parameter-overrides \
-        "ApiGatewayDomain=$API_GATEWAY_DOMAIN" \
-        "ApiGatewayStage=$STAGE" \
     --region "$REGION" \
     --no-fail-on-empty-changeset
 echo "  Frontend stack deploy complete."

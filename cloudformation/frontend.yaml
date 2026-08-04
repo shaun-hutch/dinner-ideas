@@ -1,20 +1,7 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Description: >
   Dinner Ideas Frontend Stack
-  Resources: App S3 bucket, CloudFront distribution with dual origins
-  (S3 for static assets, API Gateway for /api/* requests), OAC for S3.
-
-Parameters:
-  ApiGatewayDomain:
-    Type: String
-    Description: >
-      API Gateway domain name (without protocol or stage).
-      Example: abc123.execute-api.us-west-1.amazonaws.com
-
-  ApiGatewayStage:
-    Type: String
-    Default: prod
-    Description: API Gateway stage name used as CloudFront origin path.
+  Resources: App S3 bucket, CloudFront distribution (SPA only), OAC.
 
 Resources:
   # =========================================================================
@@ -37,7 +24,7 @@ Resources:
           Value: dinner-ideas
 
   # =========================================================================
-  # CloudFront Origin Access Control — secure S3 access
+  # CloudFront Origin Access Control
   # =========================================================================
   S3OriginAccessControl:
     Type: AWS::CloudFront::OriginAccessControl
@@ -66,39 +53,22 @@ Resources:
                 'AWS:SourceArn': !Sub 'arn:aws:cloudfront::${AWS::AccountId}:distribution/${CloudFrontDistribution}'
 
   # =========================================================================
-  # CloudFront Distribution
+  # CloudFront Distribution — SPA only
   # =========================================================================
   CloudFrontDistribution:
     Type: AWS::CloudFront::Distribution
     Properties:
       DistributionConfig:
-        Comment: Dinner Ideas — SPA frontend + API proxy
+        Comment: Dinner Ideas SPA
         Enabled: true
         HttpVersion: http2and3
-        PriceClass: PriceClass_100   # US, Canada, Europe only (cheaper)
+        PriceClass: PriceClass_100
         DefaultRootObject: index.html
-
-        # ---- Origins ----
-
         Origins:
-          # Origin 1: S3 bucket for static assets
           - Id: S3Origin
             DomainName: !GetAtt AppBucket.RegionalDomainName
             OriginAccessControlId: !GetAtt S3OriginAccessControl.Id
             S3OriginConfig: {}
-
-          # Origin 2: API Gateway for backend requests
-          - Id: ApiGatewayOrigin
-            DomainName: !Ref ApiGatewayDomain
-            OriginPath: !Sub '/${ApiGatewayStage}'
-            CustomOriginConfig:
-              OriginProtocolPolicy: https-only
-              OriginSSLProtocols:
-                - TLSv1.2
-
-        # ---- Cache Behaviors ----
-        # /api/* → API Gateway (no caching). The Lambda uses Contains()/path-segment
-        # routing so the full path works natively — no path rewrite needed.
         DefaultCacheBehavior:
           TargetOriginId: S3Origin
           ViewerProtocolPolicy: redirect-to-https
@@ -109,34 +79,8 @@ Resources:
             - GET
             - HEAD
           Compress: true
-          CachePolicyId: 658327ea-f89d-4fab-a63d-7e88639e58f6   # CachingOptimized
-          OriginRequestPolicyId: 88a5eaf4-2fd4-4709-b370-b4c650ea3fcf  # CORS-S3Origin
-
-        # Additional cache behaviors evaluated BEFORE default
-        CacheBehaviors:
-          - PathPattern: /api/*
-            TargetOriginId: ApiGatewayOrigin
-            ViewerProtocolPolicy: redirect-to-https
-            AllowedMethods:
-              - GET
-              - HEAD
-              - POST
-              - PUT
-              - DELETE
-              - OPTIONS
-              - PATCH
-            CachedMethods:
-              - GET
-              - HEAD
-            Compress: true
-            # Managed policy: CachingDisabled (no cache for API)
-            CachePolicyId: 4135ea2d-6df8-44a3-9df3-4b5a84be39ad
-            # Managed policy: AllViewer (forward all headers/query/cookies)
-            OriginRequestPolicyId: 216adef6-5c7f-47e4-b989-5492eafa07d3
-
-        # ---- Custom Error Responses (SPA routing) ----
-        # Return index.html with 200 for 403 (S3 returns 403 for missing objects
-        # when not using website hosting) and actual 404s
+          CachePolicyId: 658327ea-f89d-4fab-a63d-7e88639e58f6
+          OriginRequestPolicyId: 88a5eaf4-2fd4-4709-b370-b4c650ea3fcf
         CustomErrorResponses:
           - ErrorCode: 403
             ResponseCode: 200
@@ -144,31 +88,16 @@ Resources:
           - ErrorCode: 404
             ResponseCode: 200
             ResponsePagePath: /index.html
-
-        # ---- Misc ----
         ViewerCertificate:
           CloudFrontDefaultCertificate: true
-
       Tags:
         - Key: Application
           Value: dinner-ideas
 
-# ===========================================================================
-# Outputs
-# ===========================================================================
 Outputs:
   CloudFrontDistributionId:
-    Description: CloudFront distribution ID (needed for invalidation commands)
     Value: !Ref CloudFrontDistribution
-
   CloudFrontDomainName:
-    Description: CloudFront distribution domain name (e.g., xyz.cloudfront.net)
     Value: !GetAtt CloudFrontDistribution.DomainName
-
   AppBucketName:
-    Description: S3 bucket name for the built frontend files
     Value: !Ref AppBucket
-
-  AppBucketRegionalDomainName:
-    Description: S3 bucket regional domain name (for s3 sync)
-    Value: !GetAtt AppBucket.RegionalDomainName

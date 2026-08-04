@@ -152,7 +152,7 @@ Resources:
       Tags:
         - Key: Application
           Value: dinner-ideas
-      # Code.S3Bucket and Code.S3Key are set by 'aws cloudformation package'
+      Code: ../dinner-ideas-api/function.zip
 
   # =========================================================================
   # API Gateway REST API (v1) — proxy integration to Lambda
@@ -283,6 +283,47 @@ Resources:
             method.response.header.Access-Control-Allow-Methods: true
             method.response.header.Access-Control-Allow-Origin: true
 
+  # =========================================================================
+  # API CloudFront Distribution — dedicated CDN for the API Gateway
+  # =========================================================================
+  ApiCloudFrontDistribution:
+    Type: AWS::CloudFront::Distribution
+    Properties:
+      DistributionConfig:
+        Comment: Dinner Ideas API CDN
+        Enabled: true
+        PriceClass: PriceClass_100
+        Origins:
+          - Id: ApiGateway
+            DomainName: !Sub '${ApiGatewayRestApi}.execute-api.${AWS::Region}.amazonaws.com'
+            OriginPath: !Sub '/${StageName}'
+            CustomOriginConfig:
+              OriginProtocolPolicy: https-only
+              OriginSSLProtocols:
+                - TLSv1.2
+        DefaultCacheBehavior:
+          TargetOriginId: ApiGateway
+          ViewerProtocolPolicy: redirect-to-https
+          AllowedMethods:
+            - GET
+            - HEAD
+            - POST
+            - PUT
+            - DELETE
+            - OPTIONS
+            - PATCH
+          CachedMethods:
+            - GET
+            - HEAD
+          Compress: false
+          CachePolicyId: 4135ea2d-6df8-44a3-9df3-4b5a84be39ad   # CachingDisabled
+          OriginRequestPolicyId: b689b0a8-53d0-40ab-baf2-68738e2966ac  # AllViewerExceptHostHeader
+        ViewerCertificate:
+          CloudFrontDefaultCertificate: true
+      Tags:
+        - Key: Application
+          Value: dinner-ideas
+
 # ===========================================================================
 # Outputs
 # ===========================================================================
@@ -292,6 +333,10 @@ Outputs:
     Value: !Sub 'https://${ApiGatewayRestApi}.execute-api.${AWS::Region}.amazonaws.com'
     Export:
       Name: !Sub '${AWS::StackName}-ApiGatewayUrl'
+
+  ApiCloudFrontUrl:
+    Description: API CloudFront distribution URL
+    Value: !Sub 'https://${ApiCloudFrontDistribution.DomainName}'
 
   ApiGatewayFullUrl:
     Description: API Gateway invoke URL including stage
