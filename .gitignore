@@ -418,6 +418,10 @@ autom4te.cache/
 tarballs/
 test-results/
 
+# Dinner Ideas — generated deployment artifacts (never commit these)
+dinner-ideas-api/function.zip
+dinner-ideas-api/packaged-backend.yaml
+
 # Mac bundle stuff
 *.dmg
 *.app
