@@ -3,7 +3,6 @@ import './DinnerItemEditor.css';
 import { DinnerItemContext } from 'hooks/useDinnerItemListContext';
 import { useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { InputText } from 'primereact/inputtext';
-import './DinnerItemEditor.css';
 import { InputTextarea } from 'primereact/inputtextarea';
 import { FloatLabel } from "primereact/floatlabel";
 import { Button } from 'primereact/button';

@@ -15,22 +15,21 @@ test('can toggle between sign in and register', async ({ page }) => {
   await expect(page.locator('text=Sign In').first()).toBeVisible();
 });
 
-test('navbar renders on login page', async ({ page }) => {
+test('login page has sign in form', async ({ page }) => {
   await page.goto('http://localhost:3000/login');
-  await expect(page.locator('h1:has-text("Dinner Ideas")')).toBeVisible();
+  await expect(page.locator('input[type="email"]')).toBeVisible();
+  await expect(page.locator('footer')).toBeVisible();
 });
 
-test('discover page renders suggestions', async ({ page }) => {
+test('discover page redirects to login when unauthenticated', async ({ page }) => {
   await page.goto('http://localhost:3000/discover');
-  await expect(page.locator('text=Discover New Recipes').first()).toBeVisible();
-  await expect(page.getByRole('button', { name: 'chicken' })).toBeVisible();
-  await expect(page.getByRole('button', { name: 'pasta' })).toBeVisible();
+  // Protected route redirects to /login
+  await expect(page).toHaveURL(/\/login/);
 });
 
-test('generate page has two tabs', async ({ page }) => {
+test('generate page redirects to login when unauthenticated', async ({ page }) => {
   await page.goto('http://localhost:3000/generate');
-  await expect(page.getByText('From My Collection')).toBeVisible();
-  await expect(page.getByText('Discover New')).toBeVisible();
+  await expect(page).toHaveURL(/\/login/);
 });
 
 test('email and password fields are required', async ({ page }) => {
