@@ -6,6 +6,7 @@ import { TabView, TabPanel } from "primereact/tabview";
 import { Tag } from "primereact/tag";
 import { generateItems, getRandomMeal, importMeal } from "../../api/Api";
 import { DinnerItem } from "../../models/DinnerItem";
+import { FoodTagLabel } from "../../models/Constants";
 import DinnerListItem from "../DinnerListItem/DinnerListItem";
 import { useNavigate } from "react-router-dom";
 import "./Generate.css";
@@ -52,7 +53,8 @@ const Generate: React.FC = () => {
         setImportLoading(true);
         try {
             await importMeal(mealId);
-            navigate("/");
+            navigate("/", { replace: true });
+            setTimeout(() => window.location.reload(), 100);
         } catch (err) {
             console.error("Import failed:", err);
         } finally {
@@ -135,7 +137,6 @@ const Generate: React.FC = () => {
                                     disabled={discoverLoading}
                                     raised
                                     size="large"
-                                    severity="help"
                                 />
                             </div>
 
@@ -145,8 +146,8 @@ const Generate: React.FC = () => {
                                     <p className="text-color-secondary">{discoverMeal.description}</p>
 
                                     <div className="flex gap-2 flex-wrap mb-3">
-                                        {discoverMeal.tags?.map((tag) => (
-                                            <Tag key={tag} value={String(tag)} severity="info" />
+                                        {discoverMeal.tags?.map((tag: number) => (
+                                            <Tag key={tag} value={FoodTagLabel[tag] || String(tag)} severity="info" />
                                         ))}
                                     </div>
 

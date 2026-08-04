@@ -27,7 +27,9 @@
     "start": "vite",
     "build": "tsc && vite build",
     "preview": "vite preview",
-    "test": "vitest run"
+    "test": "vitest run",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui"
   },
   "eslintConfig": {
     "extends": [
@@ -48,6 +50,7 @@
     ]
   },
   "devDependencies": {
+    "@playwright/test": "^1.62.1",
     "jsdom": "^26.1.0",
     "vitest": "^3.2.4"
   }

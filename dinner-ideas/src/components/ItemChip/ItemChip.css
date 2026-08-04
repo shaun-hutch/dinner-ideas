@@ -1,7 +1,10 @@
 .item-chip {
-    color: black;
+    color: #222;
     margin-left: 0.5em;
     margin-bottom: 0.5em; 
     flex-shrink: 2;
     font-size: small;
+    font-weight: 600;
+    border-radius: 20px;
+    padding: 0.25em 0.75em;
 }

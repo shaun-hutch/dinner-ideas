@@ -4,17 +4,6 @@
   padding: 1rem 2rem 3rem;
 }
 
-/* Subtle page-top accent */
-.body::before {
-  content: '';
-  display: block;
-  height: 4px;
-  margin-bottom: 1.25rem;
-  border-radius: 0 0 8px 8px;
-  background: linear-gradient(90deg, var(--primary-400), var(--primary-600), var(--primary-400));
-  opacity: 0.5;
-}
-
 .app-footer {
   text-align: center;
   padding: 2.5rem 1rem 1.5rem;
@@ -22,7 +11,6 @@
   font-size: 0.85rem;
   border-top: 1px solid var(--surface-border);
   margin-top: 3rem;
-  background: linear-gradient(to top, rgba(0,0,0,0.02), transparent);
 }
 
 .app-footer a {

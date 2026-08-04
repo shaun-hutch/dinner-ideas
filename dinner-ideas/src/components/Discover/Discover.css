@@ -27,6 +27,14 @@
 .discover-result-item {
     background: var(--surface-card);
     border: 1px solid var(--surface-border);
+    border-radius: var(--radius);
+    box-shadow: var(--card-shadow);
+    width: 100%;
+}
+
+.discover-result-item .flex {
+    align-items: flex-start !important;
+    gap: 1rem;
 }
 
 .discover-empty,

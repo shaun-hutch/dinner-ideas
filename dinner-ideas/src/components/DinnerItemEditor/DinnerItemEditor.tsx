@@ -14,6 +14,15 @@ import { InputNumber } from 'primereact/inputnumber';
 import { MultiSelect } from 'primereact/multiselect';
 import { foodTagListItems, totalTime } from 'helpers/componentHelpers';
 import DinnerItemSteps from 'components/DinnerItemSteps/DinnerItemSteps';
+import { Measurement } from 'models/Measurement';
+
+const measurementLabels: Record<number, string> = {
+    [Measurement.Millilitres]: 'ml',
+    [Measurement.Teaspoon]: 'tsp',
+    [Measurement.Tablespoon]: 'tbsp',
+    [Measurement.Grams]: 'g',
+    [Measurement.Amount]: '',
+};
 
 interface DinnerItemEditorProps {
     readOnly?: boolean;
@@ -166,6 +175,22 @@ const DinnerItemEditor = (props: DinnerItemEditorProps) => {
                     <div className="dinner-item-form-field">
                         <DinnerItemSteps steps={steps} onStepsChange={setSteps} loaded={loaded} readOnly={readOnly} create={create} />
                     </div>
+
+                    {dinnerItem?.ingredients && dinnerItem.ingredients.length > 0 && (
+                        <div className="dinner-item-form-field">
+                            <h4>Ingredients</h4>
+                            <div className="ingredients-readonly">
+                                {dinnerItem.ingredients.map((ing) => (
+                                    <div key={ing.id} className="ingredient-row">
+                                        <span className="ingredient-name">{ing.name}</span>
+                                        <span className="ingredient-amount">
+                                            {ing.amount} {measurementLabels[ing.measurement] || ''}
+                                        </span>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    )}
 
                     {!readOnly && (
                         <div className="dinner-item-form-buttons">

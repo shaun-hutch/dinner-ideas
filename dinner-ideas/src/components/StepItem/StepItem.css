@@ -1,14 +1,17 @@
 .dinner-item-step {
     display: flex;
-
 }
 
 .dinner-item-fields {
     flex-grow: 2;
 }
 
+.dinner-item-fields textarea {
+    min-height: 80px;
+}
+
 .remove-button {
-    z-index: 69;
+    z-index: 10;
     width: 2em;
     height: 2em;
 }
