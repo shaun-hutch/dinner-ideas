@@ -7,17 +7,21 @@
 }
 
 .welcome-banner {
-    margin-bottom: 1.5rem;
+    margin-bottom: 1.25rem;
+    padding: 0 0.25rem;
 }
 
 .welcome-banner h2 {
-    margin: 0 0 0.25rem;
-    font-size: 1.4rem;
+    margin: 0 0 0.15rem;
+    font-size: 1.35rem;
+    font-weight: 650;
+    color: var(--text-warm);
 }
 
 .welcome-banner p {
     margin: 0;
     color: var(--text-color-secondary);
+    font-size: 0.95rem;
 }
 
 .empty-state {

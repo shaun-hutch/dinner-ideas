@@ -18,7 +18,8 @@ public class S3Service : IS3Service
 
     public S3Service()
     {
-        _s3Client = new AmazonS3Client(RegionEndpoint.USWest1);
+        var region = Environment.GetEnvironmentVariable("AWS_REGION") ?? "us-west-1";
+        _s3Client = new AmazonS3Client(RegionEndpoint.GetBySystemName(region));
         _bucketName = Environment.GetEnvironmentVariable("IMAGE_BUCKET_NAME") ?? "dinner-ideas-images";
     }
 
@@ -38,6 +39,7 @@ public class S3Service : IS3Service
 
     public string GetImageUrl(string key)
     {
-        return $"https://{_bucketName}.s3.us-west-1.amazonaws.com/{key}";
+        var region = Environment.GetEnvironmentVariable("AWS_REGION") ?? "us-west-1";
+        return $"https://{_bucketName}.s3.{region}.amazonaws.com/{key}";
     }
 }

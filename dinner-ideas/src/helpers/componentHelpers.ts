@@ -24,6 +24,6 @@ export const totalTime = (... times: number[]): string => {
     } else {
         const hours = Math.floor(total / 60);
         const mins = total % 60;
-        return `${hours} hour${mins > 60 ? "s" : ''}, ${mins} mins`;
+        return `${hours} hour${hours > 1 ? "s" : ''}, ${mins} mins`;
     }
 }

@@ -1,6 +1,10 @@
+using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 using dinner_ideas_lambda.models;
 using Newtonsoft.Json;
+
+[assembly: InternalsVisibleTo("dinner-ideas-lambda.Tests")]
 
 namespace dinner_ideas_lambda.services;
 
@@ -72,68 +76,43 @@ public class MealDbService : IMealDbService
 
     /// <summary>
     /// Maps a TheMealDB meal to our DinnerItem model.
+    /// Uses reflection to extract ingredient/measure pairs from the 20 flat fields.
     /// </summary>
-    private static DinnerItem MapToDinnerItem(MealDbMeal m)
+    internal static DinnerItem MapToDinnerItem(MealDbMeal m)
     {
-        // Collect non-empty ingredient/measure pairs
-        var ingredientPairs = new (string? Ingredient, string? Measure)[]
-        {
-            (m.StrIngredient1, m.StrMeasure1),
-            (m.StrIngredient2, m.StrMeasure2),
-            (m.StrIngredient3, m.StrMeasure3),
-            (m.StrIngredient4, m.StrMeasure4),
-            (m.StrIngredient5, m.StrMeasure5),
-            (m.StrIngredient6, m.StrMeasure6),
-            (m.StrIngredient7, m.StrMeasure7),
-            (m.StrIngredient8, m.StrMeasure8),
-            (m.StrIngredient9, m.StrMeasure9),
-            (m.StrIngredient10, m.StrMeasure10),
-            (m.StrIngredient11, m.StrMeasure11),
-            (m.StrIngredient12, m.StrMeasure12),
-            (m.StrIngredient13, m.StrMeasure13),
-            (m.StrIngredient14, m.StrMeasure14),
-            (m.StrIngredient15, m.StrMeasure15),
-            (m.StrIngredient16, m.StrMeasure16),
-            (m.StrIngredient17, m.StrMeasure17),
-            (m.StrIngredient18, m.StrMeasure18),
-            (m.StrIngredient19, m.StrMeasure19),
-            (m.StrIngredient20, m.StrMeasure20),
-        };
+        // Extract ingredients via reflection — TheMealDB uses strIngredient1..20 + strMeasure1..20
+        var ingredients = ExtractIngredients(m);
 
-        var ingredients = ingredientPairs
-            .Where(p => !string.IsNullOrWhiteSpace(p.Ingredient))
-            .Select(p => new Ingredient
-            {
-                Id = Guid.NewGuid(),
-                Name = p.Ingredient!.Trim(),
-                Description = string.IsNullOrWhiteSpace(p.Measure) ? "" : p.Measure.Trim(),
-                Amount = ParseAmount(p.Measure),
-                Measurement = InferMeasurement(p.Measure)
-            })
-            .ToList();
-
-        // Split instructions into steps by newlines or numbered markers
+        // Parse instructions into numbered steps
         var steps = ParseInstructionsToSteps(m.StrInstructions ?? "");
 
-        // Map category/tags to FoodTag enum
+        // Map category + tags to FoodTag enum
         var tags = MapTags(m.StrCategory, m.StrTags);
 
-        // Use a deterministic GUID from the meal ID
-        var guid = Guid.Parse("00000000-0000-0000-0000-" + (m.IdMeal ?? "0").PadLeft(12, '0')[..12]);
+        // Build a readable description
+        var area = string.IsNullOrWhiteSpace(m.StrArea) ? null : m.StrArea;
+        var category = string.IsNullOrWhiteSpace(m.StrCategory) ? null : m.StrCategory;
+        var description = area != null && category != null
+            ? $"A {category.ToLower()} dish from {area}. Imported from TheMealDB."
+            : area != null
+                ? $"A dish from {area}. Imported from TheMealDB."
+                : "Imported from TheMealDB.";
+
+        // Deterministic GUID from the TheMealDB meal ID
+        var padded = (m.IdMeal ?? "0").PadLeft(12, '0');
+        var guid = Guid.Parse("00000000-0000-0000-0000-" + padded[^12..]);
 
         return new DinnerItem
         {
             Id = guid,
             Name = m.StrMeal ?? "Unknown Meal",
-            Description = m.StrCategory != null
-                ? $"A {m.StrCategory.ToLower()} dish from {m.StrArea ?? "around the world"}. Imported from TheMealDB."
-                : "Imported from TheMealDB.",
+            Description = description,
             PrepTime = 15,
             CookTime = 30,
-            Steps = ingredients.Any() ? steps.ToArray() : steps.ToArray(),
+            Steps = steps.ToArray(),
             Tags = tags.ToArray(),
             Ingredients = ingredients.ToArray(),
-            ImageKey = null, // Store the URL separately — frontend will use it directly
+            ImageKey = m.StrMealThumb, // TheMealDB thumbnail URL (frontend detects full URLs)
             CreatedBy = 0,
             LastModifiedBy = 0,
             CreatedDate = DateTime.UtcNow,
@@ -142,13 +121,50 @@ public class MealDbService : IMealDbService
         };
     }
 
+    /// <summary>
+    /// Uses reflection to extract non-empty ingredient/measure pairs from the
+    /// 20 flat strIngredientN / strMeasureN properties on a MealDbMeal.
+    /// </summary>
+    internal static List<Ingredient> ExtractIngredients(MealDbMeal meal)
+    {
+        var mealType = typeof(MealDbMeal);
+        var ingredients = new List<Ingredient>();
+
+        for (int i = 1; i <= 20; i++)
+        {
+            var ingProp = mealType.GetProperty($"StrIngredient{i}");
+            var measProp = mealType.GetProperty($"StrMeasure{i}");
+
+            var name = ingProp?.GetValue(meal) as string;
+            var measure = measProp?.GetValue(meal) as string;
+
+            if (string.IsNullOrWhiteSpace(name))
+                continue;
+
+            ingredients.Add(new Ingredient
+            {
+                Id = Guid.NewGuid(),
+                Name = name.Trim(),
+                Description = string.IsNullOrWhiteSpace(measure) ? "" : measure.Trim(),
+                Amount = ParseAmount(measure),
+                Measurement = InferMeasurement(measure)
+            });
+        }
+
+        return ingredients;
+    }
+
+    /// <summary>
+    /// Splits TheMealDB instructions (one big text block) into numbered steps.
+    /// Tries newlines first, then sentence boundaries, then falls back to a single step.
+    /// </summary>
     private static List<DinnerItemStep> ParseInstructionsToSteps(string instructions)
     {
         if (string.IsNullOrWhiteSpace(instructions))
-            return [new DinnerItemStep { Id = Guid.NewGuid(), StepTitle = "Instructions", StepDescription = "See the original recipe for instructions." }];
+            return [SingleStep("Instructions", "See the original recipe for full instructions.")];
 
-        // Split by newlines (\r\n or \n)
-        var lines = instructions
+        // Normalize line endings and split
+        var rawLines = instructions
             .Replace("\r\n", "\n")
             .Replace("\r", "\n")
             .Split('\n', StringSplitOptions.RemoveEmptyEntries)
@@ -156,45 +172,70 @@ public class MealDbService : IMealDbService
             .Where(l => l.Length > 10)
             .ToList();
 
-        if (lines.Count == 0)
-        {
-            // Fallback: split long text by sentences
-            lines = Regex.Split(instructions, @"(?<=[.!?])\s+")
-                .Select(s => s.Trim())
-                .Where(s => s.Length > 10)
-                .ToList();
-        }
+        // If we got reasonable lines, use them
+        if (rawLines.Count >= 2)
+            return rawLines.Select((line, i) => MakeStep(i + 1, line)).ToList();
 
-        if (lines.Count == 0)
-        {
-            return [new DinnerItemStep { Id = Guid.NewGuid(), StepTitle = "Instructions", StepDescription = instructions.Trim() }];
-        }
+        // Try splitting by sentence boundaries
+        var sentences = Regex.Split(instructions, @"(?<=[.!?])\s+")
+            .Select(s => s.Trim())
+            .Where(s => s.Length > 10)
+            .ToList();
 
-        return lines.Select((line, i) => new DinnerItemStep
-        {
-            Id = Guid.NewGuid(),
-            StepTitle = $"Step {i + 1}",
-            StepDescription = line
-        }).ToList();
+        if (sentences.Count >= 2)
+            return sentences.Select((s, i) => MakeStep(i + 1, s)).ToList();
+
+        // Fallback: single step with the full text (trimmed to reasonable length)
+        var clean = instructions.Trim();
+        var title = clean.Length > 80 ? "Instructions" : clean[..Math.Min(80, clean.Length)];
+        return [SingleStep(title, clean)];
     }
 
+    private static DinnerItemStep MakeStep(int number, string description) =>
+        new() { Id = Guid.NewGuid(), StepTitle = $"Step {number}", StepDescription = description };
+
+    private static DinnerItemStep SingleStep(string title, string description) =>
+        new() { Id = Guid.NewGuid(), StepTitle = title, StepDescription = description };
+
+    /// <summary>
+    /// Maps TheMealDB category and tags to our FoodTag enum.
+    /// </summary>
     private static List<FoodTag> MapTags(string? category, string? tags)
     {
+        var combined = $"{(category ?? "")} {(tags ?? "")}".ToLowerInvariant();
         var result = new List<FoodTag>();
-        var combined = $"{(category ?? "")},{(tags ?? "")}".ToLowerInvariant();
 
-        if (combined.Contains("vegetarian") || combined.Contains("vegan")) result.Add(FoodTag.Vegetarian);
+        if (combined.Contains("vegetarian")) result.Add(FoodTag.Vegetarian);
         if (combined.Contains("vegan")) result.Add(FoodTag.Vegan);
-        if (combined.Contains("quick") || combined.Contains("easy")) result.Add(FoodTag.Quick);
-        if (combined.Contains("cheap") || combined.Contains("budget")) result.Add(FoodTag.Cheap);
-        if (combined.Contains("pasta") || combined.Contains("seafood")) { /* no direct mapping */ }
         if (combined.Contains("gluten")) result.Add(FoodTag.GlutenFree);
 
-        // Default: at least one tag
-        if (result.Count == 0)
+        // Quick/easy hints
+        if (combined.Contains("quick") || combined.Contains("easy") ||
+            combined.Contains("breakfast") || combined.Contains("salad"))
+            result.Add(FoodTag.Quick);
+
+        // Cheap hints
+        if (combined.Contains("budget") || combined.Contains("cheap") ||
+            combined.Contains("pasta") || combined.Contains("soup") ||
+            combined.Contains("stew") || combined.Contains("bean"))
+            result.Add(FoodTag.Cheap);
+
+        // Low carb hints
+        if (combined.Contains("keto") || combined.Contains("low carb") ||
+            combined.Contains("salad") || combined.Contains("seafood"))
+            result.Add(FoodTag.LowCarb);
+
+        // Family-friendly default for comfort food categories
+        if (combined.Contains("chicken") || combined.Contains("beef") ||
+            combined.Contains("pasta") || combined.Contains("pork") ||
+            combined.Contains("comfort") || combined.Contains("casserole"))
             result.Add(FoodTag.FamilyFriendly);
 
-        return result;
+        // Always include at least one tag
+        if (result.Count == 0)
+            result.Add(FoodTag.Quick);
+
+        return result.Distinct().ToList();
     }
 
     private static decimal ParseAmount(string? measure)

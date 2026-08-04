@@ -31,11 +31,13 @@ const DinnerListItem = (props: DinnerItemProps) => {
     } = props;
 
     const formattedTime = `${totalTime} mins`
-    const processedImage = imageKey && ImageBaseUrl
-        ? `${ImageBaseUrl}/${imageKey}`
-        : imageKey
-            ? `https://dinner-ideas-images-896789984538-us-west-1.s3.us-west-1.amazonaws.com/${imageKey}`
-            : meta_salad;
+    const processedImage = imageKey
+        ? imageKey.startsWith("http")
+            ? imageKey // Full URL (e.g., TheMealDB thumbnail)
+            : ImageBaseUrl
+                ? `${ImageBaseUrl}/${imageKey}`
+                : meta_salad
+        : meta_salad;
     
     const photo = (
         <div className="image">

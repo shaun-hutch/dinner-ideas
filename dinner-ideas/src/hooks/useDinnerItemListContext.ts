@@ -34,7 +34,8 @@ export const useDiinnerItemListContext = () => {
     useEffect(() => {
         const getData = async () => {
             const data = await getAll();
-            setDinnerItemList(data);
+            // Filter out junk items with no name
+            setDinnerItemList(data.filter(item => item.name && item.name !== "None"));
             setLoading(false);
         }
 
