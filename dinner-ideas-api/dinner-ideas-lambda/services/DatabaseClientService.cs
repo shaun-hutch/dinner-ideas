@@ -92,7 +92,7 @@ public class DatabaseClientService : IDatabaseClientService
         else 
         {
             Console.WriteLine($"No item found for {typeAndId}");
-            return null;
+            return default!;
         }
     }
 
