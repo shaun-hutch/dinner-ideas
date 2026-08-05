@@ -107,4 +107,36 @@ public class SeedDataTests
             Assert.InRange(total, 5, 180); // No recipe should take > 3 hours
         }
     }
+
+    [Fact]
+    public void AllRecipes_UseValidMeasurementEnumValues()
+    {
+        var recipes = SeedData.GetSeedRecipes();
+
+        foreach (var r in recipes)
+        {
+            foreach (var ing in r.Ingredients)
+            {
+                Assert.True(Enum.IsDefined(typeof(Measurement), ing.Measurement),
+                    $"Recipe '{r.Name}' ingredient '{ing.Name}' has invalid measurement: {ing.Measurement}");
+            }
+        }
+    }
+
+    [Fact]
+    public void NewMeasurementValues_AreAvailable()
+    {
+        // Verify the new measurement values exist on the enum
+        var cups = Measurement.Cups;
+        var ounces = Measurement.Ounces;
+        var pounds = Measurement.Pounds;
+        var pinch = Measurement.Pinch;
+        var toTaste = Measurement.ToTaste;
+
+        Assert.Equal("Cups", cups.ToString());
+        Assert.Equal("Ounces", ounces.ToString());
+        Assert.Equal("Pounds", pounds.ToString());
+        Assert.Equal("Pinch", pinch.ToString());
+        Assert.Equal("ToTaste", toTaste.ToString());
+    }
 }

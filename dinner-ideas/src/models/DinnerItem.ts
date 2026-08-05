@@ -17,4 +17,6 @@ export interface DinnerItemStep {
     stepTitle: string;
     stepDescription: string;
     id: string;
+    /** Denormalised list of ingredient IDs used in this step. */
+    ingredientIds?: string[];
 }

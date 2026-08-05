@@ -77,6 +77,7 @@ public class MealDbService : IMealDbService
     /// <summary>
     /// Maps a TheMealDB meal to our DinnerItem model.
     /// Uses reflection to extract ingredient/measure pairs from the 20 flat fields.
+    /// Best-effort associates ingredients with steps via text matching.
     /// </summary>
     internal static DinnerItem MapToDinnerItem(MealDbMeal m)
     {
@@ -85,6 +86,9 @@ public class MealDbService : IMealDbService
 
         // Parse instructions into numbered steps
         var steps = ParseInstructionsToSteps(m.StrInstructions ?? "");
+
+        // Best-effort: associate ingredients with steps by matching names in step text
+        AssociateIngredientsWithSteps(ingredients, steps);
 
         // Map category + tags to FoodTag enum
         var tags = MapTags(m.StrCategory, m.StrTags);
@@ -124,6 +128,7 @@ public class MealDbService : IMealDbService
     /// <summary>
     /// Uses reflection to extract non-empty ingredient/measure pairs from the
     /// 20 flat strIngredientN / strMeasureN properties on a MealDbMeal.
+    /// Also cleans ingredient names by stripping redundant quantity/measurement prefixes.
     /// </summary>
     internal static List<Ingredient> ExtractIngredients(MealDbMeal meal)
     {
@@ -141,17 +146,81 @@ public class MealDbService : IMealDbService
             if (string.IsNullOrWhiteSpace(name))
                 continue;
 
+            var cleanedName = CleanIngredientName(name.Trim());
+            var amount = ParseAmount(measure);
+            var measurement = InferMeasurement(measure);
+            var isToTaste = measurement == Measurement.ToTaste || amount == 0;
+
             ingredients.Add(new Ingredient
             {
                 Id = Guid.NewGuid(),
-                Name = name.Trim(),
+                Name = cleanedName,
                 Description = string.IsNullOrWhiteSpace(measure) ? "" : measure.Trim(),
-                Amount = ParseAmount(measure),
-                Measurement = InferMeasurement(measure)
+                Amount = amount,
+                Measurement = measurement,
+                Quantity = isToTaste ? (measure?.Trim() ?? "to taste") : null
             });
         }
 
         return ingredients;
+    }
+
+    /// <summary>
+    /// Strips leading quantity/unit words from ingredient names
+    /// (e.g., "2 cloves of garlic" → "garlic", "1 cup flour" → "flour").
+    /// </summary>
+    private static string CleanIngredientName(string name)
+    {
+        if (string.IsNullOrWhiteSpace(name)) return name;
+
+        // Patterns like "2 cloves of ...", "1 cup ...", "500g ..."
+        // Match: optional number/fraction + optional unit words + optional "of"
+        var cleaned = Regex.Replace(name.Trim(),
+            @"^[\d¼½¾⅓⅔⅛⅜⅝⅞./\s-]+" +               // leading numbers/fractions
+            @"\s*" +
+            @"(?:cloves?|slices?|bunches?|sprigs?|cans?|tins?|pinch(?:es)?|dash(?:es)?\s+of\s+)?" + // optional unit+of
+            @"(?:cups?\s+(?:of\s+)?)?" +
+            @"(?:tbsp|tablespoons?|tsp|teaspoons?|ml|millilitres?|litres?|liters?|g|grams?|kg|kilos?|oz|ounces?|lb|lbs|pounds?)\s+(?:of\s+)?",
+            "", RegexOptions.IgnoreCase);
+
+        // Also strip trailing "of" if it got left alone
+        cleaned = Regex.Replace(cleaned.Trim(), @"^of\s+", "", RegexOptions.IgnoreCase);
+
+        return string.IsNullOrWhiteSpace(cleaned) ? name : cleaned;
+    }
+
+    /// <summary>
+    /// Best-effort association of ingredients to steps by matching ingredient names
+    /// against step description text (case-insensitive substring match).
+    /// Populates both <see cref="Ingredient.StepId"/> and <see cref="DinnerItemStep.IngredientIds"/>.
+    /// </summary>
+    internal static void AssociateIngredientsWithSteps(List<Ingredient> ingredients, List<DinnerItemStep> steps)
+    {
+        if (ingredients.Count == 0 || steps.Count == 0) return;
+
+        foreach (var ingredient in ingredients)
+        {
+            // Skip ingredients that are already associated or have very short names
+            if (ingredient.StepId.HasValue || ingredient.Name.Length < 3)
+                continue;
+
+            var ingredientName = ingredient.Name.ToLowerInvariant();
+
+            // Try to find the ingredient name in any step description
+            foreach (var step in steps)
+            {
+                var stepText = step.StepDescription.ToLowerInvariant();
+
+                // Match whole word where possible, but fall back to substring
+                if (stepText.Contains(ingredientName))
+                {
+                    ingredient.StepId = step.Id;
+                    if (!step.IngredientIds.Contains(ingredient.Id))
+                        step.IngredientIds.Add(ingredient.Id);
+                    break; // Assign to first matching step
+                }
+            }
+        }
     }
 
     /// <summary>
@@ -241,6 +310,48 @@ public class MealDbService : IMealDbService
     private static decimal ParseAmount(string? measure)
     {
         if (string.IsNullOrWhiteSpace(measure)) return 1;
+
+        // "to taste" → 0 (free-form quantity)
+        if (Regex.IsMatch(measure, @"to\s+taste", RegexOptions.IgnoreCase)) return 0;
+
+        // Handle Unicode fractions: ½, ¼, ¾, ⅓, ⅔, ⅛, ⅜, ⅝, ⅞
+        var fractionMap = new Dictionary<char, decimal>
+        {
+            { '½', 0.5m }, { '¼', 0.25m }, { '¾', 0.75m },
+            { '⅓', 1m/3m }, { '⅔', 2m/3m },
+            { '⅛', 0.125m }, { '⅜', 0.375m }, { '⅝', 0.625m }, { '⅞', 0.875m }
+        };
+
+        // Check for mixed numbers like "1 1/2" or "1½"
+        var mixedMatch = Regex.Match(measure, @"(\d+)\s+(\d+)\s*/\s*(\d+)");
+        if (mixedMatch.Success)
+            return decimal.Parse(mixedMatch.Groups[1].Value)
+                   + decimal.Parse(mixedMatch.Groups[2].Value) / decimal.Parse(mixedMatch.Groups[3].Value);
+
+        // Check for simple fraction like "1/2"
+        var fracMatch = Regex.Match(measure, @"(\d+)\s*/\s*(\d+)");
+        if (fracMatch.Success)
+            return decimal.Parse(fracMatch.Groups[1].Value) / decimal.Parse(fracMatch.Groups[2].Value);
+
+        // Check for Unicode fraction character
+        foreach (var kvp in fractionMap)
+        {
+            if (measure.Contains(kvp.Key))
+            {
+                // Check if preceded by a whole number (e.g., "1½")
+                var prefix = Regex.Match(measure, @"(\d+)\s*" + kvp.Key);
+                if (prefix.Success)
+                    return decimal.Parse(prefix.Groups[1].Value) + kvp.Value;
+                return kvp.Value;
+            }
+        }
+
+        // Handle ranges: take the first number
+        var rangeMatch = Regex.Match(measure, @"(\d+)\s*-\s*\d+");
+        if (rangeMatch.Success)
+            return decimal.Parse(rangeMatch.Groups[1].Value);
+
+        // Standard decimal number
         var match = Regex.Match(measure, @"[\d.]+");
         return match.Success && decimal.TryParse(match.Value, out var amt) ? amt : 1;
     }
@@ -250,12 +361,27 @@ public class MealDbService : IMealDbService
         if (string.IsNullOrWhiteSpace(measure)) return Measurement.Amount;
         var m = measure.ToLowerInvariant();
 
+        // Volume
         if (m.Contains("ml") || m.Contains("millilit")) return Measurement.Millilitres;
+        if (m.Contains("litre") || m.Contains("liter") || m.Contains(" l ")) return Measurement.Litres;
         if (m.Contains("tsp") || m.Contains("teaspoon")) return Measurement.Teaspoon;
         if (m.Contains("tbsp") || m.Contains("tablespoon")) return Measurement.Tablespoon;
-        if (m.Contains("g") || m.Contains("gram") || m.Contains("kg") || m.Contains("kilo")
-            || m.Contains("oz") || m.Contains("ounce") || m.Contains("lb") || m.Contains("pound"))
-            return Measurement.Grams;
+        if (m.Contains("cup")) return Measurement.Cups;
+
+        // Weight — check for "kg" before "g" to avoid false matches
+        if (m.Contains("kg") || m.Contains("kilo")) return Measurement.Kilograms;
+        // "g" needs word-boundary check to avoid matching "sprigs", "something", etc.
+        if (Regex.IsMatch(m, @"\b\d*\s*g\b") || m.Contains("gram")) return Measurement.Grams;
+        if (m.Contains("oz") || m.Contains("ounce")) return Measurement.Ounces;
+        if (m.Contains("lb") || m.Contains("pound")) return Measurement.Pounds;
+
+        // Count / informal
+        if (m.Contains("pinch") || m.Contains("dash")) return Measurement.Pinch;
+        if (m.Contains("to taste")) return Measurement.ToTaste;
+        if (m.Contains("clove")) return Measurement.Cloves;
+        if (m.Contains("slice")) return Measurement.Slices;
+        if (m.Contains("bunch") || m.Contains("sprig")) return Measurement.Bunches;
+        if (m.Contains("can") || m.Contains("tin")) return Measurement.Cans;
 
         return Measurement.Amount;
     }

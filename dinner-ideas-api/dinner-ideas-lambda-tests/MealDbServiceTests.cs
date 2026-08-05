@@ -205,4 +205,105 @@ public class MealDbServiceTests
         // Different meal ID → different GUID
         Assert.NotEqual(r1.Id, r3.Id);
     }
+
+    // ── Step-Ingredient Association ───────────────────────────────────
+
+    [Fact]
+    public void AssociateIngredientsWithSteps_MatchesByName()
+    {
+        var ingredients = new List<Ingredient>
+        {
+            new() { Id = Guid.NewGuid(), Name = "Chicken", Amount = 1, Measurement = Measurement.Amount },
+            new() { Id = Guid.NewGuid(), Name = "Garlic", Amount = 3, Measurement = Measurement.Cloves }
+        };
+        var steps = new List<DinnerItemStep>
+        {
+            new() { Id = Guid.NewGuid(), StepTitle = "Step 1", StepDescription = "Season the chicken with salt and pepper." },
+            new() { Id = Guid.NewGuid(), StepTitle = "Step 2", StepDescription = "Sauté the garlic until fragrant." }
+        };
+
+        MealDbService.AssociateIngredientsWithSteps(ingredients, steps);
+
+        Assert.Equal(steps[0].Id, ingredients[0].StepId); // "Chicken" matches step 1
+        Assert.Equal(steps[1].Id, ingredients[1].StepId); // "Garlic" matches step 2
+        Assert.Contains(ingredients[0].Id, steps[0].IngredientIds);
+        Assert.Contains(ingredients[1].Id, steps[1].IngredientIds);
+    }
+
+    [Fact]
+    public void AssociateIngredientsWithSteps_NoMatch_LeavesUnassigned()
+    {
+        var ingredients = new List<Ingredient>
+        {
+            new() { Id = Guid.NewGuid(), Name = "Saffron", Amount = 1, Measurement = Measurement.Pinch }
+        };
+        var steps = new List<DinnerItemStep>
+        {
+            new() { Id = Guid.NewGuid(), StepTitle = "Step 1", StepDescription = "Cook the rice." }
+        };
+
+        MealDbService.AssociateIngredientsWithSteps(ingredients, steps);
+
+        Assert.Null(ingredients[0].StepId); // "Saffron" not mentioned in steps
+    }
+
+    [Fact]
+    public void AssociateIngredientsWithSteps_ShortName_Skipped()
+    {
+        var ingredients = new List<Ingredient>
+        {
+            new() { Id = Guid.NewGuid(), Name = "Oil", Amount = 1, Measurement = Measurement.Tablespoon }
+        };
+        var steps = new List<DinnerItemStep>
+        {
+            new() { Id = Guid.NewGuid(), StepTitle = "Step 1", StepDescription = "Heat oil in a pan." }
+        };
+
+        MealDbService.AssociateIngredientsWithSteps(ingredients, steps);
+
+        Assert.NotNull(ingredients[0].StepId); // "Oil" is 3 chars, should match
+    }
+
+    [Fact]
+    public void MapToDinnerItem_WithStepAssociation_EndToEnd()
+    {
+        var meal = new MealDbMeal
+        {
+            IdMeal = "52772",
+            StrMeal = "Garlic Chicken",
+            StrCategory = "Chicken",
+            StrInstructions = "First, season the chicken with salt.\r\nThen, sauté the garlic.",
+            StrIngredient1 = "Chicken",
+            StrMeasure1 = "500g",
+            StrIngredient2 = "Garlic",
+            StrMeasure2 = "2 cloves"
+        };
+
+        var result = MealDbService.MapToDinnerItem(meal);
+
+        Assert.NotEmpty(result.Ingredients);
+        Assert.NotEmpty(result.Steps);
+        // Ingredients should be associated with steps where their names appear
+        Assert.NotNull(result.Ingredients[0].StepId); // Chicken should match
+        Assert.NotNull(result.Ingredients[1].StepId); // Garlic should match
+    }
+
+    [Fact]
+    public void MapToDinnerItem_IncludesQuantity_ForToTaste()
+    {
+        var meal = new MealDbMeal
+        {
+            IdMeal = "1",
+            StrMeal = "Seasoned Dish",
+            StrIngredient1 = "Salt",
+            StrMeasure1 = "to taste"
+        };
+
+        var result = MealDbService.MapToDinnerItem(meal);
+
+        Assert.Single(result.Ingredients);
+        Assert.Equal("to taste", result.Ingredients[0].Quantity);
+        Assert.Equal(0m, result.Ingredients[0].Amount);
+        Assert.Equal(Measurement.ToTaste, result.Ingredients[0].Measurement);
+    }
 }

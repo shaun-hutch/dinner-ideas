@@ -6,27 +6,29 @@ import { InputText } from 'primereact/inputtext';
 import { InputTextarea } from 'primereact/inputtextarea';
 import { FloatLabel } from "primereact/floatlabel";
 import { Button } from 'primereact/button';
+import { Dropdown } from 'primereact/dropdown';
 import { add, update } from 'api/Api';
 import { DinnerItem, DinnerItemStep } from 'models/DinnerItem';
+import { Ingredient } from 'models/Ingredient';
 import { FoodTag } from 'models/FoodTag';
 import { InputNumber } from 'primereact/inputnumber';
 import { MultiSelect } from 'primereact/multiselect';
-import { foodTagListItems, totalTime } from 'helpers/componentHelpers';
+import { foodTagListItems, totalTime, measurementLabel, measurementListItems, formatIngredient } from 'helpers/componentHelpers';
 import DinnerItemSteps from 'components/DinnerItemSteps/DinnerItemSteps';
 import { Measurement } from 'models/Measurement';
-
-const measurementLabels: Record<number, string> = {
-    [Measurement.Millilitres]: 'ml',
-    [Measurement.Teaspoon]: 'tsp',
-    [Measurement.Tablespoon]: 'tbsp',
-    [Measurement.Grams]: 'g',
-    [Measurement.Amount]: '',
-};
 
 interface DinnerItemEditorProps {
     readOnly?: boolean;
     create?: boolean; 
 }
+
+const newIngredient = (): Ingredient => ({
+    id: crypto.randomUUID(),
+    name: '',
+    description: '',
+    measurement: Measurement.Amount,
+    amount: 1,
+});
 
 const DinnerItemEditor = (props: DinnerItemEditorProps) => {
     const navigate = useNavigate();
@@ -46,9 +48,11 @@ const DinnerItemEditor = (props: DinnerItemEditorProps) => {
     const [cookTime, setCookTime] = useState<number>(0);
     const [steps, setSteps] = useState<DinnerItemStep[]>([]);
     const [tags, setTags] = useState<FoodTag[]>([]);
+    const [ingredients, setIngredients] = useState<Ingredient[]>([]);
 
     const { dinnerItemId } = useParams();
     const { getDinnerItem, updateDinnerItem, addDinnerItem } = useContext(DinnerItemContext);
+    const measurementOptions = useMemo(() => measurementListItems(), []);
 
     useEffect(() => {
         if (dinnerItemId && getDinnerItem) {
@@ -57,20 +61,34 @@ const DinnerItemEditor = (props: DinnerItemEditorProps) => {
                 setLoaded(true);
                 setDinnerItem(item);
 
-                // set all the other items
                 setName(item.name);
                 setDescription(item.description);
                 setPrepTime(item.prepTime);
                 setCookTime(item.cookTime);
                 setTags(item.tags);
                 setSteps(item.steps);
+                setIngredients(item.ingredients ?? []);
             }
         }
     }, [dinnerItemId, getDinnerItem, loaded]);
 
-    useEffect(() => {
-        steps.map((x, i) => console.log(i, x.stepDescription, x.stepTitle));
-    },[steps]);
+    // ── Ingredient CRUD ───────────────────────────────────────────────
+
+    const handleAddIngredient = useCallback(() => {
+        setIngredients(prev => [...prev, newIngredient()]);
+    }, []);
+
+    const handleRemoveIngredient = useCallback((id: string) => {
+        setIngredients(prev => prev.filter(ing => ing.id !== id));
+    }, []);
+
+    const handleUpdateIngredient = useCallback((id: string, field: keyof Ingredient, value: string | number) => {
+        setIngredients(prev => prev.map(ing =>
+            ing.id === id ? { ...ing, [field]: value } : ing
+        ));
+    }, []);
+
+    // ── Save ───────────────────────────────────────────────────────────
 
     const onSave = useCallback(() => {
         const payload: DinnerItem = {
@@ -80,12 +98,10 @@ const DinnerItemEditor = (props: DinnerItemEditorProps) => {
             prepTime,
             cookTime,
             tags,
-            steps
-
+            steps,
+            ingredients
         };
         setIsSaving(true);
-
-        console.log('payload dinner item', payload);
 
         if (create) {
             add(payload).then((response: DinnerItem) => {
@@ -99,7 +115,6 @@ const DinnerItemEditor = (props: DinnerItemEditorProps) => {
                 console.error(error);
             });
         } else {
-
             update(payload).then((response: DinnerItem) => {
                 setIsSaving(false);
                 if (updateDinnerItem) {
@@ -112,7 +127,7 @@ const DinnerItemEditor = (props: DinnerItemEditorProps) => {
             });
         }
 
-    }, [navigate, dinnerItem, setIsSaving, name, description, tags, steps, updateDinnerItem]);
+    }, [navigate, dinnerItem, setIsSaving, name, description, tags, steps, ingredients, create, updateDinnerItem, addDinnerItem]);
 
     const totalItemTime = useMemo(() => totalTime(cookTime, prepTime), [cookTime, prepTime]);
 
@@ -171,31 +186,89 @@ const DinnerItemEditor = (props: DinnerItemEditorProps) => {
                         </FloatLabel>
                     </div>
 
+                    {/* ── Ingredients Section ───────────────────────────── */}
                     <div className="dinner-item-form-field">
-                        <DinnerItemSteps steps={steps} onStepsChange={setSteps} loaded={loaded} readOnly={readOnly} create={create} />
+                        <h4>Ingredients</h4>
+                        {ingredients.length === 0 && readOnly && (
+                            <p className="text-color-secondary">No ingredients listed.</p>
+                        )}
+                        <div className="ingredients-list">
+                            {ingredients.map((ing) => (
+                                <div key={ing.id} className="ingredient-row">
+                                    {readOnly ? (
+                                        <span className="ingredient-display">{formatIngredient(ing)}</span>
+                                    ) : (
+                                        <div className="ingredient-edit-row">
+                                            <InputText
+                                                className="ingredient-name-input"
+                                                value={ing.name}
+                                                onChange={e => handleUpdateIngredient(ing.id, 'name', e.target.value)}
+                                                placeholder="Ingredient name"
+                                            />
+                                            <InputNumber
+                                                className="ingredient-amount-input"
+                                                value={ing.amount}
+                                                onChange={e => handleUpdateIngredient(ing.id, 'amount', e.value ?? 1)}
+                                                min={0}
+                                                mode="decimal"
+                                                locale="en-NZ"
+                                            />
+                                            <Dropdown
+                                                className="ingredient-measurement-dropdown"
+                                                value={ing.measurement}
+                                                options={measurementOptions}
+                                                onChange={e => handleUpdateIngredient(ing.id, 'measurement', e.value)}
+                                                placeholder="Unit"
+                                            />
+                                            <InputText
+                                                className="ingredient-quantity-input"
+                                                value={ing.quantity ?? ''}
+                                                onChange={e => handleUpdateIngredient(ing.id, 'quantity', e.target.value)}
+                                                placeholder="or free-text (to taste, 1 can...)"
+                                            />
+                                            <Button
+                                                icon="pi pi-trash"
+                                                className="p-button-danger p-button-sm"
+                                                rounded
+                                                onClick={() => handleRemoveIngredient(ing.id)}
+                                                tooltip="Remove ingredient"
+                                            />
+                                        </div>
+                                    )}
+                                </div>
+                            ))}
+                        </div>
+                        {!readOnly && (
+                            <div className="dinner-item-add-action">
+                                <Button
+                                    icon="pi pi-plus"
+                                    className="p-button-success"
+                                    raised
+                                    rounded
+                                    onClick={handleAddIngredient}
+                                    label="Add Ingredient"
+                                />
+                            </div>
+                        )}
                     </div>
 
-                    {dinnerItem?.ingredients && dinnerItem.ingredients.length > 0 && (
-                        <div className="dinner-item-form-field">
-                            <h4>Ingredients</h4>
-                            <div className="ingredients-readonly">
-                                {dinnerItem.ingredients.map((ing) => (
-                                    <div key={ing.id} className="ingredient-row">
-                                        <span className="ingredient-name">{ing.name}</span>
-                                        <span className="ingredient-amount">
-                                            {ing.amount} {measurementLabels[ing.measurement] || ''}
-                                        </span>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-                    )}
+                    {/* ── Steps Section ──────────────────────────────────── */}
+                    <div className="dinner-item-form-field">
+                        <DinnerItemSteps
+                            steps={steps}
+                            ingredients={ingredients}
+                            onStepsChange={setSteps}
+                            onIngredientsChange={setIngredients}
+                            loaded={loaded}
+                            readOnly={readOnly}
+                            create={create}
+                        />
+                    </div>
 
                     {!readOnly && (
                         <div className="dinner-item-form-buttons">
                             <Button icon={`pi ${isSaving ? "pi-spin pi-spinner" : "pi-save"}`} className="save-button" raised rounded onClick={onSave} label="Save" disabled={isSaving} />
                         </div>
-
                     )}
                 </div>
         </div>
