@@ -1,4 +1,24 @@
 .body {
-  margin: 2em;
-  width: 0 auto;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 1rem 2rem 3rem;
+}
+
+.app-footer {
+  text-align: center;
+  padding: 2.5rem 1rem 1.5rem;
+  color: var(--text-color-secondary);
+  font-size: 0.85rem;
+  border-top: 1px solid var(--surface-border);
+  margin-top: 3rem;
+}
+
+.app-footer a {
+  color: var(--primary-color);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.app-footer a:hover {
+  text-decoration: underline;
 }

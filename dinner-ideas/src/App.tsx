@@ -5,6 +5,7 @@ import Navbar from 'components/Navbar/Navbar';
 import { DinnerItemContext, useDiinnerItemListContext } from 'hooks/useDinnerItemListContext';
 import DinnerItemEditor from 'components/DinnerItemEditor/DinnerItemEditor';
 import Generate from 'components/Generate/Generate';
+import Discover from 'components/Discover/Discover';
 import Login from 'components/Login/Login';
 import { AuthProvider, useAuth } from 'hooks/useAuth';
 
@@ -53,6 +54,10 @@ const AppRoutes = () => {
                             element: <Generate />
                         },
                         {
+                            path: "/discover",
+                            element: <Discover />
+                        },
+                        {
                             path: "/edit/:dinnerItemId",
                             element: <DinnerItemEditor />
                         },
@@ -71,6 +76,12 @@ const AppRoutes = () => {
             <div className="body">
                 <RouterProvider router={router} />
             </div>
+            <footer className="app-footer">
+                <span>Made with 🍳 in Auckland · </span>
+                <a href="https://www.themealdb.com/" target="_blank" rel="noopener noreferrer">
+                    Powered by TheMealDB
+                </a>
+            </footer>
         </DinnerItemContext.Provider>
     );
 };

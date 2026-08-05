@@ -21,4 +21,7 @@ export const FoodTagLabel: Dictionary<string> = {
     [FoodTag.FamilyFriendly]: "Family Friendly",
 };
 
-export const ApiEndpoint = import.meta.env.VITE_APP_API_ENDPOINT;
+export const ApiEndpoint = import.meta.env.VITE_APP_API_ENDPOINT || "";
+
+/** Base URL for user-uploaded images (set at build time by deploy-frontend.sh). */
+export const ImageBaseUrl = import.meta.env.VITE_IMAGE_BASE_URL || "";

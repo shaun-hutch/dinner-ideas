@@ -1,6 +1,7 @@
 using Amazon.Lambda.Core;
 using Amazon.Lambda.APIGatewayEvents;
 using System.Net;
+using System.Net.Http;
 using Newtonsoft.Json;
 using Microsoft.Extensions.DependencyInjection;
 using dinner_ideas_lambda.services;
@@ -34,61 +35,41 @@ public class Function
         {
             // Handle CORS preflight
             if (apiGatewayEvent.HttpMethod == "OPTIONS")
-            {
-                return new APIGatewayProxyResponse
-                {
-                    StatusCode = 200,
-                    Headers = CorsHeaders()
-                };
-            }
+                return CorsOk();
 
             // Auth routes — no JWT required
             if (path.Contains("auth/register"))
             {
-                var authService = provider.GetRequiredService<IAuthService>();
-                var registerRequest = JsonConvert.DeserializeObject<RegisterRequest>(apiGatewayEvent.Body);
-                var authResponse = await authService.Register(registerRequest!.Email, registerRequest.Password);
-                bodyResponse = JsonConvert.SerializeObject(authResponse);
-                return BuildResponse(statusCode, bodyResponse);
+                var req = Deserialize<RegisterRequest>(apiGatewayEvent.Body);
+                return Ok(await Resolve<IAuthService>().Register(req!.Email, req.Password));
             }
 
             if (path.Contains("auth/login"))
             {
-                var authService = provider.GetRequiredService<IAuthService>();
-                var loginRequest = JsonConvert.DeserializeObject<LoginRequest>(apiGatewayEvent.Body);
-                var authResponse = await authService.Login(loginRequest!.Email, loginRequest.Password);
-                bodyResponse = JsonConvert.SerializeObject(authResponse);
-                return BuildResponse(statusCode, bodyResponse);
+                var req = Deserialize<LoginRequest>(apiGatewayEvent.Body);
+                return Ok(await Resolve<IAuthService>().Login(req!.Email, req.Password));
             }
 
             // Validate JWT for all other routes
-            var authHeader = apiGatewayEvent.Headers?.ContainsKey("Authorization") == true
-                ? apiGatewayEvent.Headers["Authorization"]
-                : apiGatewayEvent.Headers?.ContainsKey("authorization") == true
-                    ? apiGatewayEvent.Headers["authorization"]
-                    : null;
+            var authHeader = apiGatewayEvent.Headers?.TryGetValue("Authorization", out var h1) == true ? h1
+                : apiGatewayEvent.Headers?.TryGetValue("authorization", out var h2) == true ? h2
+                : null;
 
             if (string.IsNullOrEmpty(authHeader) || !authHeader.StartsWith("Bearer "))
-            {
-                return BuildResponse(401, JsonConvert.SerializeObject(new { error = "Authorization required" }));
-            }
+                return Error(401, "Authorization required");
 
             var token = authHeader["Bearer ".Length..];
-            var authSvc = provider.GetRequiredService<IAuthService>();
-            var principal = authSvc.ValidateToken(token);
+            var principal = Resolve<IAuthService>().ValidateToken(token);
 
             if (principal == null)
-            {
-                return BuildResponse(401, JsonConvert.SerializeObject(new { error = "Invalid or expired token" }));
-            }
+                return Error(401, "Invalid or expired token");
 
             var userIdClaim = principal.FindFirst(ClaimTypes.NameIdentifier)?.Value
                            ?? principal.FindFirst("sub")?.Value;
             var userId = int.TryParse(userIdClaim, out var parsedId) ? parsedId : 1;
 
             // Proceed to actual route handling
-            var dinnerItemService = provider.GetRequiredService<IDinnerItemService>();
-            var routeParams = apiGatewayEvent.PathParameters;
+            var dinnerItemService = Resolve<IDinnerItemService>();
 
             // Extract a GUID id from the last path segment if present
             // (e.g., /dinner-ideas-db/550e8400-e29b-41d4-a716-446655440000).
@@ -106,68 +87,101 @@ public class Function
             switch (apiGatewayEvent.HttpMethod)
             {
                 case "GET":
-                    if (pathId.HasValue)
+                    if (path.Contains("meals/random"))
+                    {
+                        context.Logger.LogInformation("Fetching random meal from TheMealDB");
+                        bodyResponse = Serialize(await Resolve<IMealDbService>().GetRandomMeal());
+                    }
+                    else if (path.Contains("meals/search"))
+                    {
+                        var q = apiGatewayEvent.QueryStringParameters?.TryGetValue("q", out var query) == true ? query : "";
+                        context.Logger.LogInformation($"Searching TheMealDB for: {q}");
+                        bodyResponse = Serialize(await Resolve<IMealDbService>().SearchMeals(q));
+                    }
+                    else if (path.Contains("meals/categories"))
+                    {
+                        context.Logger.LogInformation("Fetching meal categories from TheMealDB");
+                        bodyResponse = Serialize(await Resolve<IMealDbService>().GetCategories());
+                    }
+                    else if (pathId.HasValue)
                     {
                         context.Logger.LogInformation($"GET item by id: {pathId.Value}");
-                        var itemResponse = await dinnerItemService.GetItem(pathId.Value);
-                        bodyResponse = JsonConvert.SerializeObject(itemResponse);
+                        bodyResponse = Serialize(await dinnerItemService.GetItem(pathId.Value));
                     }
                     else
                     {
-                        var itemListResponse = await dinnerItemService.GetItems();
-                        bodyResponse = JsonConvert.SerializeObject(itemListResponse);
+                        bodyResponse = Serialize(await dinnerItemService.GetItems());
                     }
                     break;
+
                 case "POST":
-                    if (path.Contains("upload-url"))
+                    if (path.Contains("meals/import"))
                     {
-                        context.Logger.LogInformation($"generating upload URL");
-                        var uploadRequest = JsonConvert.DeserializeObject<ImageUploadRequest>(apiGatewayEvent.Body);
-                        var imageKey = $"images/{uploadRequest!.DinnerItemId}/{Guid.NewGuid()}{Path.GetExtension(uploadRequest.FileName)}";
-                        var s3Service = provider.GetRequiredService<IS3Service>();
-                        var uploadUrl = s3Service.GenerateUploadUrl(imageKey, uploadRequest.ContentType, TimeSpan.FromMinutes(5));
-                        var imageUrl = s3Service.GetImageUrl(imageKey);
-                        bodyResponse = JsonConvert.SerializeObject(new ImageUploadResponse
+                        context.Logger.LogInformation("Importing meal from TheMealDB");
+                        var importReq = Deserialize<MealImportRequest>(apiGatewayEvent.Body);
+                        bodyResponse = Serialize(await Resolve<IMealDbService>().ImportMeal(importReq!.MealId, userId));
+                    }
+                    else if (path.Contains("seed"))
+                    {
+                        context.Logger.LogInformation("Seeding starter recipes");
+                        var recipes = SeedData.GetSeedRecipes();
+                        var created = new List<DinnerItem>();
+                        foreach (var r in recipes)
                         {
-                            UploadUrl = uploadUrl,
+                            r.CreatedBy = userId;
+                            r.LastModifiedBy = userId;
+                            r.CreatedDate = DateTime.UtcNow;
+                            r.LastModifiedDate = DateTime.UtcNow;
+                            created.Add(await dinnerItemService.CreateItem(r));
+                        }
+                        context.Logger.LogInformation($"Seeded {created.Count} starter recipes");
+                        bodyResponse = Serialize(created);
+                    }
+                    else if (path.Contains("upload-url"))
+                    {
+                        context.Logger.LogInformation("generating upload URL");
+                        var uploadReq = Deserialize<ImageUploadRequest>(apiGatewayEvent.Body);
+                        var imageKey = $"images/{uploadReq!.DinnerItemId}/{Guid.NewGuid()}{Path.GetExtension(uploadReq.FileName)}";
+                        var s3 = Resolve<IS3Service>();
+                        bodyResponse = Serialize(new ImageUploadResponse
+                        {
+                            UploadUrl = s3.GenerateUploadUrl(imageKey, uploadReq.ContentType, TimeSpan.FromMinutes(5)),
                             ImageKey = imageKey,
-                            ImageUrl = imageUrl
+                            ImageUrl = s3.GetImageUrl(imageKey)
                         });
                     }
                     else if (path.Contains("generate"))
                     {
-                        context.Logger.LogInformation($"generating random item list");
-                        var generateRequest = JsonConvert.DeserializeObject<DinnerGenerateRequest>(apiGatewayEvent.Body);
-                        var generatedItems = await dinnerItemService.GenerateItems(generateRequest!.Count);
-                        bodyResponse = JsonConvert.SerializeObject(generatedItems);
+                        context.Logger.LogInformation("generating random item list");
+                        var genReq = Deserialize<DinnerGenerateRequest>(apiGatewayEvent.Body);
+                        bodyResponse = Serialize(await dinnerItemService.GenerateItems(genReq!.Count));
                     }
                     else
                     {
-                        context.Logger.LogInformation($"creating item");
-                        var createItem = JsonConvert.DeserializeObject<DinnerItem>(apiGatewayEvent.Body);
-                        createItem!.CreatedBy = userId;
-                        var postResponse = await dinnerItemService.CreateItem(createItem!);
-                        bodyResponse = JsonConvert.SerializeObject(postResponse);
+                        context.Logger.LogInformation("creating item");
+                        var item = Deserialize<DinnerItem>(apiGatewayEvent.Body);
+                        item!.CreatedBy = userId;
+                        bodyResponse = Serialize(await dinnerItemService.CreateItem(item));
                     }
                     break;
+
                 case "PUT":
-                    var updateItem = JsonConvert.DeserializeObject<DinnerItem>(apiGatewayEvent.Body);
+                    var updateItem = Deserialize<DinnerItem>(apiGatewayEvent.Body);
                     updateItem!.LastModifiedBy = userId;
-                    var putResponse = await dinnerItemService.UpdateItem(updateItem!);
-                    bodyResponse = JsonConvert.SerializeObject(putResponse);
+                    bodyResponse = Serialize(await dinnerItemService.UpdateItem(updateItem));
                     break;
+
                 case "DELETE":
                     if (pathId.HasValue)
                     {
                         context.Logger.LogInformation($"DELETE item by id: {pathId.Value}");
-                        var deleted = await dinnerItemService.DeleteItem(pathId.Value);
-                        bodyResponse = JsonConvert.SerializeObject(deleted);
+                        bodyResponse = Serialize(await dinnerItemService.DeleteItem(pathId.Value));
                     }
                     else
                     {
                         context.Logger.LogWarning("DELETE called without a valid GUID id in path");
                         statusCode = (int)HttpStatusCode.BadRequest;
-                        bodyResponse = JsonConvert.SerializeObject(new { error = "Item id is required for DELETE" });
+                        bodyResponse = Serialize(new { error = "Item id is required for DELETE" });
                     }
                     break;
             }
@@ -175,24 +189,42 @@ public class Function
         catch (UnauthorizedAccessException ex)
         {
             Console.WriteLine(ex);
-            statusCode = 401;
-            bodyResponse = JsonConvert.SerializeObject(new { error = ex.Message });
+            return Error(401, ex.Message);
         }
         catch (InvalidOperationException ex)
         {
             Console.WriteLine(ex);
-            statusCode = 409;
-            bodyResponse = JsonConvert.SerializeObject(new { error = ex.Message });
+            return Error(409, ex.Message);
         }
         catch (Exception ex)
         {
             Console.WriteLine(ex);
-            statusCode = (int)HttpStatusCode.InternalServerError;
-            bodyResponse = JsonConvert.SerializeObject(new { error = "An internal error occurred" });
+            return Error(500, "An internal error occurred");
         }
 
         return BuildResponse(statusCode, bodyResponse);
     }
+
+    // ── Helpers ───────────────────────────────────────────────────────────
+
+    /// <summary>Resolve a service from the DI container.</summary>
+    private T Resolve<T>() where T : notnull => provider.GetRequiredService<T>();
+
+    /// <summary>Deserialize the request body.</summary>
+    private static T? Deserialize<T>(string? body) => JsonConvert.DeserializeObject<T>(body ?? "");
+
+    /// <summary>Serialize an object to JSON.</summary>
+    private static string Serialize(object? obj) => JsonConvert.SerializeObject(obj);
+
+    /// <summary>Return a 200 OK with JSON body.</summary>
+    private static APIGatewayProxyResponse Ok(object? body) => BuildResponse(200, Serialize(body));
+
+    /// <summary>Return a CORS preflight 200 OK.</summary>
+    private static APIGatewayProxyResponse CorsOk() => new() { StatusCode = 200, Headers = CorsHeaders() };
+
+    /// <summary>Return an error response.</summary>
+    private static APIGatewayProxyResponse Error(int code, string message) =>
+        BuildResponse(code, Serialize(new { error = message }));
 
     private static APIGatewayProxyResponse BuildResponse(int statusCode, string body)
     {
@@ -222,6 +254,8 @@ public class Function
         services.AddScoped<IDatabaseClientService, DatabaseClientService>();
         services.AddSingleton<IS3Service, S3Service>();
         services.AddScoped<IAuthService, AuthService>();
+        services.AddSingleton<HttpClient>();
+        services.AddScoped<IMealDbService, MealDbService>();
 
         JsonConvert.DefaultSettings = () => new JsonSerializerSettings
         {

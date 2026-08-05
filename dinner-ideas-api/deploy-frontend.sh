@@ -55,12 +55,33 @@ if [ -z "$API_CF_URL" ] || [ "$API_CF_URL" = "None" ]; then
 fi
 echo "  API CloudFront URL: $API_CF_URL"
 
+# ---- Step 1b: Retrieve Image Bucket URL from backend stack ----
+echo ""
+echo "[1b/5] Retrieving Image Bucket URL from backend stack ($BACKEND_STACK_NAME)..."
+IMAGE_BUCKET=$(aws cloudformation describe-stacks \
+    --stack-name "$BACKEND_STACK_NAME" \
+    --region "$REGION" \
+    --query 'Stacks[0].Outputs[?OutputKey==`ImageBucketName`].OutputValue' \
+    --output text 2>/dev/null || echo "")
+
+if [ -z "$IMAGE_BUCKET" ] || [ "$IMAGE_BUCKET" = "None" ]; then
+    echo "  WARNING: Could not retrieve Image Bucket name from backend stack."
+    echo "  Images will use a fallback URL."
+else
+    IMAGE_BASE_URL="https://${IMAGE_BUCKET}.s3.${REGION}.amazonaws.com"
+    echo "  Image Base URL: $IMAGE_BASE_URL"
+fi
+
 # ---- Step 2: Build the React frontend ----
 echo ""
 echo "[2/5] Building React frontend..."
 cd "$FRONTEND_DIR"
 npm ci
-VITE_APP_API_ENDPOINT="$API_CF_URL" npm run build
+if [ -n "$IMAGE_BASE_URL" ]; then
+    VITE_APP_API_ENDPOINT="$API_CF_URL" VITE_IMAGE_BASE_URL="$IMAGE_BASE_URL" npm run build
+else
+    VITE_APP_API_ENDPOINT="$API_CF_URL" npm run build
+fi
 echo "  Build complete. Output: $FRONTEND_DIR/dist"
 
 # ---- Step 3: Deploy frontend CloudFormation stack (S3 + CloudFront) ----

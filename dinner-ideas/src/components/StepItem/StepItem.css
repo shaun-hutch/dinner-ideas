@@ -1,14 +1,17 @@
 .dinner-item-step {
     display: flex;
-
 }
 
 .dinner-item-fields {
     flex-grow: 2;
 }
 
+.dinner-item-fields textarea {
+    min-height: 80px;
+}
+
 .remove-button {
-    z-index: 69;
+    z-index: 10;
     width: 2em;
     height: 2em;
 }
@@ -17,4 +20,45 @@
     display: flex;
     align-items: center;
     padding: 1em;
+}
+
+/* ── Step Ingredients ─────────────────────────────────────────────── */
+
+.step-ingredients {
+    margin-top: 0.75em;
+    padding: 0.5em 0.75em;
+    background: var(--surface-50);
+    border-radius: 6px;
+    border: 1px solid var(--surface-200);
+}
+
+.step-ingredients-available {
+    background: var(--blue-50);
+    border-color: var(--blue-200);
+}
+
+.step-ingredients-label {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--text-color-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.step-ingredients-list {
+    margin: 0.25em 0 0 0;
+    padding: 0;
+    list-style: none;
+}
+
+.step-ingredient-item {
+    padding: 0.15em 0;
+    font-size: 0.9rem;
+}
+
+.step-ingredient-checkbox {
+    display: flex;
+    align-items: center;
+    gap: 0.5em;
+    cursor: pointer;
 }

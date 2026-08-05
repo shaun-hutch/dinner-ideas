@@ -42,10 +42,109 @@
     }
 }
 
+/* Fix MultiSelect dropdown item hover/selected visibility */
+.p-multiselect-item {
+    padding: 0.6em 1em;
+}
+
+.p-multiselect-item.p-highlight {
+    background: var(--primary-50);
+    color: var(--primary-700);
+    font-weight: 600;
+}
+
+.p-multiselect-item:not(.p-highlight):not(.p-disabled):hover {
+    background: var(--surface-100);
+    color: var(--text-color);
+}
+
+.p-multiselect-item .p-checkbox .p-checkbox-box.p-highlight {
+    border-color: var(--primary-color);
+    background: var(--primary-color);
+}
+
+/* Ensure tag chips inside multiselect have visible text */
+.p-multiselect-token {
+    background: var(--primary-100);
+    color: var(--primary-700);
+    font-weight: 500;
+    border-radius: 16px;
+    padding: 0.2em 0.6em;
+}
+
+.p-multiselect-token .p-multiselect-token-label {
+    color: inherit;
+}
+
 .dinner-item-form-buttons {
     display: flex;
     flex-direction: row-reverse;
     padding: 1em;
+}
+
+/* ── Ingredient Editor ─────────────────────────────────────────────── */
+
+.ingredients-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5em;
+    padding: 0.5em 0;
+}
+
+.ingredient-row {
+    padding: 0.5em;
+    background: var(--surface-50);
+    border-radius: 8px;
+    border: 1px solid var(--surface-200);
+}
+
+.ingredient-display {
+    font-size: 1rem;
+    color: var(--text-color);
+}
+
+.ingredient-edit-row {
+    display: flex;
+    align-items: center;
+    gap: 0.5em;
+    flex-wrap: wrap;
+}
+
+.ingredient-name-input {
+    flex: 2;
+    min-width: 150px;
+}
+
+.ingredient-amount-input {
+    flex: 0 0 90px;
+}
+
+.ingredient-measurement-dropdown {
+    flex: 0 0 110px;
+}
+
+.ingredient-quantity-input {
+    flex: 1;
+    min-width: 130px;
+}
+
+.ingredient-step-dropdown {
+    flex: 0 0 140px;
+}
+
+.dinner-item-add-action {
+    padding: 0.5em 0;
+}
+
+.ingredient-name {
+    font-weight: 500;
+    color: var(--text-warm);
+}
+
+.ingredient-amount {
+    color: var(--text-color-secondary);
+    font-size: 0.9em;
+    white-space: nowrap;
 }
 
 input[readonly],

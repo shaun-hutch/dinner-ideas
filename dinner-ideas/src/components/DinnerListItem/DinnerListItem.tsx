@@ -5,6 +5,7 @@ import meta_salad from '../../../src/images/meta_salad.png'
 import React from "react";
 import ItemChipContainer from "../ItemChipContainer/ItemChipContainer";
 import { Button } from "primereact/button";
+import { ImageBaseUrl } from "../../models/Constants";
 
 interface DinnerItemProps {
     isLoading: boolean;
@@ -31,7 +32,11 @@ const DinnerListItem = (props: DinnerItemProps) => {
 
     const formattedTime = `${totalTime} mins`
     const processedImage = imageKey
-        ? `https://shaun-web-app-bucket.s3.us-west-1.amazonaws.com/${imageKey}`
+        ? imageKey.startsWith("http")
+            ? imageKey // Full URL (e.g., TheMealDB thumbnail)
+            : ImageBaseUrl
+                ? `${ImageBaseUrl}/${imageKey}`
+                : meta_salad
         : meta_salad;
     
     const photo = (

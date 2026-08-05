@@ -128,7 +128,7 @@ public class AuthService : IAuthService
         var normalized = email.ToLowerInvariant().Trim();
         var request = new ScanRequest
         {
-            FilterExpression = "#type = :type AND email = :email",
+            FilterExpression = "begins_with(#type, :type) AND email = :email",
             ExpressionAttributeNames = new Dictionary<string, string>
             {
                 { "#type", Constants.ID_KEY }

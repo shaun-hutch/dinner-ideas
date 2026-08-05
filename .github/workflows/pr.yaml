@@ -1,0 +1,72 @@
+name: PR Validation
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+# Cancel in-progress runs when a new commit is pushed to the same PR
+concurrency:
+  group: pr-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # ==========================================================================
+  # Backend: .NET restore → build → test
+  # ==========================================================================
+  backend:
+    name: Backend Build & Test
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET 10
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.x'
+
+      - name: Restore dependencies
+        run: dotnet restore dinner-ideas.sln
+
+      - name: Build
+        run: dotnet build dinner-ideas.sln --no-restore --configuration Release
+
+      - name: Run unit tests
+        run: dotnet test dinner-ideas-api/dinner-ideas-lambda-tests/dinner-ideas-lambda.Tests.csproj --no-build --configuration Release --verbosity normal
+
+  # ==========================================================================
+  # Frontend: install → typecheck → build → unit tests
+  # ==========================================================================
+  frontend:
+    name: Frontend Build & Test
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: 'npm'
+          cache-dependency-path: dinner-ideas/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+        working-directory: dinner-ideas
+
+      - name: Type check
+        run: npx tsc --noEmit
+        working-directory: dinner-ideas
+
+      - name: Build
+        run: npm run build
+        working-directory: dinner-ideas
+
+      - name: Run unit tests
+        run: npm test
+        working-directory: dinner-ideas

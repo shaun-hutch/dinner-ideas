@@ -92,7 +92,7 @@ public class DatabaseClientService : IDatabaseClientService
         else 
         {
             Console.WriteLine($"No item found for {typeAndId}");
-            return null;
+            return default!;
         }
     }
 
@@ -151,7 +151,6 @@ public class DatabaseClientService : IDatabaseClientService
         if (existingItem is null)
             throw new ArgumentNullException(nameof(item));
 
-        item.CreatedDate = utcNow;
         item.LastModifiedDate = utcNow;
 
         var dict = _dynamoObjectService.ToAttributeMap(item);

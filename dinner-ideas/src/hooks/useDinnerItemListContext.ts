@@ -17,19 +17,25 @@ export const useDiinnerItemListContext = () => {
     const [loading, setLoading] = useState(true);
     const getDinnerItem = (id: string) => dinnerItemList.find(x => x.id === id);
     const updateDinnerItem = (item: DinnerItem) => {
-        const index = dinnerItemList.findIndex(x => x.id === item.id);
-        if (index !== -1) {
-            dinnerItemList[index] = item;
-        }
+        setDinnerItemList(prev => {
+            const index = prev.findIndex(x => x.id === item.id);
+            if (index !== -1) {
+                const updated = [...prev];
+                updated[index] = item;
+                return updated;
+            }
+            return prev;
+        });
     };
     const addDinnerItem = (item: DinnerItem) => {
-        dinnerItemList.push(item);
+        setDinnerItemList(prev => [...prev, item]);
     }
 
     useEffect(() => {
         const getData = async () => {
             const data = await getAll();
-            setDinnerItemList(data);
+            // Filter out junk items with no name
+            setDinnerItemList(data.filter(item => item.name && item.name !== "None"));
             setLoading(false);
         }
 

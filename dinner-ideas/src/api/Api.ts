@@ -104,3 +104,61 @@ export const login = async (email: string, password: string): Promise<AuthRespon
     }
     return response.json();
 };
+
+// Delete API
+export const remove = async (id: string): Promise<boolean> => {
+    const response = await fetch(`${baseEndpoint}/${id}`, {
+        method: "DELETE",
+        headers: getAuthHeaders()
+    });
+    if (!response.ok) throw new Error(`Error: ${response.status}`);
+    return response.json();
+};
+
+// Seed API
+export const seedRecipes = async (): Promise<DinnerItem[]> => {
+    const response = await fetch(`${baseEndpoint}/seed`, {
+        method: "POST",
+        headers: getAuthHeaders()
+    });
+    if (!response.ok) throw new Error(`Error: ${response.status}`);
+    return response.json();
+};
+
+// MealDB Discovery API
+export interface MealDbCategory {
+    idCategory: string;
+    strCategory: string;
+    strCategoryThumb: string;
+    strCategoryDescription: string;
+}
+
+export const getRandomMeal = async (): Promise<DinnerItem | null> => {
+    const response = await fetch(`${baseEndpoint}/meals/random`, { headers: getAuthHeaders() });
+    if (!response.ok) throw new Error(`Error: ${response.status}`);
+    return response.json();
+};
+
+export const searchMeals = async (query: string): Promise<DinnerItem[]> => {
+    const response = await fetch(`${baseEndpoint}/meals/search?q=${encodeURIComponent(query)}`, {
+        headers: getAuthHeaders()
+    });
+    if (!response.ok) throw new Error(`Error: ${response.status}`);
+    return response.json();
+};
+
+export const getMealCategories = async (): Promise<MealDbCategory[]> => {
+    const response = await fetch(`${baseEndpoint}/meals/categories`, { headers: getAuthHeaders() });
+    if (!response.ok) throw new Error(`Error: ${response.status}`);
+    return response.json();
+};
+
+export const importMeal = async (mealId: string): Promise<DinnerItem> => {
+    const response = await fetch(`${baseEndpoint}/meals/import`, {
+        method: "POST",
+        headers: getAuthHeaders(),
+        body: JSON.stringify({ mealId })
+    });
+    if (!response.ok) throw new Error(`Error: ${response.status}`);
+    return response.json();
+};

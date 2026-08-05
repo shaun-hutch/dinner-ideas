@@ -3,6 +3,7 @@ import { MenuItem } from "primereact/menuitem";
 import { Button } from "primereact/button";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../hooks/useAuth";
+import "./Navbar.css";
 
 const Navbar = () => {
     const navigate = useNavigate();
@@ -23,6 +24,11 @@ const Navbar = () => {
             label: 'Generate',
             icon: 'pi pi-sync',
             command: () => navigate('/generate')
+        },
+        {
+            label: 'Discover',
+            icon: 'pi pi-globe',
+            command: () => navigate('/discover')
         }
     ];
 
@@ -31,7 +37,7 @@ const Navbar = () => {
             {user && <span className="nav-user">{user.email}</span>}
             <Button
                 icon="pi pi-sign-out"
-                className="p-button-text p-button-sm"
+                className="p-button-text p-button-rounded p-button-sm"
                 onClick={logout}
                 tooltip="Sign out"
                 tooltipOptions={{ position: "left" }}
